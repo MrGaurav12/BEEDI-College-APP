@@ -17,6 +17,8 @@ import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
 import 'package:beedi_college/Screens/AIChatScreen.dart';
 import 'package:beedi_college/Screens/AcedemicScreen.dart';
 import 'package:beedi_college/Screens/AdmissionScreen.dart';
+import 'package:beedi_college/Screens/AlumniSpotlightScreen.dart';
+import 'package:beedi_college/Screens/AttendanceScreen.dart';
 import 'package:beedi_college/Screens/CampusMapScreen.dart';
 import 'package:beedi_college/Screens/ContactsScreen.dart';
 import 'package:beedi_college/Screens/ELibraryScreen.dart';
@@ -7381,74 +7383,74 @@ class TimetableScreen extends StatelessWidget {
   );
 }
 
-class AttendanceScreen extends StatelessWidget {
-  const AttendanceScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AC.bg,
-    appBar: _detailAppBar('Attendance', const Color(0xFF42A5F5)),
-    body: _detailBody(
-      '✅',
-      'Attendance Tracker',
-      'Monitor your attendance across all subjects in real-time.',
-      const Color(0xFF42A5F5),
-      [
-        'Overall Attendance: 87%',
-        'Mathematics: 92% (22/24 classes)',
-        'Physics: 85% (17/20 classes)',
-        'DSA: 88% (21/24 classes)',
-        'Minimum required: 75% per subject',
-        'Get alerts when attendance drops below threshold',
-      ],
-    ),
-  );
-}
+// class AttendanceScreen extends StatelessWidget {
+//   const AttendanceScreen({super.key});
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//     backgroundColor: AC.bg,
+//     appBar: _detailAppBar('Attendance', const Color(0xFF42A5F5)),
+//     body: _detailBody(
+//       '✅',
+//       'Attendance Tracker',
+//       'Monitor your attendance across all subjects in real-time.',
+//       const Color(0xFF42A5F5),
+//       [
+//         'Overall Attendance: 87%',
+//         'Mathematics: 92% (22/24 classes)',
+//         'Physics: 85% (17/20 classes)',
+//         'DSA: 88% (21/24 classes)',
+//         'Minimum required: 75% per subject',
+//         'Get alerts when attendance drops below threshold',
+//       ],
+//     ),
+//   );
+// }
 
-class LeaderboardScreen extends StatelessWidget {
-  const LeaderboardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AC.bg,
-    appBar: _detailAppBar('Leaderboard', const Color(0xFF1565C0)),
-    body: _detailBody(
-      '🏅',
-      'BEEDI Student Leaderboard',
-      'Top performers across academics, sports, and activities.',
-      const Color(0xFF1565C0),
-      [
-        '🥇 Priya Sharma – CSE – 9,850 pts',
-        '🥈 Arjun Mehta – MBA – 9,720 pts',
-        '🥉 Sneha Roy – Physics – 9,650 pts',
-        '⭐ Rohit Kumar – ECE – 9,520 pts',
-        '⭐ Anjali Gupta – BBA – 9,410 pts',
-        'Rankings updated weekly based on academics + activities',
-      ],
-    ),
-  );
-}
+// class LeaderboardScreen extends StatelessWidget {
+//   const LeaderboardScreen({super.key});
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//     backgroundColor: AC.bg,
+//     appBar: _detailAppBar('Leaderboard', const Color(0xFF1565C0)),
+//     body: _detailBody(
+//       '🏅',
+//       'BEEDI Student Leaderboard',
+//       'Top performers across academics, sports, and activities.',
+//       const Color(0xFF1565C0),
+//       [
+//         '🥇 Priya Sharma – CSE – 9,850 pts',
+//         '🥈 Arjun Mehta – MBA – 9,720 pts',
+//         '🥉 Sneha Roy – Physics – 9,650 pts',
+//         '⭐ Rohit Kumar – ECE – 9,520 pts',
+//         '⭐ Anjali Gupta – BBA – 9,410 pts',
+//         'Rankings updated weekly based on academics + activities',
+//       ],
+//     ),
+//   );
+// }
 
-class AlumniSpotlightScreen extends StatelessWidget {
-  const AlumniSpotlightScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AC.bg,
-    appBar: _detailAppBar('Alumni Spotlight', const Color(0xFF1E88E5)),
-    body: _detailBody(
-      '🌟',
-      'Our Distinguished Alumni',
-      'BEEDI alumni are making waves globally across all fields.',
-      const Color(0xFF1E88E5),
-      [
-        'Dr. Amit Verma – CTO, Zomato',
-        'Kavya Singh – IAS Officer, Bihar Cadre',
-        'Rahul Jha – NASA Researcher, USA',
-        'Meera Pandey – Forbes 30 Under 30',
-        'Sanjay Sinha – Founder, EduTech Unicorn',
-        'Connect via Alumni Portal for mentorship',
-      ],
-    ),
-  );
-}
+// class AlumniSpotlightScreen extends StatelessWidget {
+//   const AlumniSpotlightScreen({super.key});
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//     backgroundColor: AC.bg,
+//     appBar: _detailAppBar('Alumni Spotlight', const Color(0xFF1E88E5)),
+//     body: _detailBody(
+//       '🌟',
+//       'Our Distinguished Alumni',
+//       'BEEDI alumni are making waves globally across all fields.',
+//       const Color(0xFF1E88E5),
+//       [
+//         'Dr. Amit Verma – CTO, Zomato',
+//         'Kavya Singh – IAS Officer, Bihar Cadre',
+//         'Rahul Jha – NASA Researcher, USA',
+//         'Meera Pandey – Forbes 30 Under 30',
+//         'Sanjay Sinha – Founder, EduTech Unicorn',
+//         'Connect via Alumni Portal for mentorship',
+//       ],
+//     ),
+//   );
+// }
 
 // ════════════════════════════════════════════════════════════
 //  DETAIL APP BAR & BODY HELPERS
