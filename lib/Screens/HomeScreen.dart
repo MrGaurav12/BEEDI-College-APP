@@ -17,17 +17,21 @@ import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
 import 'package:beedi_college/Screens/AIChatScreen.dart';
 import 'package:beedi_college/Screens/AcedemicScreen.dart';
 import 'package:beedi_college/Screens/AdmissionScreen.dart';
+import 'package:beedi_college/Screens/CampusMapScreen.dart';
 import 'package:beedi_college/Screens/ContactsScreen.dart';
 import 'package:beedi_college/Screens/ELibraryScreen.dart';
 import 'package:beedi_college/Screens/FacultyPortalScreen.dart';
 import 'package:beedi_college/Screens/HajipurVaishaliScreen.dart';
+import 'package:beedi_college/Screens/JobBoardScreen.dart';
 import 'package:beedi_college/Screens/KYPAdmissionScreen.dart';
 import 'package:beedi_college/Screens/KYPQuizeScreen.dart';
 import 'package:beedi_college/Screens/OpportunitiesScreen.dart';
 import 'package:beedi_college/Screens/ResearchScreen.dart';
+import 'package:beedi_college/Screens/ScholarshipScreen.dart';
 import 'package:beedi_college/Screens/SportsScreen.dart';
 import 'package:beedi_college/Screens/StudentLifeScreen.dart';
 import 'package:beedi_college/Screens/StudentQuizScreen.dart' hide LoginScreen;
+import 'package:beedi_college/Screens/StudyTimerScreen.dart';
 import 'package:beedi_college/Screens/SubjectChooseScrren.dart';
 import 'package:beedi_college/Screens/TodatTestScreen.dart';
 import 'package:beedi_college/Screens/VirtualTourScreen.dart';
@@ -7285,51 +7289,51 @@ class StudentEntryScreen extends StatelessWidget {
 //   );
 // }
 
-class ScholarshipScreen extends StatelessWidget {
-  const ScholarshipScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AC.bg,
-    appBar: _detailAppBar('Scholarships', const Color(0xFF42A5F5)),
-    body: _detailBody(
-      '🏆',
-      'Scholarship Finder',
-      'Find and apply for scholarships worth crores every year.',
-      const Color(0xFF42A5F5),
-      [
-        'Merit Scholarship – ₹75,000/year for top 10%',
-        'SC/ST Fellowship – ₹50,000/year',
-        'Sports Excellence – ₹40,000/year',
-        'Research Grant – ₹2,00,000 for PhD',
-        'Girls Empowerment – ₹30,000/year',
-        'National Scholarship Portal integration',
-      ],
-    ),
-  );
-}
+// class ScholarshipScreen extends StatelessWidget {
+//   const ScholarshipScreen({super.key});
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//     backgroundColor: AC.bg,
+//     appBar: _detailAppBar('Scholarships', const Color(0xFF42A5F5)),
+//     body: _detailBody(
+//       '🏆',
+//       'Scholarship Finder',
+//       'Find and apply for scholarships worth crores every year.',
+//       const Color(0xFF42A5F5),
+//       [
+//         'Merit Scholarship – ₹75,000/year for top 10%',
+//         'SC/ST Fellowship – ₹50,000/year',
+//         'Sports Excellence – ₹40,000/year',
+//         'Research Grant – ₹2,00,000 for PhD',
+//         'Girls Empowerment – ₹30,000/year',
+//         'National Scholarship Portal integration',
+//       ],
+//     ),
+//   );
+// }
 
-class StudyTimerScreen extends StatelessWidget {
-  const StudyTimerScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AC.bg,
-    appBar: _detailAppBar('Study Timer', const Color(0xFF1565C0)),
-    body: _detailBody(
-      '⏱️',
-      'Pomodoro Study Timer',
-      'Boost your productivity with focused study sessions.',
-      const Color(0xFF1565C0),
-      [
-        '25-minute focused study sessions',
-        '5-minute short breaks',
-        'Long break after 4 Pomodoros',
-        'Track daily study hours',
-        'Weekly progress reports',
-        'Streak tracking for motivation',
-      ],
-    ),
-  );
-}
+// class StudyTimerScreen extends StatelessWidget {
+//   const StudyTimerScreen({super.key});
+//   @override
+//   Widget build(BuildContext context) => Scaffold(
+//     backgroundColor: AC.bg,
+//     appBar: _detailAppBar('Study Timer', const Color(0xFF1565C0)),
+//     body: _detailBody(
+//       '⏱️',
+//       'Pomodoro Study Timer',
+//       'Boost your productivity with focused study sessions.',
+//       const Color(0xFF1565C0),
+//       [
+//         '25-minute focused study sessions',
+//         '5-minute short breaks',
+//         'Long break after 4 Pomodoros',
+//         'Track daily study hours',
+//         'Weekly progress reports',
+//         'Streak tracking for motivation',
+//       ],
+//     ),
+//   );
+// }
 
 class GradeCalculatorScreen extends StatelessWidget {
   const GradeCalculatorScreen({super.key});
