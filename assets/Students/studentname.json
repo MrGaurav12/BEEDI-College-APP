@@ -1,0 +1,30 @@
+{
+  "rahul": {
+    "name": "Rahul",
+    "pin": "123456",
+    "subjectProgress": {
+      "BS-CIT": 0,
+      "BS-CLS": 0,
+      "BS-CSS": 0,
+      "General IT": 0
+    },
+    "totalPoints": 0,
+    "dailyStreak": 1,
+    "rank": 50,
+    "unlockedAchievements": []
+  },
+  "john": {
+    "name": "John Doe",
+    "pin": "654321",
+    "subjectProgress": {
+      "BS-CIT": 5,
+      "BS-CLS": 3,
+      "BS-CSS": 0,
+      "General IT": 2
+    },
+    "totalPoints": 200,
+    "dailyStreak": 3,
+    "rank": 45,
+    "unlockedAchievements": ["Perfect Score"]
+  }
+}

@@ -1,0 +1,1262 @@
+[
+  {
+    "question": "What is the correct way to introduce your name in English?",
+    "options": ["Myself is Ankit.", "My name Ankit.", "My name is Ankit.", "I name is Ankit."],
+    "correct": 2,
+    "hint": "Use a subject + verb.",
+    "explanation": "\"My name is\" is the standard subject-verb-object structure for introducing yourself."
+  },
+  {
+    "question": "Which of the following is a formal greeting?",
+    "options": ["Hey!", "What's up?", "Hi!", "Good morning."],
+    "correct": 3,
+    "hint": "Used in professional settings.",
+    "explanation": "\"Good morning\" is a formal greeting, while others are informal."
+  },
+  {
+    "question": "What does the pronoun \"I\" refer to?",
+    "options": ["A person you are talking to", "A thing you see", "Yourself", "Someone else"],
+    "correct": 2,
+    "hint": "It refers to the speaker.",
+    "explanation": "\"I\" is a first-person pronoun referring to oneself."
+  },
+  {
+    "question": "Choose the correct sentence:",
+    "options": ["I are a student.", "I is a teacher.", "I am a student.", "I be a boy."],
+    "correct": 2,
+    "hint": "Match \"I\" with the correct verb.",
+    "explanation": "\"I am\" is the correct subject-verb agreement for first-person singular."
+  },
+  {
+    "question": "Which greeting would you use when meeting a teacher in the morning?",
+    "options": ["What's up, teacher?", "Good morning, teacher.", "Hey!", "Yo, teacher!"],
+    "correct": 1,
+    "hint": "Respectful and time-specific.",
+    "explanation": "\"Good morning, teacher\" is polite and appropriate for a school setting."
+  },
+  {
+    "question": "What is the polite way to say where you're from?",
+    "options": ["I from Delhi.", "I am Delhi.", "I is from Delhi.", "I am from Delhi."],
+    "correct": 3,
+    "hint": "Use the verb \"to be\".",
+    "explanation": "\"I am from [place]\" is the grammatically correct and polite structure."
+  },
+  {
+    "question": "Which of these is a correct self-introduction sentence?",
+    "options": ["I name is Raju.", "My name is Raju.", "Me name Raju.", "Mine name is Raju."],
+    "correct": 1,
+    "hint": "Possessive adjective + noun + verb.",
+    "explanation": "\"My name is\" correctly uses the possessive adjective \"my\"."
+  },
+  {
+    "question": "What does \"My\" show in the sentence: \"My book is new\"?",
+    "options": ["Action", "Possession", "Greeting", "Question"],
+    "correct": 1,
+    "hint": "It shows who owns the book.",
+    "explanation": "\"My\" is a possessive adjective indicating ownership."
+  },
+  {
+    "question": "How do you use \"You\" in a sentence?",
+    "options": ["You am nice.", "You is friend.", "You are my friend.", "You be a student."],
+    "correct": 2,
+    "hint": "\"You\" takes the plural verb form.",
+    "explanation": "Even when singular, \"you\" always pairs with \"are\"."
+  },
+  {
+    "question": "Why do we repeat sentences when learning?",
+    "options": ["To get bored", "To write more", "To improve pronunciation and fluency", "To avoid mistakes"],
+    "correct": 2,
+    "hint": "It builds muscle memory.",
+    "explanation": "Repetition helps internalize correct pronunciation, rhythm, and sentence structure."
+  },
+  {
+    "question": "What is the correct way to introduce your father?",
+    "options": ["He is the my father.", "That are my father.", "This is my father.", "My father this is."],
+    "correct": 2,
+    "hint": "Use \"this is\" for introductions.",
+    "explanation": "\"This is my father\" is the standard introduction format for people."
+  },
+  {
+    "question": "Which word correctly completes the sentence: \"This is Tina. _______ mother is a doctor.\"",
+    "options": ["His", "Their", "Her", "She"],
+    "correct": 2,
+    "hint": "Tina is female.",
+    "explanation": "\"Her\" is the feminine possessive adjective."
+  },
+  {
+    "question": "Which pronoun should be used to describe a group that includes you?",
+    "options": ["They", "He", "We", "She"],
+    "correct": 2,
+    "hint": "First-person plural.",
+    "explanation": "\"We\" refers to yourself and at least one other person."
+  },
+  {
+    "question": "Choose the correct sentence using \"they.\"",
+    "options": ["They is my parents.", "They are my cousins.", "They am my friends.", "They be my neighbours."],
+    "correct": 1,
+    "hint": "\"They\" is plural.",
+    "explanation": "The plural subject \"they\" requires the plural verb \"are\"."
+  },
+  {
+    "question": "What is the correct possessive word in this sentence: \"Ravi and Neha are siblings. _______ house is big.\"",
+    "options": ["Her", "Their", "His", "Ours"],
+    "correct": 1,
+    "hint": "Possessive for multiple people.",
+    "explanation": "\"Their\" is the possessive adjective for a plural subject (Ravi and Neha)."
+  },
+  {
+    "question": "Which adjective best describes someone who makes you laugh?",
+    "options": ["Funny", "Tall", "Strong", "Quiet"],
+    "correct": 0,
+    "hint": "Related to humor.",
+    "explanation": "A \"funny\" person causes laughter."
+  },
+  {
+    "question": "Identify the sentence with the correct use of \"her.\"",
+    "options": ["This is Seema. Her brother are kind", "This is Seema. Her name is Raci", "This is Seema. Her is my cousin", "This is Seema. Her are good."],
+    "correct": 1,
+    "hint": "\"Her\" shows possession.",
+    "explanation": "\"Her name\" correctly uses the possessive adjective before a noun."
+  },
+  {
+    "question": "Which sentence uses both a pronoun and an adjective correctly?",
+    "options": ["They is helpful.", "We are tall and kind.", "Her is funny.", "His are strong."],
+    "correct": 1,
+    "hint": "Pronoun (We) + verb (are) + adjectives (tall, kind).",
+    "explanation": "\"We are tall and kind\" has correct subject-verb agreement and uses adjectives to describe."
+  },
+  {
+    "question": "Which word fits best in the sentence: \"My grandmother is _______ and kind.\"",
+    "options": ["tall", "strict", "old", "lazy"],
+    "correct": 2,
+    "hint": "Common descriptor for a grandparent.",
+    "explanation": "\"Old\" logically pairs with \"grandmother\" and the adjective \"kind\"."
+  },
+  {
+    "question": "Choose the correct sentence using \"his.\"",
+    "options": ["This is Rohit. His sister is a teacher.", "This is Rohit. He's sister is a teacher.", "This is Rohit. Her sister is a teacher.", "This is Rohit. Him sister is a teacher."],
+    "correct": 0,
+    "hint": "Possessive for a male.",
+    "explanation": "\"His\" is the correct possessive adjective for a male subject (Rohit)."
+  },
+  {
+    "question": "Choose the correct sentence.",
+    "options": ["He go to school.", "He goes to school.", "He going to school.", "He gone to school."],
+    "correct": 1,
+    "hint": "Third-person singular needs -s.",
+    "explanation": "With \"he\", the verb takes an -s (goes)."
+  },
+  {
+    "question": "Which sentence is correct?",
+    "options": ["She play football.", "She plays football.", "She playing football.", "She played football yesterday."],
+    "correct": 1,
+    "hint": "Same rule: she + verb-s.",
+    "explanation": "The third-person singular subject \"She\" requires the verb \"plays\"."
+  },
+  {
+    "question": "Which verb form is correct with \"They\"?",
+    "options": ["They eats lunch.", "They eat lunch.", "They eating lunch.", "They eaten lunch."],
+    "correct": 1,
+    "hint": "Plural subject = base verb.",
+    "explanation": "The plural pronoun \"They\" takes the base form of the verb (eat)."
+  },
+  {
+    "question": "What is the correct sentence?",
+    "options": ["I gets up at 6 a.m.", "I get up at 6 a.m.", "I getting up at 6 a.m.", "I got up at 6 a.m. yesterday."],
+    "correct": 1,
+    "hint": "First-person singular = base verb.",
+    "explanation": "\"I\" uses the base form \"get\", not \"gets\"."
+  },
+  {
+    "question": "Choose the correct sentence.",
+    "options": ["We goes to class.", "We go to class.", "We going to class.", "We went to class yesterday."],
+    "correct": 1,
+    "hint": "\"We\" is plural.",
+    "explanation": "The plural subject \"We\" takes the base verb \"go\"."
+  },
+  {
+    "question": "Which sentence is correct?",
+    "options": ["She study every day.", "She studies every day.", "She studying every day.", "She studied every day."],
+    "correct": 1,
+    "hint": "She/he/it + verb-s/es.",
+    "explanation": "The third-person singular subject \"She\" requires \"studies\"."
+  },
+  {
+    "question": "What is the correct form of the verb for \"He\"?",
+    "options": ["He walk to the market.", "He walks to the market.", "He walking to the market.", "He walked to the market."],
+    "correct": 1,
+    "hint": "Add -s for he/she/it.",
+    "explanation": "The verb for \"He\" in present simple is \"walks\"."
+  },
+  {
+    "question": "Which is correct?",
+    "options": ["They wakes up late.", "They wake up late.", "They waking up late.", "They woke up late."],
+    "correct": 1,
+    "hint": "No -s for plural subjects.",
+    "explanation": "\"They\" takes the base form of the verb (wake)."
+  },
+  {
+    "question": "Fill in the blank: She _______ tea in the morning.",
+    "options": ["drink", "drinks", "drinking", "drank"],
+    "correct": 1,
+    "hint": "Habitual action for a female subject.",
+    "explanation": "The sentence is in present simple, so \"drinks\" is correct for \"She\"."
+  },
+  {
+    "question": "Choose the correct sentence.",
+    "options": ["He watches TV at night.", "He watch TV at night.", "He watching TV at night", "He watched TV last night."],
+    "correct": 0,
+    "hint": "Third-person singular.",
+    "explanation": "For \"he\", the verb \"watch\" becomes \"watches\"."
+  },
+  {
+    "question": "Which sentence is correct?",
+    "options": ["There is a kitchen in my house.", "There kitchen is in my house.", "Is kitchen there my house.", "Kitchen there is in my house."],
+    "correct": 0,
+    "hint": "Use \"there is/are\" to state existence.",
+    "explanation": "\"There is\" is the correct existential phrase for a singular noun."
+  },
+  {
+    "question": "What is a place where you cook food?",
+    "options": ["Bedroom", "Kitchen", "Bathroom", "Living Room"],
+    "correct": 1,
+    "hint": "Has a stove/oven.",
+    "explanation": "Cooking is done in the kitchen."
+  },
+  {
+    "question": "What is used to sit on?",
+    "options": ["Table", "Fan", "Chair", "Bed"],
+    "correct": 2,
+    "hint": "Has a back and seat.",
+    "explanation": "A chair is specifically designed for sitting."
+  },
+  {
+    "question": "Choose the correct sentence.",
+    "options": ["My house have four rooms.", "My house has four rooms.", "My house haves four rooms", "My house had four rooms."],
+    "correct": 1,
+    "hint": "Third-person singular subject.",
+    "explanation": "\"House\" is singular, so the verb must be \"has\"."
+  },
+  {
+    "question": "What is \"near\" used for?",
+    "options": ["To show direction", "To show closeness", "To show number", "To show time"],
+    "correct": 1,
+    "hint": "Opposite of \"far\".",
+    "explanation": "\"Near\" indicates that something is a short distance away."
+  },
+  {
+    "question": "What do you use to sleep on?",
+    "options": ["Chair", "Cupboard", "Bed", "Table"],
+    "correct": 2,
+    "hint": "Has a mattress.",
+    "explanation": "A bed is the piece of furniture used for sleeping."
+  },
+  {
+    "question": "Which sentence uses \"There are\" correctly?",
+    "options": ["There are one window in my room.", "There are two windows in my room.", "There are a table in my room.", "There are a book on the table."],
+    "correct": 1,
+    "hint": "Used for plural nouns.",
+    "explanation": "\"There are\" is correct because \"two windows\" is plural."
+  },
+  {
+    "question": "What is the correct sentence?",
+    "options": ["The bathroom is beside the bedroom", "Bathroom the is beside bedroom.", "The is beside bathroom bedroom.", "Beside the bathroom is the bedroom."],
+    "correct": 0,
+    "hint": "Standard English word order.",
+    "explanation": "The sentence follows the Subject-Verb-Complement order correctly."
+  },
+  {
+    "question": "What do we use a cupboard for?",
+    "options": ["Sleeping", "Eating", "Storing clothes or items", "Cooking"],
+    "correct": 2,
+    "hint": "Has shelves or drawers.",
+    "explanation": "A cupboard is a storage unit for various items, clothes, or dishes."
+  },
+  {
+    "question": "Where do we usually watch TV?",
+    "options": ["Kitchen", "Living room", "Bathroom", "Bedroom"],
+    "correct": 1,
+    "hint": "Also called a family room.",
+    "explanation": "The living room is the common area where televisions are typically placed."
+  },
+  {
+    "question": "Which sentence correctly describes a classroom?",
+    "options": ["There are a blackboard in the room", "There is a blackboard in the room.", "Is blackboard there in room.", "Blackboard there is in room."],
+    "correct": 1,
+    "hint": "Blackboard is singular.",
+    "explanation": "\"There is\" is used for singular nouns like \"a blackboard\"."
+  },
+  {
+    "question": "What do students usually do in class?",
+    "options": ["Eat food", "Watch movies", "Read and write", "Sleep"],
+    "correct": 2,
+    "hint": "Core academic activities.",
+    "explanation": "Reading and writing are primary learning activities in a classroom."
+  },
+  {
+    "question": "Choose the correct action verb for this sentence: \"We _______ to the teacher.\"",
+    "options": ["Say", "Speak", "Listen", "Talk"],
+    "correct": 2,
+    "hint": "Pay attention to the teacher.",
+    "explanation": "In a classroom, students typically \"listen\" to the teacher."
+  },
+  {
+    "question": "Which question is polite and correct to ask in school?",
+    "options": ["Give me pen.", "Can I borrow a pen?", "I want pen.", "I need pen."],
+    "correct": 1,
+    "hint": "Use \"can\" to request permission.",
+    "explanation": "\"Can I borrow...?\" is a polite request form."
+  },
+  {
+    "question": "What is the correct answer to \"Where is the library?\"",
+    "options": ["It is next to the staff room.", "It is study place.", "Library is book.", "It is a building."],
+    "correct": 0,
+    "hint": "Give a specific location.",
+    "explanation": "The answer provides a clear location using a prepositional phrase."
+  },
+  {
+    "question": "What is the opposite of \"open\"?",
+    "options": ["Close", "Closed", "Shut", "Opening"],
+    "correct": 1,
+    "hint": "Past participle form.",
+    "explanation": "While \"close\" and \"shut\" are verbs, the adjective opposite is \"closed\"."
+  },
+  {
+    "question": "\"The new bag is light. My old bag is _______.\"",
+    "options": ["Soft", "Clean", "Heavy", "Small"],
+    "correct": 2,
+    "hint": "Antonym of \"light\".",
+    "explanation": "The opposite of \"light\" (in weight) is \"heavy\"."
+  },
+  {
+    "question": "Which sentence is correct?",
+    "options": ["May I to go outside?", "Can I go outside?", "Do I go outside?", "I go outside?"],
+    "correct": 1,
+    "hint": "Modal verb + base verb.",
+    "explanation": "\"Can I go?\" follows the correct modal verb structure without \"to\"."
+  },
+  {
+    "question": "What is the opposite of \"big\"?",
+    "options": ["Low", "Small", "Short", "Tiny"],
+    "correct": 1,
+    "hint": "Antonym of large.",
+    "explanation": "The direct antonym of \"big\" is \"small\"."
+  },
+  {
+    "question": "What do teachers and students do in the classroom?",
+    "options": ["Dance and sleep", "Read, write, ask, and answer", "Cook and clean", "Play and run"],
+    "correct": 1,
+    "hint": "Interactive learning activities.",
+    "explanation": "Classrooms are for academic engagement like reading, writing, and Q&A."
+  },
+  {
+    "question": "What is the correct sentence to express a preference?",
+    "options": ["I liking mangoes.", "I like mangoes.", "I likes mangoes.", "I am liking mangoes."],
+    "correct": 1,
+    "hint": "Simple present for likes.",
+    "explanation": "\"I like\" is the correct present simple form to express preference."
+  },
+  {
+    "question": "Which sentence shows a dislike?",
+    "options": ["I like milk.", "I love milk.", "I do not like milk.", "I am liking milk."],
+    "correct": 2,
+    "hint": "Use \"do not\".",
+    "explanation": "The negative form \"do not like\" explicitly expresses dislike."
+  },
+  {
+    "question": "What is the correct sentence using \"because\"?",
+    "options": ["I like mangoes they are sweet.", "I like mangoes because they are sweet.", "Because I like mangoes they are sweet.", "I like mangoes because sweet."],
+    "correct": 1,
+    "hint": "Because joins reason to statement.",
+    "explanation": "The structure is [statement] + because + [reason]."
+  },
+  {
+    "question": "Which hobby is an indoor activity?",
+    "options": ["Gardening", "Reading", "Cycling", "Swimming"],
+    "correct": 1,
+    "hint": "Done inside a building.",
+    "explanation": "Reading is typically done indoors, unlike gardening or cycling."
+  },
+  {
+    "question": "Which word shows a stronger feeling than \"like\"?",
+    "options": ["Enjoy", "Dislike", "Love", "Want"],
+    "correct": 2,
+    "hint": "Very strong affection.",
+    "explanation": "\"Love\" expresses a much stronger positive emotion than \"like\"."
+  },
+  {
+    "question": "Choose the correct sentence using \"enjoy.\"",
+    "options": ["I enjoy to play football.", "I enjoy playing football.", "I enjoys football.", "I am enjoy football."],
+    "correct": 1,
+    "hint": "Enjoy + gerund (-ing form).",
+    "explanation": "The verb \"enjoy\" is followed by a gerund (playing)."
+  },
+  {
+    "question": "What is the opposite of \"I like sweets\"?",
+    "options": ["I do not like sweets.", "I do no like sweets.", "I dislike sweets not.", "I not like sweets."],
+    "correct": 0,
+    "hint": "Make the sentence negative.",
+    "explanation": "Adding \"do not\" makes the positive sentence negative."
+  },
+  {
+    "question": "Which sentence gives a reason for a hobby?",
+    "options": ["I play football because it is fun.", "I play football because fun.", "I play football is fun.", "I play football fun."],
+    "correct": 0,
+    "hint": "Look for \"because\" + complete clause.",
+    "explanation": "This sentence correctly uses \"because\" followed by a full reason (it is fun)."
+  },
+  {
+    "question": "Choose the correct use of \"love.\"",
+    "options": ["I loves chocolate.", "I love chocolate.", "I love chocolates is.", "I am love chocolate."],
+    "correct": 1,
+    "hint": "I + base verb.",
+    "explanation": "The first-person subject \"I\" takes the base form \"love\"."
+  },
+  {
+    "question": "Which sentence would you repeat in a speaking practice?",
+    "options": ["I dislike because vegetables.", "I like drawing.", "I am hobby is music", "I like because fun."],
+    "correct": 1,
+    "hint": "Grammatically correct and complete.",
+    "explanation": "\"I like drawing\" is a simple, correct sentence ideal for repetition."
+  },
+  {
+    "question": "Which word is used to ask about a person?",
+    "options": ["What", "Who", "Where", "Why"],
+    "correct": 1,
+    "hint": "Replace with a name.",
+    "explanation": "\"Who\" is the interrogative pronoun for people."
+  },
+  {
+    "question": "Choose the correct question for the answer \"I live in Patna.\"",
+    "options": ["Where do you live?", "What do you live?", "Who do you live?", "Why do you live?"],
+    "correct": 0,
+    "hint": "Asking about location.",
+    "explanation": "\"Where\" asks for a place (Patna)."
+  },
+  {
+    "question": "Which question asks about time?",
+    "options": ["Where are you?", "When is the exam?", "What is your name?", "Who is that?"],
+    "correct": 1,
+    "hint": "Time-related word.",
+    "explanation": "\"When\" is used to ask about time."
+  },
+  {
+    "question": "What is the correct helping verb in this question: \"_______ she go to school?\"",
+    "options": ["Do", "Does", "Did", "Is"],
+    "correct": 1,
+    "hint": "Third-person singular subject.",
+    "explanation": "With \"she\", the auxiliary verb for present simple questions is \"Does\"."
+  },
+  {
+    "question": "\"What do you eat for lunch at school?\" is an example of a:",
+    "options": ["Yes/No question", "Expanded WH-question", "Command sentence", "Exclamation"],
+    "correct": 1,
+    "hint": "Begins with \"what\" and asks for details.",
+    "explanation": "It is a \"Wh-\" question that seeks specific information."
+  },
+  {
+    "question": "Which question is best to ask about a place?",
+    "options": ["What is your teacher's name?", "Where is your book?", "Why do you like music?", "How are you?"],
+    "correct": 1,
+    "hint": "The word for location.",
+    "explanation": "\"Where\" asks for a place or location."
+  },
+  {
+    "question": "\"He goes to school at 8 a.m.\" What is the correct question?",
+    "options": ["Why he goes to school?", "When he go to school?", "When does he go to school?", "When he goes to school?"],
+    "correct": 2,
+    "hint": "Question about time + correct structure.",
+    "explanation": "The correct structure is: When + does + subject + base verb."
+  },
+  {
+    "question": "Choose the correct question to ask about reason:",
+    "options": ["Who do you like?", "Why are you late?", "Where are you from?", "What is that?"],
+    "correct": 1,
+    "hint": "The word \"why\" asks for a reason.",
+    "explanation": "\"Why\" is the interrogative word used to ask for a reason or cause."
+  },
+  {
+    "question": "In conversation practice, which sentence is a correct response?",
+    "options": ["I am go at home.", "I go to school by bus.", "I school like bus.", "I am go to school."],
+    "correct": 1,
+    "hint": "Subject-Verb-Object order.",
+    "explanation": "This sentence has correct word order and verb form (go)."
+  },
+  {
+    "question": "What is the purpose of WH-questions in real life?",
+    "options": ["To answer yes or no", "To give orders", "To ask for information", "To express feelings"],
+    "correct": 2,
+    "hint": "They are open-ended.",
+    "explanation": "WH-questions are designed to elicit specific information, not just confirmation."
+  },
+  {
+    "question": "Which connector is used to add similar ideas?",
+    "options": ["But", "Because", "And", "So"],
+    "correct": 2,
+    "hint": "It combines items in a list.",
+    "explanation": "\"And\" is a coordinating conjunction used to add information or join similar ideas."
+  },
+  {
+    "question": "Choose the correct sentence using \"but\".",
+    "options": ["I was tired, and I went to bed.", "I was tired, but I finished my homework.", "I was tired because I finished my homework.", "I was tired so I went to bed."],
+    "correct": 1,
+    "hint": "Shows contrast.",
+    "explanation": "\"But\" is used to connect two contrasting ideas (tired vs. finished)."
+  },
+  {
+    "question": "What does the connector \"because\" show?",
+    "options": ["Result", "Addition", "Reason", "Contrast"],
+    "correct": 2,
+    "hint": "It answers \"why?\".",
+    "explanation": "\"Because\" introduces a clause of reason or cause."
+  },
+  {
+    "question": "Which connector shows contrast?",
+    "options": ["So", "But", "Since", "And"],
+    "correct": 1,
+    "hint": "Opposite of \"and\".",
+    "explanation": "\"But\" is used to show a contrast or unexpected result."
+  },
+  {
+    "question": "Choose the correct sentence using \"so\".",
+    "options": ["I was hungry, so I ate lunch.", "I was hungry because I ate lunch.", "I was hungry but I ate lunch.", "I was hungry and I ate lunch."],
+    "correct": 0,
+    "hint": "Shows a result.",
+    "explanation": "\"So\" indicates that the second clause is a result of the first."
+  },
+  {
+    "question": "Fill in the blank: I stayed home _______ it was raining.",
+    "options": ["but", "since", "and", "so"],
+    "correct": 1,
+    "hint": "Gives a reason.",
+    "explanation": "\"Since\" (or because) provides the reason for staying home."
+  },
+  {
+    "question": "Join \"I like oranges. I like apples.\" using a connector.",
+    "options": ["I like oranges but apples", "I like oranges because apples.", "I like oranges and apples.", "I like oranges so apples."],
+    "correct": 2,
+    "hint": "Adds two similar items.",
+    "explanation": "\"And\" is used to combine two similar positive statements."
+  },
+  {
+    "question": "What is the effect of using \"since\" in a sentence?",
+    "options": ["It shows a result.", "It gives a reason.", "It adds two ideas.", "It shows contrast."],
+    "correct": 1,
+    "hint": "Similar to \"because\".",
+    "explanation": "\"Since\" can be used as a conjunction to give a reason or cause."
+  },
+  {
+    "question": "Which connector completes this sentence correctly? \"She was sick, _______ she didn't go to school.\"",
+    "options": ["because", "but", "so", "and"],
+    "correct": 2,
+    "hint": "Sickness led to absence.",
+    "explanation": "\"So\" shows the result (not going to school) of her being sick."
+  },
+  {
+    "question": "Choose the sentence where the meaning changes with the connector.",
+    "options": ["I played and studied.", "I played because I studied.", "I played so I studied.", "I played but I studied."],
+    "correct": 1,
+    "hint": "Cause and effect vs. addition.",
+    "explanation": "Using \"because\" implies studying caused playing, which changes the logical relationship."
+  },
+  {
+    "question": "What type of sentence is \"Sit down\"?",
+    "options": ["Question", "Imperative sentence", "Exclamation", "Statement"],
+    "correct": 1,
+    "hint": "Gives a command.",
+    "explanation": "An imperative sentence gives a direct command or instruction."
+  },
+  {
+    "question": "Which is the most polite way to ask someone to sit?",
+    "options": ["Sit!", "Sit now.", "Please sit down.", "Sit here."],
+    "correct": 2,
+    "hint": "Adds a magic word.",
+    "explanation": "Using \"please\" makes a command or request more polite."
+  },
+  {
+    "question": "What does the instruction \"Don't run\" mean?",
+    "options": ["You can walk slowly", "You must run fast", "You are not allowed to run", "Keep running"],
+    "correct": 2,
+    "hint": "Negative command.",
+    "explanation": "\"Don't\" indicates that the action is prohibited."
+  },
+  {
+    "question": "Which word begins a negative command?",
+    "options": ["Doesn't", "Not", "Can't", "Don't"],
+    "correct": 3,
+    "hint": "Do + not.",
+    "explanation": "Negative imperatives typically start with \"Don't\"."
+  },
+  {
+    "question": "Where are you likely to hear \"Please keep silence\"?",
+    "options": ["Playground", "Hospital", "Market", "Train station"],
+    "correct": 1,
+    "hint": "Place needing quiet for healing.",
+    "explanation": "Hospitals require silence for patient rest and recovery."
+  },
+  {
+    "question": "What does \"Please form a queue\" mean?",
+    "options": ["Shout loudly", "Stand in a line", "Run to the front", "Cross the road carefully"],
+    "correct": 1,
+    "hint": "Wait your turn.",
+    "explanation": "A \"queue\" is a line of people waiting for something."
+  },
+  {
+    "question": "Which instruction would you find in a classroom?",
+    "options": ["Wash your hands", "Turn to page ten", "Exit this way", "Cross the road carefully"],
+    "correct": 1,
+    "hint": "Related to a textbook.",
+    "explanation": "Turning to a specific page is a common classroom instruction."
+  },
+  {
+    "question": "What kind of word is \"Open\" in the sentence \"open your book\"?",
+    "options": ["Noun", "Verb", "Adjective", "Preposition"],
+    "correct": 1,
+    "hint": "It is an action.",
+    "explanation": "\"Open\" here is an action word, or verb, telling someone what to do."
+  },
+  {
+    "question": "Which of these is a public instruction?",
+    "options": ["Sit in your chair", "Raise your hand", "Do not enter", "Read aloud"],
+    "correct": 2,
+    "hint": "Seen on a door or gate.",
+    "explanation": "\"Do not enter\" is a sign found in public places for safety."
+  },
+  {
+    "question": "What should you do if a sign says, \"Exit this way\"?",
+    "options": ["Stand still", "Enter the other door", "Leave through the marked path", "Stay inside"],
+    "correct": 2,
+    "hint": "Follow the arrow.",
+    "explanation": "\"Exit this way\" indicates the path to leave a building or area."
+  },
+  {
+    "question": "Which of the following is the most polite way to ask a teacher for help?",
+    "options": ["Help me with this.", "Tell me now.", "Could you please explain this question?", "You need to help me."],
+    "correct": 2,
+    "hint": "Use \"could\" and \"please\".",
+    "explanation": "This request uses the polite modal \"could\" and \"please\"."
+  },
+  {
+    "question": "What makes a polite request sound more respectful?",
+    "options": ["Using louder voice", "Adding \"please\" and a kind tone", "Asking without explanation", "Ignoring the listener"],
+    "correct": 1,
+    "hint": "Manners matter.",
+    "explanation": "\"Please\" and a kind tone are key to respectful requests."
+  },
+  {
+    "question": "Which expression is formal and polite?",
+    "options": ["May I borrow your pen, sir?", "Can I take your pen?", "Give me your pen.", "You don't need this pen, right?"],
+    "correct": 0,
+    "hint": "Use \"may\" and title.",
+    "explanation": "\"May I\" is more formal than \"can I\", and \"sir\" adds respect."
+  },
+  {
+    "question": "What is the polite response if you can't help someone?",
+    "options": ["Go ask someone else.", "No.", "I'm really sorry, I can't help right now.", "That's not my job."],
+    "correct": 2,
+    "hint": "Apologize and be clear.",
+    "explanation": "This response shows empathy and politeness while declining."
+  },
+  {
+    "question": "What should you say when someone gives you something?",
+    "options": ["Please", "Sorry", "Thank you", "Why?"],
+    "correct": 2,
+    "hint": "Show gratitude.",
+    "explanation": "\"Thank you\" is the standard expression of gratitude."
+  },
+  {
+    "question": "In which situation would you use \"Excuse me\"?",
+    "options": ["When refusing to help", "When walking away from someone", "When interrupting or trying to speak politely", "When asking a close friend something"],
+    "correct": 2,
+    "hint": "Get attention politely.",
+    "explanation": "\"Excuse me\" is used to politely interrupt or get someone's attention."
+  },
+  {
+    "question": "Which of these is an appropriate informal polite request?",
+    "options": ["May I speak to the principal?", "Can you help me with this drawing?", "Would you please help me fill this form?", "Would you mind giving me your ID card?"],
+    "correct": 1,
+    "hint": "Use with friends.",
+    "explanation": "\"Can you\" is suitable for informal situations like with classmates."
+  },
+  {
+    "question": "Which is a rude way to respond to \"Can I borrow your pen?\"",
+    "options": ["Sure, here you go.", "No, I'm using it right now.", "Get your own.", "Sorry, I don't have one."],
+    "correct": 2,
+    "hint": "Aggressive and unhelpful.",
+    "explanation": "Telling someone to \"get your own\" is dismissive and rude."
+  },
+  {
+    "question": "What is the correct polite version of the sentence: \"Move now\"?",
+    "options": ["Get out of the way.", "Move already!", "Could you move a little, please?", "Don't just stand there."],
+    "correct": 2,
+    "hint": "Request, not demand.",
+    "explanation": "This turns a command into a polite request using \"could\" and \"please\"."
+  },
+  {
+    "question": "Which polite expression shows that you're happy to help someone?",
+    "options": ["I can't help right now.", "Sure, I'd be happy to!", "You should ask someone else.", "Okay, but make it quick."],
+    "correct": 1,
+    "hint": "Expresses willingness.",
+    "explanation": "This response shows enthusiasm and a positive attitude toward helping."
+  },
+  {
+    "question": "Which word best completes the sentence: \"My school is _______ and clean.\"",
+    "options": ["tall", "short", "big", "round"],
+    "correct": 2,
+    "hint": "Describes size.",
+    "explanation": "\"Big\" is a common adjective to describe a school's size."
+  },
+  {
+    "question": "Choose the correct comparative form: \"This chair is _______ than that one.\"",
+    "options": ["soft", "softest", "softer", "more soft"],
+    "correct": 2,
+    "hint": "Compare two things.",
+    "explanation": "For short adjectives like \"soft\", add \"-er\" for the comparative form."
+  },
+  {
+    "question": "Which adjective is used to describe how something feels?",
+    "options": ["colourful", "shiny", "rough", "noisy"],
+    "correct": 2,
+    "hint": "Texture or sensation.",
+    "explanation": "\"Rough\" describes a tactile sensation (touch)."
+  },
+  {
+    "question": "\"This is the _______ building in our neighbourhood.\" Choose the correct superlative.",
+    "options": ["tall", "taller", "most tall", "tallest"],
+    "correct": 3,
+    "hint": "Comparing three or more.",
+    "explanation": "The superlative form of \"tall\" is \"tallest\"."
+  },
+  {
+    "question": "What does the sentence \"The flower smells fresh\" describe?",
+    "options": ["Taste", "Touch", "Sight", "Smell"],
+    "correct": 3,
+    "hint": "Sense of nose.",
+    "explanation": "\"Smells\" refers to the olfactory sense."
+  },
+  {
+    "question": "Which sentence uses a superlative adjective correctly?",
+    "options": ["This road is more longer.", "She is the tallest girl in class.", "He is taller than the tallest.", "That book is more best."],
+    "correct": 1,
+    "hint": "Correct form and structure.",
+    "explanation": "\"Tallest\" is the correct superlative, and the sentence structure is right."
+  },
+  {
+    "question": "Choose the adjective that describes sound.",
+    "options": ["Bitter", "Loud", "Smooth", "Colourful"],
+    "correct": 1,
+    "hint": "Related to hearing.",
+    "explanation": "\"Loud\" describes a high volume of sound."
+  },
+  {
+    "question": "\"That painting is more beautiful than the others.\" Which kind of adjective is used?",
+    "options": ["Positive", "Superlative", "Descriptive", "Comparative"],
+    "correct": 3,
+    "hint": "Comparing two things.",
+    "explanation": "\"More beautiful\" is the comparative form of the adjective."
+  },
+  {
+    "question": "Which of these is a correct pair of sense and adjective?",
+    "options": ["Taste - soft", "Touch - shiny", "Smell - spicy", "Sound - sweet"],
+    "correct": 2,
+    "hint": "Spicy food has a strong aroma.",
+    "explanation": "\"Spicy\" is commonly associated with the sense of smell (or taste)."
+  },
+  {
+    "question": "Which word would you use to describe fruit's taste?",
+    "options": ["Bitter", "Noisy", "Crowded", "Hard"],
+    "correct": 0,
+    "hint": "Opposite of sweet.",
+    "explanation": "\"Bitter\" is a basic taste descriptor, applicable to some fruits like citrus peel."
+  },
+  {
+    "question": "What does the phrase \"next to\" mean?",
+    "options": ["On top of", "Far from", "Beside", "Behind"],
+    "correct": 2,
+    "hint": "Adjacent to.",
+    "explanation": "\"Next to\" means immediately beside or adjacent."
+  },
+  {
+    "question": "Which sentence uses the word \"behind\" correctly?",
+    "options": ["The school is behind the park.", "The bank is behind the money.", "Behind is the road.", "The shop behinds the corner."],
+    "correct": 0,
+    "hint": "Indicates position.",
+    "explanation": "The structure [place A] + is + behind + [place B] is correct."
+  },
+  {
+    "question": "How would you politely ask someone for directions?",
+    "options": ["\"Tell me where it is.\"", "\"Where is that thing?\"", "\"Excuse me, can you help me find the bank?\"", "\"Go there?\""],
+    "correct": 2,
+    "hint": "Polite request.",
+    "explanation": "This uses \"excuse me\" and \"can you help me\" for politeness."
+  },
+  {
+    "question": "Which of these is a correct direction phrase?",
+    "options": ["Cross under the house", "Walk pass the road", "Go straight and take the second left", "Turn down and sit"],
+    "correct": 2,
+    "hint": "Clear and standard.",
+    "explanation": "This is a standard sequence for giving driving or walking directions."
+  },
+  {
+    "question": "If a place is \"across from\" your school, where is it?",
+    "options": ["Next door to it", "On the same side", "Opposite the school", "Behind the school"],
+    "correct": 2,
+    "hint": "On the other side of the road.",
+    "explanation": "\"Across from\" means on the opposite side of a street or square."
+  },
+  {
+    "question": "What is the polite way to begin asking for directions?",
+    "options": ["Hey!", "You know where is...?", "Excuse me", "Hello only"],
+    "correct": 2,
+    "hint": "Standard polite opener.",
+    "explanation": "\"Excuse me\" is the most common and polite way to get a stranger's attention."
+  },
+  {
+    "question": "Which location word means \"in the middle of two things\"?",
+    "options": ["Behind", "Between", "Beside", "Outside"],
+    "correct": 1,
+    "hint": "Sandwiched.",
+    "explanation": "\"Between\" is used for a point in the middle of two distinct objects."
+  },
+  {
+    "question": "What should you avoid when giving directions?",
+    "options": ["Using clear steps", "Mentioning landmarks", "Using short phrases", "Giving too many steps at once"],
+    "correct": 3,
+    "hint": "Keep it simple.",
+    "explanation": "Giving too many steps at once can be confusing."
+  },
+  {
+    "question": "What is the best response to: \"Excuse me, where is the train station?\"",
+    "options": ["Just go.", "Why are you asking?", "Go straight, then turn right. It's beside the post office.", "Ask someone else."],
+    "correct": 2,
+    "hint": "Clear and helpful.",
+    "explanation": "This provides a clear, step-by-step answer with a landmark."
+  },
+  {
+    "question": "Which word correctly completes the sentence: \"The shop is _______ the corner of the street\"?",
+    "options": ["behind", "at", "to", "over"],
+    "correct": 1,
+    "hint": "Specific location.",
+    "explanation": "\"At the corner\" is the correct prepositional phrase for a specific intersection."
+  },
+  {
+    "question": "Which of the following is a fruit?",
+    "options": ["Carrot", "Mango", "Bread", "Butter"],
+    "correct": 1,
+    "hint": "Sweet, has seeds.",
+    "explanation": "Mango is a tropical fruit; carrot is a vegetable."
+  },
+  {
+    "question": "What is usually eaten in the morning?",
+    "options": ["Dinner", "Snack", "Breakfast", "Lunch"],
+    "correct": 2,
+    "hint": "First meal of the day.",
+    "explanation": "Breakfast is the meal eaten in the morning."
+  },
+  {
+    "question": "Which sentence is in passive voice?",
+    "options": ["She eats an apple.", "They cook rice.", "An apple is eaten by her.", "We make tea."],
+    "correct": 2,
+    "hint": "Subject receives the action.",
+    "explanation": "The subject (apple) receives the action (is eaten)."
+  },
+  {
+    "question": "What taste does lemon have?",
+    "options": ["Sweet", "Bitter", "Salty", "Sour"],
+    "correct": 3,
+    "hint": "Like citrus.",
+    "explanation": "Lemons are known for their sour or acidic taste."
+  },
+  {
+    "question": "\"The chef prepares the food.\" Convert this to passive voice.",
+    "options": ["The food prepares the chef.", "The chef is prepared by the food.", "The food is prepared by the chef.", "The chef has food prepared."],
+    "correct": 2,
+    "hint": "Object becomes subject.",
+    "explanation": "The object (food) becomes subject, + is + past participle (prepared)."
+  },
+  {
+    "question": "Which of these is a dairy product?",
+    "options": ["Fish", "Juice", "Cheese", "Onion"],
+    "correct": 2,
+    "hint": "Made from milk.",
+    "explanation": "Cheese is produced from milk, making it a dairy product."
+  },
+  {
+    "question": "Which of these meals is usually eaten at night?",
+    "options": ["Breakfast", "Dinner", "Snack", "Lunch"],
+    "correct": 1,
+    "hint": "Evening meal.",
+    "explanation": "Dinner is the main meal typically eaten in the evening."
+  },
+  {
+    "question": "What is the correct taste word for \"chips\"?",
+    "options": ["Sweet", "Spicy", "Salty", "Sour"],
+    "correct": 2,
+    "hint": "Flavor of potato chips.",
+    "explanation": "Chips are typically flavored primarily with salt."
+  },
+  {
+    "question": "Choose the passive form of \"They eat bread.\"",
+    "options": ["Bread is eaten by them.", "They are eaten by bread.", "Eating bread is by them.", "Bread eats them."],
+    "correct": 0,
+    "hint": "Focus on the bread.",
+    "explanation": "The object (bread) becomes the subject of the passive sentence."
+  },
+  {
+    "question": "What is the correct category for \"rice\"?",
+    "options": ["Meat", "Grain", "Dairy", "Vegetable"],
+    "correct": 1,
+    "hint": "Cereal crop.",
+    "explanation": "Rice is a type of grain, a staple food."
+  },
+  {
+    "question": "What does the word \"receipt\" mean?",
+    "options": ["A type of shopping bag", "A written record of a purchase", "A discount coupon", "A price tag"],
+    "correct": 1,
+    "hint": "Proof of payment.",
+    "explanation": "A receipt is a document confirming a transaction."
+  },
+  {
+    "question": "Which of the following is a polite way to ask for a price?",
+    "options": ["\"Give me the cost.\"", "\"Tell price.\"", "\"How much does this cost?\"", "\"This is how much?\""],
+    "correct": 2,
+    "hint": "Standard question form.",
+    "explanation": "This is the complete and polite sentence structure for asking price."
+  },
+  {
+    "question": "Which payment method is NOT digital?",
+    "options": ["UPI", "Card", "Wallet app", "Cash"],
+    "correct": 3,
+    "hint": "Physical currency.",
+    "explanation": "Cash (notes and coins) is a physical, non-digital payment method."
+  },
+  {
+    "question": "What does \"many\" go with?",
+    "options": ["Rice", "Sugar", "Apples", "Water"],
+    "correct": 2,
+    "hint": "Countable plural nouns.",
+    "explanation": "\"Many\" is used with countable nouns (e.g., many apples)."
+  },
+  {
+    "question": "Which of these is uncountable?",
+    "options": ["Pens", "Bottles", "Salt", "Bananas"],
+    "correct": 2,
+    "hint": "Cannot be easily counted.",
+    "explanation": "Salt is a mass noun, considered uncountable in English."
+  },
+  {
+    "question": "What would you say to a shopkeeper to ask for a shirt politely?",
+    "options": ["\"Give me shirt.\"", "\"I want that.\"", "\"I'd like to buy this shirt, please.\"", "\"Shirt is needed.\""],
+    "correct": 2,
+    "hint": "Use \"I'd like\" and \"please\".",
+    "explanation": "This is a polite and clear expression of intent to purchase."
+  },
+  {
+    "question": "What does the word \"discount\" mean?",
+    "options": ["A fee added to the bill", "A higher price", "A reduced price", "A price tag"],
+    "correct": 2,
+    "hint": "On sale.",
+    "explanation": "A discount is a reduction in the original price."
+  },
+  {
+    "question": "Which of the following is a correct sentence?",
+    "options": ["\"I want much apples.\"", "\"Give me some sugar\"", "\"I'd like many water\"", "\"I need a few milk.\""],
+    "correct": 1,
+    "hint": "Uncountable noun + some.",
+    "explanation": "\"Sugar\" is uncountable, so it pairs with \"some\", not \"many\"."
+  },
+  {
+    "question": "Which question is correct to ask in a shop?",
+    "options": ["\"How much are these shoes?\"", "\"These shoes how much?\"", "\"Much this shoes cost?\"", "\"Price is what for shoes?\""],
+    "correct": 0,
+    "hint": "Correct word order.",
+    "explanation": "This follows the standard English question order: How much + verb + subject."
+  },
+  {
+    "question": "If the total bill is 520 and you give 600, how much is the balance?",
+    "options": ["100", "-20", "80", "120"],
+    "correct": 2,
+    "hint": "600 - 520.",
+    "explanation": "600 - 520 = 80, which is the change to be returned."
+  },
+  {
+    "question": "Which of the following is a health-related word?",
+    "options": ["Basket", "Fever", "Wallet", "Receipt"],
+    "correct": 1,
+    "hint": "Symptom of illness.",
+    "explanation": "Fever is a medical symptom, indicating a health issue."
+  },
+  {
+    "question": "What would you say if you had a headache yesterday?",
+    "options": ["I have a headache.", "I am headache.", "I had a headache.", "I have had headache"],
+    "correct": 2,
+    "hint": "Past tense needed.",
+    "explanation": "For something that happened yesterday, use the past simple \"had\"."
+  },
+  {
+    "question": "Which of these is a preventive health habit?",
+    "options": ["Skipping breakfast", "Eating junk food", "Washing hands before meals", "Sleeping very late"],
+    "correct": 2,
+    "hint": "Stops germs.",
+    "explanation": "Hand washing prevents the spread of infections and diseases."
+  },
+  {
+    "question": "What does the sentence \"She is feeling weak\" describe?",
+    "options": ["An activity", "A payment", "A health condition", "A time of day"],
+    "correct": 2,
+    "hint": "State of body.",
+    "explanation": "Weakness is a physical symptom or health condition."
+  },
+  {
+    "question": "Choose the correct sentence in indirect speech:",
+    "options": ["He said to drink water.", "He said drink water", "He drink water", "He says that drink water."],
+    "correct": 0,
+    "hint": "Reporting a command.",
+    "explanation": "Indirect commands use \"said to + infinitive\"."
+  },
+  {
+    "question": "What is the correct Indirect form of: Doctor: \"Take rest\"?",
+    "options": ["Doctor said me take rest.", "The doctor told to take rest.", "The doctor told me to take rest.", "The doctor said that take rest."],
+    "correct": 2,
+    "hint": "Verb + object + infinitive.",
+    "explanation": "The structure for reporting commands is: told + [person] + to + verb."
+  },
+  {
+    "question": "Which sentence uses a reporting verb correctly?",
+    "options": ["He talk me to eat fruits.", "She said me to go home", "They told me to drink warm water", "We say that drink juice"],
+    "correct": 2,
+    "hint": "Correct verb (told) and structure.",
+    "explanation": "\"Told\" is correctly followed by an object (me) and \"to\" + verb."
+  },
+  {
+    "question": "Which of the following shows good health practice?",
+    "options": ["I skip breakfast.", "I eat chips every day.", "I brush my teeth twice a day.", "I play video games all night"],
+    "correct": 2,
+    "hint": "Oral hygiene.",
+    "explanation": "Brushing teeth twice daily is a standard recommendation for dental health."
+  },
+  {
+    "question": "What tense is used in this sentence: \"I had a cold last week\"?",
+    "options": ["Present continuous", "Past simple", "Future perfect", "Present perfect"],
+    "correct": 1,
+    "hint": "Time marker \"last week\".",
+    "explanation": "The past simple tense is used for completed actions at a specific past time."
+  },
+  {
+    "question": "Which sentence describes a symptom?",
+    "options": ["I bought vegetables.", "I went to the market.", "I have a sore throat.", "I paid with cash."],
+    "correct": 2,
+    "hint": "Sign of illness.",
+    "explanation": "A sore throat is a physical symptom of being unwell."
+  },
+  {
+    "question": "What does \"sunny\" weather mean?",
+    "options": ["It is snowing.", "The sun is shining.", "It is raining heavily.", "The weather is foggy."],
+    "correct": 1,
+    "hint": "Clear sky.",
+    "explanation": "Sunny weather is characterized by the sun being visible and shining."
+  },
+  {
+    "question": "Which of the following is an advanced weather word?",
+    "options": ["Hot", "Rainy", "Drizzling", "Cloudy"],
+    "correct": 2,
+    "hint": "Specific type of light rain.",
+    "explanation": "\"Drizzling\" is a more specific and advanced term than \"rainy\"."
+  },
+  {
+    "question": "Choose the correct sentence:",
+    "options": ["It raining outside.", "Is rain today.", "It is raining outside", "Rain it is."],
+    "correct": 2,
+    "hint": "Subject + verb-ing.",
+    "explanation": "The correct present continuous structure is: It + is + raining."
+  },
+  {
+    "question": "Which word means \"slightly cold\"?",
+    "options": ["Chilly", "Humid", "Hot", "Sunny"],
+    "correct": 0,
+    "hint": "Mildly cold.",
+    "explanation": "\"Chilly\" describes weather that is unpleasantly but not extremely cold."
+  },
+  {
+    "question": "What does \"foggy\" weather reduce?",
+    "options": ["Sound", "Smell", "Vision", "Temperature"],
+    "correct": 2,
+    "hint": "Hard to see.",
+    "explanation": "Fog consists of tiny water droplets that reduce visibility."
+  },
+  {
+    "question": "What does a \"heatwave\" mean?",
+    "options": ["Many days of heavy rain", "Sudden cold in winter", "A long period of very hot weather", "Windy weather with thunder"],
+    "correct": 2,
+    "hint": "Prolonged heat.",
+    "explanation": "A heatwave is an extended period of abnormally hot weather."
+  },
+  {
+    "question": "Choose the correct sentence to describe today's weather",
+    "options": ["There foggy morning is", "It was fog", "It is foggy this morning", "Foggy is day"],
+    "correct": 2,
+    "hint": "Present tense + \"it is\".",
+    "explanation": "The correct structure is \"It is + adjective\" to describe current weather."
+  },
+  {
+    "question": "What does the term \"low pressure\" usually mean in a weather report?",
+    "options": ["Clear skies", "Thunderstorm or rain", "Cold wind", "Earthquake"],
+    "correct": 1,
+    "hint": "Associated with storms.",
+    "explanation": "Low-pressure systems are typically associated with clouds, rain, and storms."
+  },
+  {
+    "question": "What would you likely see during a thunderstorm?",
+    "options": ["Bright sunshine", "Lightning and heavy rain", "Snowfall", "Fog covering the road"],
+    "correct": 1,
+    "hint": "Electrical storm.",
+    "explanation": "Thunderstorms are defined by the presence of lightning and thunder."
+  },
+  {
+    "question": "Which of these cities might experience a heatwave in summer?",
+    "options": ["Shimla", "Delhi", "Manali", "Darjeeling"],
+    "correct": 1,
+    "hint": "Hot plains.",
+    "explanation": "Delhi, located in the northern plains, experiences extreme summer heat."
+  },
+  {
+    "question": "Which sentence is in the simple present tense?",
+    "options": ["I will go to school.", "I went to school.", "I go to school.", "I am going to school."],
+    "correct": 2,
+    "hint": "Habitual action.",
+    "explanation": "\"I go\" is the simple present form, indicating a regular action."
+  },
+  {
+    "question": "Which subject needs an -s added to the verb in the present tense?",
+    "options": ["I", "You", "They", "He"],
+    "correct": 3,
+    "hint": "Third-person singular.",
+    "explanation": "He, she, and it require the verb to end in -s or -es."
+  },
+  {
+    "question": "Choose the correct sentence in present tense:",
+    "options": ["She read books every day.", "She reads books every day.", "She reading books every day.", "She is read books every day."],
+    "correct": 1,
+    "hint": "She + verb-s.",
+    "explanation": "\"Reads\" is the correct third-person singular form."
+  },
+  {
+    "question": "Which verb form is correct for \"He\" in the present tense?",
+    "options": ["play", "playing", "plays", "played"],
+    "correct": 2,
+    "hint": "Add -s.",
+    "explanation": "The base verb \"play\" becomes \"plays\" for the subject \"He\"."
+  },
+  {
+    "question": "What is the correct sentence to describe a fact?",
+    "options": ["The sun rising in the east.", "The sun rose in the east.", "The sun rises in the east.", "The sun rise in the east."],
+    "correct": 2,
+    "hint": "Universal truth.",
+    "explanation": "General facts are expressed using the simple present tense."
+  },
+  {
+    "question": "Identify the sentence that describes a daily routine:",
+    "options": ["She brushed her teeth.", "She brushes her teeth every morning.", "She will brush her teeth.", "She is brushing her teeth now."],
+    "correct": 1,
+    "hint": "Habitual action.",
+    "explanation": "The simple present with \"every morning\" indicates a routine."
+  },
+  {
+    "question": "Which of the following is NOT used in simple present tense?",
+    "options": ["Goes", "Eats", "Played", "Studies"],
+    "correct": 2,
+    "hint": "Past tense marker -ed.",
+    "explanation": "\"Played\" is in the past tense, not simple present."
+  },
+  {
+    "question": "Choose the sentence that shows a third-person habit.",
+    "options": ["I go for a walk.", "They play football.", "He goes for a walk.", "We eat dinner"],
+    "correct": 2,
+    "hint": "He + goes.",
+    "explanation": "The subject is third-person singular (He) and the verb has -s."
+  },
+  {
+    "question": "Which is a correct general fact?",
+    "options": ["Water boiling at 100°c", "Water boils at 100°c", "Water is boiling at 100°c", "Water boiled at 100°c"],
+    "correct": 1,
+    "hint": "Scientific fact.",
+    "explanation": "Scientific facts are stated in the simple present tense."
+  },
+  {
+    "question": "What is the simple present form of the verb in this sentence: \"He _______ to school every day\"?",
+    "options": ["go", "goes", "going", "gone"],
+    "correct": 1,
+    "hint": "He + verb-s.",
+    "explanation": "The correct form for \"He\" in simple present is \"goes\"."
+  },
+  {
+    "question": "Which sentence is in the simple past tense?",
+    "options": ["I am going to school.", "I go to school.", "I went to school.", "I will go to school."],
+    "correct": 2,
+    "hint": "Past action.",
+    "explanation": "\"Went\" is the past tense form of \"go\"."
+  },
+  {
+    "question": "What is the past tense of \"eat\"?",
+    "options": ["eaten", "eat", "eats", "ate"],
+    "correct": 3,
+    "hint": "Irregular verb.",
+    "explanation": "The past tense of \"eat\" is \"ate\"."
+  },
+  {
+    "question": "Choose the correct past tense sentence:",
+    "options": ["She play football yesterday.", "She played football yesterday.", "She is playing football yesterday.", "She plays football yesterday."],
+    "correct": 1,
+    "hint": "Add -ed for regular verbs.",
+    "explanation": "\"Played\" is the past tense form, and \"yesterday\" indicates past time."
+  },
+  {
+    "question": "Which of the following is a regular verb in past tense?",
+    "options": ["went", "took", "studied", "saw"],
+    "correct": 2,
+    "hint": "Adds -ed or -d.",
+    "explanation": "\"Studied\" is formed by adding -d to the base form \"study\"."
+  },
+  {
+    "question": "What is the past tense of \"go\"?",
+    "options": ["goes", "going", "gone", "went"],
+    "correct": 3,
+    "hint": "Irregular verb.",
+    "explanation": "The past tense of \"go\" is \"went\"."
+  },
+  {
+    "question": "\"He _______ to the market.\" Choose the correct verb:",
+    "options": ["goes", "went", "go", "going"],
+    "correct": 1,
+    "hint": "Past action implied.",
+    "explanation": "Without context, but as a past sentence, \"went\" is correct."
+  },
+  {
+    "question": "Which sentence uses the time marker \"last week\"?",
+    "options": ["She goes to school.", "She will go to school.", "She went to school last week.", "She is going to school."],
+    "correct": 2,
+    "hint": "Specific past time.",
+    "explanation": "\"Last week\" is a time marker used with the simple past tense."
+  },
+  {
+    "question": "What is the past tense of \"write\"?",
+    "options": ["wrote", "writing", "writes", "writed"],
+    "correct": 0,
+    "hint": "Irregular verb.",
+    "explanation": "The past tense of \"write\" is \"wrote\"."
+  },
+  {
+    "question": "Which sentence is grammatically correct?",
+    "options": ["We watch a movie yesterday.", "We watched a movie yesterday.", "We watches a movie yesterday.", "We watching a movie yesterday."],
+    "correct": 1,
+    "hint": "Regular verb + -ed.",
+    "explanation": "\"Watched\" is the correct past form, and \"yesterday\" fits the past tense."
+  },
+  {
+    "question": "\"They _______ a cake for her birthday.\" Fill in the blank:",
+    "options": ["bake", "baking", "baked", "bakes"],
+    "correct": 2,
+    "hint": "Completed action.",
+    "explanation": "The past tense \"baked\" indicates the action is finished."
+  }
+]

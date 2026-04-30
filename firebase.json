@@ -1,0 +1,33 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "beedicollegevaishali",
+          "appId": "1:836903145620:android:7b9bb239919aabdba32481",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "beedicollegevaishali",
+          "configurations": {
+            "android": "1:836903145620:android:7b9bb239919aabdba32481",
+            "ios": "1:836903145620:ios:6b5a9de4024979eaa32481",
+            "macos": "1:836903145620:ios:6b5a9de4024979eaa32481",
+            "web": "1:836903145620:web:64beb2762351df82a32481",
+            "windows": "1:836903145620:web:a9785a9da62e934da32481"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
