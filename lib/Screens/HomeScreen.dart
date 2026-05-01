@@ -12,6 +12,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:beedi_college/ADMISSION/Screens/ResultScreen.dart' hide LeaderboardScreen, LoginScreen;
 import 'package:beedi_college/ADMISSION/Screens/login_screen.dart';
 import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
 import 'package:beedi_college/Screens/AIChatScreen.dart';
@@ -27,7 +28,8 @@ import 'package:beedi_college/Screens/GradeCalculatorScreen.dart';
 import 'package:beedi_college/Screens/HajipurVaishaliScreen.dart';
 import 'package:beedi_college/Screens/JobBoardScreen.dart';
 import 'package:beedi_college/Screens/KYPAdmissionScreen.dart';
-import 'package:beedi_college/Screens/KYPQuizeScreen.dart';
+import 'package:beedi_college/Screens/KYPQuizeScreen.dart' hide LeaderboardScreen;
+import 'package:beedi_college/Screens/LeaderboardScreen.dart';
 import 'package:beedi_college/Screens/OpportunitiesScreen.dart';
 import 'package:beedi_college/Screens/ResearchScreen.dart';
 import 'package:beedi_college/Screens/ScholarshipScreen.dart';
@@ -874,6 +876,12 @@ List<DrawerItem> get kDrawerItems => [
     icon: Icons.calculate_rounded,
     color: const Color(0xFF1E88E5),
     screen: const GradeCalculatorScreen(),
+  ),
+   DrawerItem(
+    label: 'Result',
+    icon: Icons.calculate_rounded,
+    color: const Color(0xFF1E88E5),
+    screen: const ResultManagementApp(),
   ),
   DrawerItem(
     label: 'Timetable',
