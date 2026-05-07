@@ -28,8 +28,7 @@ class _AIChatScreenState extends State<AIChatScreen>
   late Animation<double> _logoPulse;
   late Animation<double> _typingAnim;
 
-final String apiUrl =
-"https://isolating-prankish-spirits.ngrok-free.dev/chat";
+  final String apiUrl = "https://192.168.232.91:8002";
 
   // Color palette — deep navy + gold accent
   static const Color _bg = Color(0xFF0D1117);
@@ -326,10 +325,7 @@ final String apiUrl =
             ),
             child: Text(
               s,
-              style: const TextStyle(
-                color: _textSecondary,
-                fontSize: 13,
-              ),
+              style: const TextStyle(color: _textSecondary, fontSize: 13),
             ),
           ),
         );
@@ -355,8 +351,9 @@ final String apiUrl =
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: Row(
-          mainAxisAlignment:
-              isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isUser
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!isUser) ...[
@@ -398,13 +395,15 @@ final String apiUrl =
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: isUser
                           ? _userBubble
                           : isError
-                              ? const Color(0xFF2D1B1B)
-                              : _aiBubble,
+                          ? const Color(0xFF2D1B1B)
+                          : _aiBubble,
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(18),
                         topRight: const Radius.circular(18),
@@ -415,8 +414,8 @@ final String apiUrl =
                         color: isUser
                             ? Colors.white.withOpacity(0.08)
                             : isError
-                                ? Colors.redAccent.withOpacity(0.3)
-                                : _border,
+                            ? Colors.redAccent.withOpacity(0.3)
+                            : _border,
                         width: 1,
                       ),
                       boxShadow: [
@@ -557,7 +556,7 @@ final String apiUrl =
                           color: _accent.withOpacity(0.1),
                           blurRadius: 8,
                           spreadRadius: 1,
-                        )
+                        ),
                       ]
                     : [],
               ),
@@ -616,7 +615,7 @@ final String apiUrl =
                         color: _accent.withOpacity(0.4),
                         blurRadius: 12,
                         spreadRadius: 2,
-                      )
+                      ),
                     ]
                   : [],
             ),
@@ -689,27 +688,23 @@ final String apiUrl =
                           height: 7,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _loading
-                                ? _accent
-                                : const Color(0xFF3FB950),
+                            color: _loading ? _accent : const Color(0xFF3FB950),
                             boxShadow: [
                               BoxShadow(
-                                color: (_loading
-                                        ? _accent
-                                        : const Color(0xFF3FB950))
-                                    .withOpacity(0.6),
+                                color:
+                                    (_loading
+                                            ? _accent
+                                            : const Color(0xFF3FB950))
+                                        .withOpacity(0.6),
                                 blurRadius: 4,
-                              )
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(width: 5),
                         Text(
                           _loading ? "Thinking..." : "Online",
-                          style: TextStyle(
-                            color: _textSecondary,
-                            fontSize: 11,
-                          ),
+                          style: TextStyle(color: _textSecondary, fontSize: 11),
                         ),
                       ],
                     ),

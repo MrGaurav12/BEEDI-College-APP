@@ -177,6 +177,24 @@ const List<Subject> _subjects = [
     icon: '🛡️',
     totalMinutes: 60,
   ),
+    Subject(
+    code: 'Exam BS-CIT',
+    name: 'Ready For Final Exam',
+    icon: '🛡️',
+    totalMinutes: 60,
+  ),
+      Subject(
+    code: 'Exam BS-CLS',
+    name: 'Ready For Final Exam',
+    icon: '🛡️',
+    totalMinutes: 60,
+  ),
+      Subject(
+    code: 'Exam BS-CSS',
+    name: 'Ready For Final Exam',
+    icon: '🛡️',
+    totalMinutes: 60,
+  ),
 ];
 
 // BS-CIT Questions
@@ -14880,8 +14898,721 @@ const List<QuizQuestion> _mocktestQuestions = [
   ),
 ];
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////  BS-CIT /////////////////////////////////////////
+ const List<QuizQuestion> _examcitQuestions = [
+  QuizQuestion(
+    id: 'examcit1',
+    question: 'Which website allows you to lock/unlock Aadhaar?',
+    options: [
+      'www.incometax.gov.in',
+      'www.uidai.gov.in',
+      'www.mygov.in',
+      'www.indiapost.gov.in'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'UIDAI (Unique Identification Authority of India) official website uidai.gov.in allows Aadhaar locking/unlocking for security.',
+  ),
+  QuizQuestion(
+    id: 'examcit2',
+    question: 'What happens if you sit in bad posture for a long time?',
+    options: [
+      'You type faster',
+      'You learn more',
+      'You become more active',
+      'You may feel neck and back pain'
+    ],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Poor posture over time strains muscles and spine, leading to neck pain, back pain, and other musculoskeletal issues.',
+  ),
+  QuizQuestion(
+    id: 'examcit3',
+    question: 'What happens when you use the "Freeze Top Row" option?',
+    options: [
+      'Top row moves down',
+      'Top row stays visible while scrolling',
+      'Top row is deleted',
+      'Top row changes colour'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Freeze Top Row keeps the top row visible even when you scroll down, making it easier to reference column headers.',
+  ),
+  QuizQuestion(
+    id: 'examcit4',
+    question: 'Which household appliance is an example of automation?',
+    options: ['Chair', 'Spoon', 'Washing machine', 'Bucket'],
+    correctIndex: 2,
+    subject: 'Exam BS-CIT',
+    description: 'A washing machine automates the laundry process, reducing manual effort through programmed cycles.',
+  ),
+  QuizQuestion(
+    id: 'examcit5',
+    question: 'Why should you update antivirus software?',
+    options: [
+      'To install games',
+      'To get new virus definitions',
+      'To reduce battery',
+      'To change wallpapers'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Antivirus updates include new virus definitions that help detect and protect against recently discovered threats.',
+  ),
+  QuizQuestion(
+    id: 'examcit6',
+    question: 'What should you always do in a paid promotion?',
+    options: [
+      'Hide that it\'s paid',
+      'Delete old posts',
+      'Clearly say it\'s an ad or sponsorship',
+      'Never mention the brand'
+    ],
+    correctIndex: 2,
+    subject: 'Exam BS-CIT',
+    description: 'Disclosing paid promotions is legally required and maintains transparency and trust with your audience.',
+  ),
+  QuizQuestion(
+    id: 'examcit7',
+    question: 'Which of these should you avoid for safe digital payments?',
+    options: ['Strong passwords', 'Updating apps', 'Secure networks', 'Sharing OTP'],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Sharing OTP (One Time Password) is dangerous as it can lead to unauthorized access to your accounts and financial loss.',
+  ),
+  QuizQuestion(
+    id: 'examcit8',
+    question: 'Why is checking the date of a webpage important?',
+    options: [
+      'To download it faster',
+      'To find spelling errors',
+      'To see if its colourful',
+      'To ensure information is recent'
+    ],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Checking the date helps verify that the information is current and relevant, as outdated information may be inaccurate.',
+  ),
+  QuizQuestion(
+    id: 'examcit9',
+    question: 'What should you check before accepting a friend request?',
+    options: ['Number of posts', 'Internet speed', 'Profile picture only', 'Mutual friends and real identity'],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Checking mutual friends and real identity helps verify authenticity and avoid connecting with fake or malicious accounts.',
+  ),
+  QuizQuestion(
+    id: 'examcit10',
+    question: 'What is one common requirement for remote jobs?',
+    options: ['Office attendance', 'Strong internet connection', 'Vehicle license', 'Uniform'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Remote jobs require a strong internet connection for communication, file sharing, and accessing work platforms.',
+  ),
+  QuizQuestion(
+    id: 'examcit11',
+    question: 'What is 2FA in cloud storage?',
+    options: [
+      'Two Factor Authentication',
+      'Two File Access',
+      'Two Fast Access',
+      'Two Folder Arrangement'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'Two Factor Authentication (2FA) adds an extra layer of security by requiring two forms of verification to access accounts.',
+  ),
+  QuizQuestion(
+    id: 'examcit12',
+    question: 'What is the use of the COUNT function?',
+    options: [
+      'To count number of cells with numbers',
+      'To format cells',
+      'To calculate difference',
+      'To find the total'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'The COUNT function in spreadsheet software counts only cells that contain numeric values, ignoring blanks and text.',
+  ),
+  QuizQuestion(
+    id: 'examcit13',
+    question: 'What happens when you delete a file from Documents?',
+    options: [
+      'It goes to Recycle Bin',
+      'It disappears forever',
+      'It renames itself',
+      'It becomes a folder'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'On Windows systems, deleted files go to the Recycle Bin where they can be restored before permanent deletion.',
+  ),
+  QuizQuestion(
+    id: 'examcit14',
+    question: 'What is the benefit of remote collaboration?',
+    options: [
+      'People must travel',
+      'People can work from anywhere',
+      'You cannot share files',
+      'It wastes time'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Remote collaboration allows team members to work from different locations, increasing flexibility and reducing travel needs.',
+  ),
+  QuizQuestion(
+    id: 'examcit15',
+    question: 'What is the advantage of organizing files into folders?',
+    options: [
+      'Hides files from others',
+      'Folders take less space',
+      'Looks colourful',
+      'Helps find files easily'
+    ],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Organizing files into folders makes retrieval quicker and easier by categorizing related files together.',
+  ),
+  QuizQuestion(
+    id: 'examcit16',
+    question: 'What does a feedback form usually collect?',
+    options: ['News reports', 'User opinions and ratings', 'Music files', 'Movie reviews'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Feedback forms are designed to gather user opinions, ratings, and suggestions to improve products or services.',
+  ),
+  QuizQuestion(
+    id: 'examcit17',
+    question: 'Where is cloud data typically stored? (From page 17)',
+    options: ['In Google Drive', 'In your email inbox', 'On YouTube', 'On your computer'],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'Cloud data is stored on remote servers like Google Drive, accessible via the internet rather than local storage.',
+  ),
+  QuizQuestion(
+    id: 'examcit18',
+    question: 'What is a good password example?',
+    options: ['rahul123', '123456', 'password', 'R@huLI672#'],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'R@huLI672# contains uppercase, lowercase, numbers, and special characters, making it strong against password attacks.',
+  ),
+  QuizQuestion(
+    id: 'examcit19',
+    question: 'Which tool is used for creating websites? (From page 19)',
+    options: ['Photoshop', 'Google Sites', 'Excel', 'CorelDRAW'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Google Sites is a website builder tool, while Photoshop and CorelDRAW are design tools and Excel is for spreadsheets.',
+  ),
+  QuizQuestion(
+    id: 'examcit20',
+    question: 'What is a benefit of cloud storage?',
+    options: ['Access from anywhere', 'Backup of data', 'Data is always 100% safe', 'File sharing from hacking'],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'Cloud storage allows access to files from anywhere with an internet connection, providing convenience and flexibility.',
+  ),
+  QuizQuestion(
+    id: 'examcit21',
+    question: 'What is a SMART goal?',
+    options: [
+      'Specific and measurable targets',
+      'No timeline',
+      'A vague plan',
+      'Confusing steps'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound, providing clear direction for achieving objectives.',
+  ),
+  QuizQuestion(
+    id: 'examcit22',
+    question: 'What is a benefit of structured online learning?',
+    options: [
+      'Random videos',
+      'No deadlines',
+      'Clear learning path',
+      'No exams'
+    ],
+    correctIndex: 2,
+    subject: 'Exam BS-CIT',
+    description: 'Structured online learning provides a clear, organized path with defined objectives and progression through topics.',
+  ),
+  QuizQuestion(
+    id: 'examcit23',
+    question: 'What is a Trojan Horse?',
+    options: [
+      'Antivirus software',
+      'A fake program that hides malware',
+      'A type of game',
+      'Security patch'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'A Trojan Horse disguises itself as legitimate software but contains malicious code that can harm your system.',
+  ),
+  QuizQuestion(
+    id: 'examcit24',
+    question: 'What is the use of the COUNT function?',
+    options: [
+      'To count number of cells with numbers',
+      'To format cells',
+      'To calculate difference',
+      'To find the total'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'COUNT function counts only cells containing numeric values, useful for data analysis in spreadsheets.',
+  ),
+  QuizQuestion(
+    id: 'examcit25',
+    question: 'What is VLOOKUP used for?',
+    options: [
+      'Combining cells',
+      'Looking up values in a table',
+      'Sorting data',
+      'Formatting cells'
+    ],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'VLOOKUP searches for a value in the first column of a table and returns a corresponding value from another column.',
+  ),
+  QuizQuestion(
+    id: 'examcit26',
+    question: 'Which of these is an effect of cyberbullying?',
+    options: ['Confidence boost', 'Fear and sadness', 'Better concentration', 'Happiness'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Cyberbullying causes emotional distress including fear, sadness, anxiety, and depression in victims.',
+  ),
+  QuizQuestion(
+    id: 'examcit27',
+    question: 'Why should we follow sustainable digital habits?',
+    options: [
+      'To save energy and protect the planet',
+      'To harm the environment',
+      'To use more electricity',
+      'To waste more data'
+    ],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'Sustainable digital habits like reducing screen time and cloud storage use help save energy and reduce environmental impact.',
+  ),
+  QuizQuestion(
+    id: 'examcit28',
+    question: 'Siri works only on which type of devices?',
+    options: ['Windows PC', 'Apple devices', 'Amazon Echo', 'Android phones'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'Siri is Apple\'s virtual assistant and is exclusively available on Apple devices like iPhone, iPad, Mac, and Apple Watch.',
+  ),
+  QuizQuestion(
+    id: 'examcit29',
+    question: 'Which button helps you preview your Google Form?',
+    options: ['Link icon', 'Eye icon', 'Microphone icon', 'Trash icon'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'The eye icon in Google Forms allows you to preview how the form will appear to respondents before publishing.',
+  ),
+  QuizQuestion(
+    id: 'examcit30',
+    question: 'Which of these is NOT a way to save energy on devices?',
+    options: [
+      'Adjusting brightness',
+      'Closing unused apps',
+      'Using sleep mode',
+      'Playing games all day'
+    ],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Playing games all day consumes significant energy, unlike brightness adjustment, closing apps, or using sleep mode which save energy.',
+  ),
+  QuizQuestion(
+    id: 'examcit31',
+    question: 'What must we protect while using AI?',
+    options: ['TV remotes', 'Personal data', 'Shoes', 'Hair'],
+    correctIndex: 1,
+    subject: 'Exam BS-CIT',
+    description: 'AI systems often process personal data, which must be protected to ensure privacy and prevent misuse.',
+  ),
+  QuizQuestion(
+    id: 'examcit32',
+    question: 'What is a strong password made of?',
+    options: [
+      'Only numbers',
+      'Only letters',
+      'Letters, numbers, and special characters',
+      'Only your name'
+    ],
+    correctIndex: 2,
+    subject: 'Exam BS-CIT',
+    description: 'Strong passwords combine uppercase/lowercase letters, numbers, and special characters to resist guessing and brute-force attacks.',
+  ),
+  QuizQuestion(
+    id: 'examcit33',
+    question: 'What does screen resolution affect?',
+    options: ['CPU speed', 'Internet speed', 'Volume', 'Sharpness and clarity of the screen'],
+    correctIndex: 3,
+    subject: 'Exam BS-CIT',
+    description: 'Screen resolution determines pixel density, affecting how sharp and clear images and text appear on the display.',
+  ),
+  QuizQuestion(
+    id: 'examcit34',
+    question: 'What is the first step to apply for a government job online?',
+    options: [
+      'Attend the interview',
+      'Download the admit card',
+      'Register on the recruitment portal',
+      'Pay the fee'
+    ],
+    correctIndex: 2,
+    subject: 'Exam BS-CIT',
+    description: 'Registration on the official recruitment portal is the first step to create an account and proceed with the application.',
+  ),
+  QuizQuestion(
+    id: 'examcit35',
+    question: 'Which app is commonly used for booking train tickets in India?',
+    options: ['IRCTC', 'Practo', 'RedBus', 'BookMyShow'],
+    correctIndex: 0,
+    subject: 'Exam BS-CIT',
+    description: 'IRCTC (Indian Railway Catering and Tourism Corporation) is the official app for booking train tickets in India.',
+  ),
+];
 
+
+///////////////////////////////////////////////// BS-CLS ///////////////////
+const List<QuizQuestion> _examclsQuestions = [
+  QuizQuestion(
+    id: 'examcls1',
+    question: 'Which adjectives describes someone who is always happy?',
+    options: ['CHEERFUL', 'SAD', 'ANGRY', 'TIRED'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: 'CHEERFUL is the adjective that describes someone who is always happy.',
+  ),
+  QuizQuestion(
+    id: 'examcls2',
+    question: 'She told me not to eat sugar. (Choose the correct sentence)',
+    options: ['She told me not to eat sugar.', 'She said me not to eat sugar.', 'She tell me not to eat sugar.', 'She saying me not to eat sugar.'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: 'The correct structure is "She told me not to eat sugar" (tell + person + infinitive).',
+  ),
+  QuizQuestion(
+    id: 'examcls3',
+    question: 'What is one benefit of using transitional phrases?',
+    options: ['They replace body language', 'They help structure your opinion', 'They make you sound informal', 'They make you sound formal'],
+    correctIndex: 1,
+    subject: 'Exam BS-CLS',
+    description: 'Transitional phrases help organize thoughts and structure opinions clearly.',
+  ),
+  QuizQuestion(
+    id: 'examcls4',
+    question: 'Choose the correct future continuous sentence.',
+    options: ['They travel to Mumbai.', 'They were traveling to Mumbai.', 'They are traveling to Mumbai tomorrow.', 'They will be traveling to Mumbai tomorrow.'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"They will be traveling to Mumbai tomorrow" correctly expresses a future continuous action.',
+  ),
+  QuizQuestion(
+    id: 'examcls5',
+    question: 'What do comics use to show what characters say?',
+    options: ['Large photos', 'Easy sentences', 'Speech bubbles', 'Short articles'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: 'Comics use speech bubbles to show what characters say.',
+  ),
+  QuizQuestion(
+    id: 'examcls6',
+    question: 'Complete the sentence: The library is _____ the police station.',
+    options: ['beside the street', 'above the road', 'on the road', 'beside'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"Beside" correctly indicates the library is next to the police station.',
+  ),
+  QuizQuestion(
+    id: 'examcls7',
+    question: 'What is the purpose of festivals?',
+    options: ['To have fun', 'To bond with family and friends', 'To feel good after studying hard', 'All of the above'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: 'Festivals serve multiple purposes including having fun, bonding with others, and celebrating achievements.',
+  ),
+  QuizQuestion(
+    id: 'examcls8',
+    question: 'Choose the sentence in the past simple tense.',
+    options: ['She has eaten dinner.', 'She is eating dinner.', 'She eats dinner.', 'She ate dinner.'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"She ate dinner" is in past simple tense, indicating a completed action in the past.',
+  ),
+  QuizQuestion(
+    id: 'examcls9',
+    question: 'Which pronoun replaces "a car"?',
+    options: ['We', 'He', 'It', 'She'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: '"It" is the pronoun used for objects or things like a car.',
+  ),
+  QuizQuestion(
+    id: 'examcls10',
+    question: 'What is the polite way to ask for a discount?',
+    options: ['I want cheaper.', 'That\'s too much!', 'You give discount?', 'Is there a discount on this?'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"Is there a discount on this?" is a polite and appropriate way to ask about discounts.',
+  ),
+  QuizQuestion(
+    id: 'examcls11',
+    question: 'Identify the sentence that asks a question.',
+    options: ['It tells you to do something.', 'It makes a statement.', 'It asks a question.', 'It gives a command.'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: 'An interrogative sentence is one that asks a question.',
+  ),
+  QuizQuestion(
+    id: 'examcls12',
+    question: 'What is the meaning of "dialogue" in a story?',
+    options: ['The words characters say to each other', 'The actions characters perform', 'The costumes worn by actors', 'The description of the setting'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: 'Dialogue refers to the conversation or words spoken between characters in a story or movie.',
+  ),
+  QuizQuestion(
+    id: 'examcls13',
+    question: 'Which tip can help you when you are nervous about speaking?',
+    options: ['think it - say it - check it', 'speaking in one word answers', 'speak as fast as you can', 'whispering sentence'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: 'The "think it - say it - check it" tip helps organize thoughts and reduces nervousness while speaking.',
+  ),
+  QuizQuestion(
+    id: 'examcls14',
+    question: 'Choose the correct sentence using "Go" appropriately.',
+    options: ['Go to the back of the room.', 'Go to the front of the line.', 'Go to the side.', 'Go to the corner.'],
+    correctIndex: 1,
+    subject: 'Exam BS-CLS',
+    description: '"Go to the front of the line" is a commonly used and correct imperative sentence.',
+  ),
+  QuizQuestion(
+    id: 'examcls15',
+    question: 'What is a characteristic of science fiction?',
+    options: ['Only humans as characters', 'Stories with no problems', 'A made-up setting with aliens', 'Historical events only'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: 'Science fiction often features made-up settings including aliens, futuristic technology, or other worlds.',
+  ),
+  QuizQuestion(
+    id: 'examcls16',
+    question: 'How to politely express you want to purchase something?',
+    options: ['I want this now.', 'Buy this for me.', 'I like this, so I have it.', 'I\'d like to buy this, please.'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"I\'d like to buy this, please" is the most polite and appropriate way to express a purchase intention.',
+  ),
+  QuizQuestion(
+    id: 'examcls17',
+    question: 'Complete the sentence: This is my brother. _____ likes to play football.',
+    options: ['He', 'We', 'She', 'It'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: '"He" is the correct pronoun to refer to a male person (brother).',
+  ),
+  QuizQuestion(
+    id: 'examcls18',
+    question: 'Choose the best word to complete this sentence. It was very cold, _____ I wore a jacket.',
+    options: ['So', 'But', 'And', 'Because'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: '"So" indicates the result or consequence - because it was cold, wearing a jacket was the result.',
+  ),
+  QuizQuestion(
+    id: 'examcls19',
+    question: 'In the question, "Why are you sad?", which word is the "Wh-word"?',
+    options: ['Why', 'Are', 'Sad', 'You'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: '"Why" is the Wh-word as it starts with \'Wh\' and asks for a reason.',
+  ),
+  QuizQuestion(
+    id: 'examcls20',
+    question: 'What is an "opinion"?',
+    options: ['Something that can be proven with science', 'Something that is always true', 'Something that someone believes or feels', 'Something that is a fact'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: 'An opinion is a personal belief, feeling, or thought that may vary from person to person.',
+  ),
+  QuizQuestion(
+    id: 'examcls21',
+    question: 'Choose the correct future perfect sentence.',
+    options: ['I have finished my homework.', 'I finish my homework.', 'I will finish my homework.', 'I will have finished my homework.'],
+    correctIndex: 3,
+    subject: 'Exam BS-CLS',
+    description: '"I will have finished" is future perfect tense, indicating completion before a future time.',
+  ),
+  QuizQuestion(
+    id: 'examcls22',
+    question: 'What type of language is used in a formal setting?',
+    options: ['casual and short', 'funny and fast', 'polite and complete', 'slang and relaxed'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: 'Formal settings require polite, complete, and professional language.',
+  ),
+  QuizQuestion(
+    id: 'examcls23',
+    question: 'Which of these is a classroom instruction?',
+    options: ['Open your book', 'I like chocolate', 'Dogs can run fast', 'The sky is blue'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: '"Open your book" is a command or instruction commonly used in classrooms.',
+  ),
+  QuizQuestion(
+    id: 'examcls24',
+    question: 'Identify the present continuous sentence.',
+    options: ['They walk to school.', 'They walked to school.', 'They are walking to school.', 'They will walk to school.'],
+    correctIndex: 2,
+    subject: 'Exam BS-CLS',
+    description: '"They are walking to school" is present continuous tense (am/is/are + verb-ing).',
+  ),
+  QuizQuestion(
+    id: 'examcls25',
+    question: 'What does "pronunciation" refer to?',
+    options: ['Writing words correctly', 'Saying the sounds of words correctly', 'Spelling words correctly', 'Understanding word meanings'],
+    correctIndex: 1,
+    subject: 'Exam BS-CLS',
+    description: 'Pronunciation is the way in which a word is spoken, including saying sounds correctly.',
+  ),
+  QuizQuestion(
+    id: 'examcls26',
+    question: 'Which point would you use if you want to speak during a meeting?',
+    options: ['I want to talk.', 'Excuse me.', 'Look here!', 'Hey!'],
+    correctIndex: 1,
+    subject: 'Exam BS-CLS',
+    description: '"Excuse me" is the polite and appropriate way to speak during a meeting.',
+  ),
+  QuizQuestion(
+    id: 'examcls27',
+    question: 'What is good advice for a library?',
+    options: ['Keep your voice down', 'Talk loudly', 'Close the library door', 'Read outside'],
+    correctIndex: 0,
+    subject: 'Exam BS-CLS',
+    description: 'Libraries require quiet environments, so "Keep your voice down" is proper etiquette.',
+  ),
+];
+
+
+///////////////////////////////////////////////////////////////////////////// BS-CSS /////////////////////////////////////////////
+const List<QuizQuestion> _examcssQuestions = [
+  QuizQuestion(
+    id: 'examcss1',
+    question: 'What should you do when you notice a weakness in yourself?',
+    options: ['Hide it from others.', 'Take small steps to improve it.', 'Give up on your goal.', 'Ignore it.'],
+    correctIndex: 1,
+    subject: 'Exam BS-CSS',
+    description: 'Taking small steps to improve is the most constructive approach to personal growth.',
+  ),
+  QuizQuestion(
+    id: 'examcss2',
+    question: 'What could help you grow and find job leads?',
+    options: ['Moving to a new city', 'Buying a new laptop', 'Joining an online group', 'Working late hours'],
+    correctIndex: 2,
+    subject: 'Exam BS-CSS',
+    description: 'Joining an online group provides networking and learning opportunities that help in growth and job search.',
+  ),
+  QuizQuestion(
+    id: 'examcss3',
+    question: 'Why is it important to know both your strengths and weaknesses?',
+    options: ['To impress others.', 'To help you grow and make better choices.', 'To look smart.', 'To avoid difficult conversations.'],
+    correctIndex: 1,
+    subject: 'Exam BS-CSS',
+    description: 'Knowing strengths and weaknesses helps in personal development and informed decision-making.',
+  ),
+  QuizQuestion(
+    id: 'examcss4',
+    question: 'How should you approach achieving a goal?',
+    options: ['Focus only on long-term goals', 'Define a clear goal and take small steps', 'Avoid setting goals to reduce failure', 'Wait for the right opportunity'],
+    correctIndex: 1,
+    subject: 'Exam BS-CSS',
+    description: 'Breaking down a goal into small steps makes it manageable and increases chances of success.',
+  ),
+  QuizQuestion(
+    id: 'examcss5',
+    question: 'What helps reduce stress and improve long-term emotional health?',
+    options: ['Skipping meals under pressure', 'Staying online longer', 'Avoiding all social contact', 'Staying active'],
+    correctIndex: 3,
+    subject: 'Exam BS-CSS',
+    description: 'Regular physical activity reduces stress and improves emotional well-being.',
+  ),
+  QuizQuestion(
+    id: 'examcss6',
+    question: 'Which of the following is the most effective way to communicate important medical information to a local community?',
+    options: ['Using technical terms', 'Using formal medical language', 'Using simple and clear language', 'Using complex medical charts'],
+    correctIndex: 2,
+    subject: 'Exam BS-CSS',
+    description: 'Simple and clear language ensures better understanding and accessibility for the community.',
+  ),
+  QuizQuestion(
+    id: 'examcss7',
+    question: 'Which of the following methods can help reach families effectively?',
+    options: ['Conducting large meetings', 'Television ads', 'Written pamphlets', 'Voice messages in local language'],
+    correctIndex: 3,
+    subject: 'Exam BS-CSS',
+    description: 'Voice messages in local language are personal and easily understandable, making them effective for family communication.',
+  ),
+  QuizQuestion(
+    id: 'examcss8',
+    question: 'What could confidence help you achieve?',
+    options: ['Create opportunities and trust', 'Make fewer friends', 'Memorise faster', 'Avoid difficult conversations'],
+    correctIndex: 0,
+    subject: 'Exam BS-CSS',
+    description: 'Confidence helps build trust and seize opportunities, leading to personal and professional growth.',
+  ),
+  QuizQuestion(
+    id: 'examcss9',
+    question: 'What helped P.V. Sindhu succeed, besides talent and hard work?',
+    options: ['A lucky tournament draw', 'Fewer matches to play', 'Her rivals\' injuries', 'Strong support from her team'],
+    correctIndex: 3,
+    subject: 'Exam BS-CSS',
+    description: 'Strong support system including coaches, family, and teammates contributes significantly to an athlete\'s success.',
+  ),
+  QuizQuestion(
+    id: 'examcss10',
+    question: 'Which behaviour shows lack of adaptability in a team?',
+    options: ['Ignoring colleagues\' ideas and sticking only to your own methods', 'Following the same routine process even when it is inefficient', 'Avoiding challenges and waiting for instructions', 'All of the above'],
+    correctIndex: 3,
+    subject: 'Exam BS-CSS',
+    description: 'All these behaviours resist change and improvement, showing lack of adaptability.',
+  ),
+  QuizQuestion(
+    id: 'examcss11',
+    question: 'Why is paraphrasing important in communication?',
+    options: ['It proves you\'re smarter', 'It helps you win the argument', 'It shows you\'re listening and clarifies meaning', 'It ends the argument quickly'],
+    correctIndex: 2,
+    subject: 'Exam BS-CSS',
+    description: 'Paraphrasing ensures mutual understanding and shows active listening.',
+  ),
+  QuizQuestion(
+    id: 'examcss12',
+    question: 'What should you do when someone yells at you?',
+    options: ['Raise your voice to match theirs.', 'Set kind boundaries and stay calm', 'Ignore them completely', 'Walk away without responding'],
+    correctIndex: 1,
+    subject: 'Exam BS-CSS',
+    description: 'Setting boundaries calmly maintains respect and de-escalates conflict.',
+  ),
+  QuizQuestion(
+    id: 'examcss13',
+    question: 'How do notifications on devices typically affect focus?',
+    options: ['They help us take breaks between tasks, improving focus', 'They help us take breaks between tasks, reducing focus', 'They make us switch between tasks, improving focus', 'They make us switch between tasks, reducing focus'],
+    correctIndex: 3,
+    subject: 'Exam BS-CSS',
+    description: 'Constant notifications cause task switching, which reduces concentration and productivity.',
+  ),
+];
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ─────────────────────────────────────────────
 //  THEME & CONSTANTS
 // ─────────────────────────────────────────────
@@ -15282,7 +16013,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
             const SizedBox(height: 16),
             const Text(
-              'BS-CIT Online Test',
+              'KUSHAL YUVA PROGRAM Online Test',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -15661,8 +16392,14 @@ class _SubjectCard extends StatelessWidget {
         return List.from(_clsQuestions)..shuffle(Random());
       case 'BS-CSS':
         return List.from(_cssQuestions)..shuffle(Random());
-              case 'Mock Test':
-        return List.from(_mocktestQuestions)..shuffle(Random());       
+      case 'Mock Test':
+        return List.from(_mocktestQuestions)..shuffle(Random()); 
+      case 'Exam BS-CIT':
+        return List.from(_examcitQuestions)..shuffle(Random());
+      case 'Exam BS-CLS':
+        return List.from(_examclsQuestions)..shuffle(Random());
+      case 'BS-CSS':
+        return List.from(_examcssQuestions)..shuffle(Random());      
       default:
         return [];
     }

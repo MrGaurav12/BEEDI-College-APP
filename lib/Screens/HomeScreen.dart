@@ -15,6 +15,7 @@ import 'dart:math';
 import 'package:beedi_college/ADMISSION/Screens/ResultScreen.dart' hide LeaderboardScreen, LoginScreen;
 import 'package:beedi_college/ADMISSION/Screens/login_screen.dart';
 import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
+import 'package:beedi_college/STUDENTCHAT/studentchatscreen.dart' hide LoginScreen;
 import 'package:beedi_college/Screens/AIChatScreen.dart';
 import 'package:beedi_college/Screens/AcedemicScreen.dart';
 import 'package:beedi_college/Screens/AdmissionScreen.dart';
@@ -768,6 +769,12 @@ List<DrawerItem> get kDrawerItems => [
     color: const Color(0xFF1E88E5),
     screen: const AcademicScreen(),
   ),
+    DrawerItem(
+    label: 'Student Chat',
+    icon: Icons.menu_book_rounded,
+    color: const Color(0xFF1E88E5),
+    screen: const AppStartScreen(),
+  ),
   DrawerItem(
     label: 'Research',
     icon: Icons.science_rounded,
@@ -881,7 +888,7 @@ List<DrawerItem> get kDrawerItems => [
     label: 'Result',
     icon: Icons.calculate_rounded,
     color: const Color(0xFF1E88E5),
-    screen: const ResultManagementApp(),
+    screen: const BatchSelectionScreen(),
   ),
   DrawerItem(
     label: 'Timetable',
