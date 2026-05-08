@@ -12,10 +12,13 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:beedi_college/ADMISSION/Screens/ResultScreen.dart' hide LeaderboardScreen, LoginScreen;
+import 'package:beedi_college/ADMISSION/Screens/ResultScreen.dart'
+    hide LeaderboardScreen, LoginScreen;
 import 'package:beedi_college/ADMISSION/Screens/login_screen.dart';
+import 'package:beedi_college/GAME/GameScreen.dart';
 import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
-import 'package:beedi_college/STUDENTCHAT/studentchatscreen.dart' hide LoginScreen;
+import 'package:beedi_college/STUDENTCHAT/studentchatscreen.dart'
+    hide LoginScreen;
 import 'package:beedi_college/Screens/AIChatScreen.dart';
 import 'package:beedi_college/Screens/AcedemicScreen.dart';
 import 'package:beedi_college/Screens/AdmissionScreen.dart';
@@ -29,7 +32,8 @@ import 'package:beedi_college/Screens/GradeCalculatorScreen.dart';
 import 'package:beedi_college/Screens/HajipurVaishaliScreen.dart';
 import 'package:beedi_college/Screens/JobBoardScreen.dart';
 import 'package:beedi_college/Screens/KYPAdmissionScreen.dart';
-import 'package:beedi_college/Screens/KYPQuizeScreen.dart' hide LeaderboardScreen;
+import 'package:beedi_college/Screens/KYPQuizeScreen.dart'
+    hide LeaderboardScreen, GameScreen;
 import 'package:beedi_college/Screens/LeaderboardScreen.dart';
 import 'package:beedi_college/Screens/OpportunitiesScreen.dart';
 import 'package:beedi_college/Screens/ResearchScreen.dart';
@@ -87,8 +91,6 @@ class AC {
   static const Color grey = Color(0xFF64748B);
   static const Color lightGrey = Color(0xFFF1F5F9);
   static const Color borderGrey = Color(0xFFE2E8F0);
-
-  
 
   static const appBarGrad = LinearGradient(
     colors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFF42A5F5)],
@@ -665,7 +667,8 @@ List<CardData> get kCards => [
     title: 'Research',
     subtitle: 'Innovation & cutting-edge studies',
     icon: Icons.science_rounded,
-    networkImg: 'https://miro.medium.com/v2/resize:fit:1400/1*ibByiZpcXhuXPzbFtoSqFg.png',
+    networkImg:
+        'https://miro.medium.com/v2/resize:fit:1400/1*ibByiZpcXhuXPzbFtoSqFg.png',
     accent: const Color(0xFF1565C0),
     accent2: const Color(0xFF42A5F5),
     screen: const ResearchScreen(),
@@ -675,7 +678,8 @@ List<CardData> get kCards => [
     title: 'Student Life',
     subtitle: 'Culture, clubs & community',
     icon: Icons.people_alt_rounded,
-    networkImg: 'https://hotmart.s3.amazonaws.com/product_pictures/68165baa-7048-4f85-ae25-6c540576664b/TeacherwithAI.png',
+    networkImg:
+        'https://hotmart.s3.amazonaws.com/product_pictures/68165baa-7048-4f85-ae25-6c540576664b/TeacherwithAI.png',
     accent: const Color(0xFF1E88E5),
     accent2: const Color(0xFF42A5F5),
     screen: const StudentLifeScreen(),
@@ -685,7 +689,8 @@ List<CardData> get kCards => [
     title: 'Sports',
     subtitle: 'Champions on and off field',
     icon: Icons.sports_soccer_rounded,
-    networkImg: 'https://cdn.prod.website-files.com/671653eb164bd7404a75a117/671926acacddbca59e0f2352_ia.png',
+    networkImg:
+        'https://cdn.prod.website-files.com/671653eb164bd7404a75a117/671926acacddbca59e0f2352_ia.png',
     accent: const Color(0xFF0D47A1),
     accent2: const Color(0xFF1E88E5),
     screen: const SportsScreen(),
@@ -695,7 +700,8 @@ List<CardData> get kCards => [
     title: 'Admission',
     subtitle: 'Join the BEEDI family today',
     icon: Icons.how_to_reg_rounded,
-    networkImg: 'https://www.esparklearning.com/app/uploads/2024/04/AI-for-Image-Generation-featured-image-e1712251769334.webp',
+    networkImg:
+        'https://www.esparklearning.com/app/uploads/2024/04/AI-for-Image-Generation-featured-image-e1712251769334.webp',
     accent: const Color(0xFF1565C0),
     accent2: const Color(0xFF42A5F5),
     screen: const AdmissionScreen(),
@@ -705,7 +711,8 @@ List<CardData> get kCards => [
     title: 'KYP Quiz',
     subtitle: 'Test your knowledge & skills',
     icon: Icons.quiz_rounded,
-    networkImg: 'https://miro.medium.com/v2/resize:fit:1400/1*HyZJyzKp6fWwSITjxfd2iQ.jpeg',
+    networkImg:
+        'https://miro.medium.com/v2/resize:fit:1400/1*HyZJyzKp6fWwSITjxfd2iQ.jpeg',
     accent: const Color(0xFF1E88E5),
     accent2: const Color(0xFF42A5F5),
     screen: const KYPQuizScreen(),
@@ -769,11 +776,18 @@ List<DrawerItem> get kDrawerItems => [
     color: const Color(0xFF1E88E5),
     screen: const AcademicScreen(),
   ),
-    DrawerItem(
+  DrawerItem(
     label: 'Student Chat',
     icon: Icons.menu_book_rounded,
     color: const Color(0xFF1E88E5),
     screen: const AppStartScreen(),
+  ),
+    DrawerItem(
+    label: 'Learning',
+    icon: Icons.menu_book_rounded,
+    color: const Color(0xFF1E88E5),
+    // screen: const LearningGameScreen(),
+    screen : const GameScreen(),
   ),
   DrawerItem(
     label: 'Research',
@@ -884,7 +898,7 @@ List<DrawerItem> get kDrawerItems => [
     color: const Color(0xFF1E88E5),
     screen: const GradeCalculatorScreen(),
   ),
-   DrawerItem(
+  DrawerItem(
     label: 'Result',
     icon: Icons.calculate_rounded,
     color: const Color(0xFF1E88E5),
@@ -1169,494 +1183,606 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
- String _getBotReply(String msg) {
-  String lowerMsg = msg.toLowerCase().trim();
-  
-  // ==================== ADMISSION QUERIES (15+) ====================
-  if (lowerMsg.contains('admission') || lowerMsg.contains('apply') || lowerMsg.contains('enroll') || 
-      lowerMsg.contains('last date') || lowerMsg.contains('deadline') || lowerMsg.contains('application')) {
-    if (lowerMsg.contains('last date') || lowerMsg.contains('deadline')) 
-      return '📅 Admission deadline: December 31, 2026. Apply early for scholarships! apply.beeedicollege.ac.in';
-    if (lowerMsg.contains('process') || lowerMsg.contains('procedure'))
-      return '📝 Admission Process: 1) Online application 2) Entrance exam 3) Personal interview 4) Document verification 5) Fee payment. Start now!';
-    if (lowerMsg.contains('document') || lowerMsg.contains('documents'))
-      return '📄 Required documents: 10th & 12th marksheets, Transfer certificate, Migration certificate, Passport photos, ID proof, Caste certificate (if applicable).';
-    return '🎓 Admissions open till Dec 31, 2026! Courses: B.Tech, MBA, MCA, B.Sc, B.Com. Apply: apply.beeedicollege.ac.in Helpline: +91-80001-23456';
-  }
-  
-  // ==================== FEE & FINANCE QUERIES (10+) ====================
-  if (lowerMsg.contains('fee') || lowerMsg.contains('fees') || lowerMsg.contains('cost') || lowerMsg.contains('price') || 
-      lowerMsg.contains('tuition') || lowerMsg.contains('payment') || lowerMsg.contains('refund')) {
-    if (lowerMsg.contains('payment') || lowerMsg.contains('online payment'))
-      return '💳 Online payment options: UPI, Credit/Debit Cards, Net Banking, NEFT/RTGS. Installment facility available. Contact accounts@beeedicollege.ac.in';
-    if (lowerMsg.contains('refund') || lowerMsg.contains('cancellation'))
-      return '🔄 Refund Policy: 100% before course start, 50% within 15 days, no refund after 30 days. Terms apply.';
-    if (lowerMsg.contains('hostel') && lowerMsg.contains('fee'))
-      return '🏠 Hostel fees: ₹60,000/year for double occupancy, ₹85,000/year for single occupancy. Includes mess, WiFi, laundry.';
-    return '💰 Fee Structure:\n• B.Tech: ₹85,000/year\n• MBA: ₹1,20,000/year\n• MCA: ₹75,000/year\n• B.Sc: ₹50,000/year\nScholarships available for meritorious students!';
-  }
-  
-  // ==================== PLACEMENT QUERIES (15+) ====================
-  if (lowerMsg.contains('placement') || lowerMsg.contains('job') || lowerMsg.contains('recruit') || 
-      lowerMsg.contains('package') || lowerMsg.contains('salary') || lowerMsg.contains('company') ||
-      lowerMsg.contains('campus drive') || lowerMsg.contains('interview') || lowerMsg.contains('intern')) {
-    if (lowerMsg.contains('highest') || lowerMsg.contains('top') || lowerMsg.contains('max'))
-      return '🏆 Highest Package: ₹45 LPA (Google), ₹38 LPA (Amazon), ₹35 LPA (Microsoft). Multiple global offers!';
-    if (lowerMsg.contains('average') || lowerMsg.contains('avg'))
-      return '📊 Average Package: ₹7.2 LPA. Top companies: Google, Amazon, Microsoft, Flipkart, Infosys, TCS, Wipro, Deloitte.';
-    if (lowerMsg.contains('intern') || lowerMsg.contains('internship'))
-      return '💼 Internship opportunities: Paid internships starting ₹25K-50K/month. Stipend based on performance. 100% internship assistance provided.';
-    if (lowerMsg.contains('profile') || lowerMsg.contains('role'))
-      return '👨‍💻 Job Profiles: Software Engineer, Data Scientist, Cloud Architect, Product Manager, Business Analyst, Consultant, System Engineer.';
-    if (lowerMsg.contains('batch') || lowerMsg.contains('year'))
-      return '📅 2024 Placement Stats: 97% placed, 250+ companies visited, 1500+ offers made. Record-breaking placements!';
-    return '💼 Placement Highlights:\n• 97% placement rate\n• ₹45 LPA highest package\n• 250+ recruiters\n• 1500+ offers\n• Top MNCs visit regularly\nNeed specific details? Ask about company, package, or role!';
-  }
-  
-  // ==================== KYP/QUIZ QUERIES (10+) ====================
-  if (lowerMsg.contains('kyp') || lowerMsg.contains('quiz') || lowerMsg.contains('certificate') || 
-      lowerMsg.contains('test') || lowerMsg.contains('exam') || lowerMsg.contains('assessment') ||
-      lowerMsg.contains('government') && lowerMsg.contains('certificate')) {
-    if (lowerMsg.contains('enrollment') || lowerMsg.contains('register'))
-      return '📝 KYP Enrollment: Free registration at kyp.beeedicollege.ac.in. Limited seats! Register now with your college ID.';
-    if (lowerMsg.contains('syllabus') || lowerMsg.contains('topics'))
-      return '📚 KYP Syllabus: Aptitude, Reasoning, General Knowledge, Technical Skills, Soft Skills, Communication. Mock tests available!';
-    if (lowerMsg.contains('result') || lowerMsg.contains('score'))
-      return '📊 KYP Results declared within 7 days. Check your scorecard online. Merit certificate for top performers.';
-    if (lowerMsg.contains('validity') || lowerMsg.contains('valid') && lowerMsg.contains('certificate'))
-      return '✅ Government certificate valid for lifetime. Accepted by all PSUs, banks, and government exams.';
-    return '🎓 KYP Quiz: Free government-certified program!\n• Test your knowledge\n• Earn recognized certificate\n• Boost your resume\n• 5 lakh+ students enrolled\n• Open to all streams\nEnroll: kyp.beeedicollege.ac.in';
-  }
-  
-  // ==================== HOSTEL QUERIES (10+) ====================
-  if (lowerMsg.contains('hostel') || lowerMsg.contains('accommodation') || lowerMsg.contains('room') || 
-      lowerMsg.contains('mess') || lowerMsg.contains('food') || lowerMsg.contains('living') ||
-      lowerMsg.contains('pg') || lowerMsg.contains('rent')) {
-    if (lowerMsg.contains('security') || lowerMsg.contains('safety'))
-      return '🔒 24/7 security with CCTV cameras, biometric access, female wardens, and medical facility. Parents can visit anytime.';
-    if (lowerMsg.contains('wifi') || lowerMsg.contains('internet'))
-      return '🌐 High-speed WiFi (100 Mbps) throughout campus. 24/7 internet access in rooms, labs, and library.';
-    if (lowerMsg.contains('room') && (lowerMsg.contains('type') || lowerMsg.contains('facility')))
-      return '🛏️ Room types: Single occupancy, Double occupancy, Dormitory (4 sharing). Attached bathroom, AC/non-AC options available.';
-    if (lowerMsg.contains('mess') || lowerMsg.contains('food'))
-      return '🍽️ Mess facility: North Indian, South Indian, Chinese, Continental options. Breakfast, Lunch, Dinner, Snacks. Special diet available.';
-    if (lowerMsg.contains('curfew') || lowerMsg.contains('timing'))
-      return '⏰ Hostel timings: Girls hostel entry 8 PM, Boys hostel 10 PM. Late entry requires permission. Weekend passes available.';
-    if (lowerMsg.contains('laundry') || lowerMsg.contains('washing'))
-      return '🧺 Laundry facility: Washing machines available. Professional laundry service at ₹500/month.';
-    return '🏠 Hostel Facilities:\n• Separate boys & girls hostels\n• AC/Non-AC rooms\n• 24/7 WiFi & power backup\n• Healthy mess food\n• Gym & recreation room\n• 24/7 security\n• Medical facility\nApply online for hostel allocation!';
-  }
-  
-  // ==================== LIBRARY QUERIES (10+) ====================
-  if (lowerMsg.contains('library') || lowerMsg.contains('book') || lowerMsg.contains('read') || 
-      lowerMsg.contains('journal') || lowerMsg.contains('research paper') || lowerMsg.contains('e-book') ||
-      lowerMsg.contains('magazine') || lowerMsg.contains('publication')) {
-    if (lowerMsg.contains('e-library') || lowerMsg.contains('online') || lowerMsg.contains('digital'))
-      return '💻 Digital Library: Access 500,000+ e-books, 200+ journals, IEEE, Springer, ACM, ScienceDirect. Login with college ID.';
-    if (lowerMsg.contains('timing') || lowerMsg.contains('hours'))
-      return '🕒 Library Hours: Monday-Saturday 8 AM to 10 PM, Sunday 10 AM to 6 PM. 24x7 study area available during exams.';
-    if (lowerMsg.contains('borrow') || lowerMsg.contains('issue') || lowerMsg.contains('lending'))
-      return '📖 Borrowing rules: 5 books for 15 days, ₹5/day fine for late return. Renew online up to 3 times.';
-    if (lowerMsg.contains('membership') || lowerMsg.contains('card'))
-      return '🪪 Library card: Free for all students. Online registration through student portal. Digital ID accepted.';
-    if (lowerMsg.contains('photocopy') || lowerMsg.contains('print'))
-      return '🖨️ Photocopy & Printing: ₹2/page for B&W, ₹5/page for color. Scanning free. Book binding available.';
-    return '📚 Library Resources:\n• 5,00,000+ physical books\n• Digital library (24/7)\n• 200+ journals & magazines\n• Research databases\n• Reading hall (500+ seats)\n• Computer section (100 PCs)\nVisit the central library today!';
-  }
-  
-  // ==================== SCHOLARSHIP QUERIES (10+) ====================
-  if (lowerMsg.contains('scholarship') || lowerMsg.contains('financial aid') || lowerMsg.contains('grant') || 
-      lowerMsg.contains('fee waiver') || lowerMsg.contains('stipend') || lowerMsg.contains('merit') && lowerMsg.contains('award')) {
-    if (lowerMsg.contains('merit') || lowerMsg.contains('top'))
-      return '🏅 Merit Scholarship: ₹75,000/year for top 10% students. Based on semester exam performance. Renewed automatically.';
-    if (lowerMsg.contains('sc') || lowerMsg.contains('st') || lowerMsg.contains('obc') || lowerMsg.contains('caste'))
-      return '👥 SC/ST/OBC Scholarship: Up to ₹50,000/year. Income certificate required. Apply through National Scholarship Portal.';
-    if (lowerMsg.contains('girl') || lowerMsg.contains('women'))
-      return '👩 Girls Empowerment Scholarship: ₹30,000/year for female students. Merit-based + income criteria. Special quota available.';
-    if (lowerMsg.contains('sport') || lowerMsg.contains('athlete'))
-      return '🏆 Sports Excellence: ₹40,000/year for state/national level players. Submit sports certificates.';
-    if (lowerMsg.contains('research') || lowerMsg.contains('phd'))
-      return '🔬 Research Grant: ₹2,00,000 for PhD scholars. Publish papers, attend conferences, lab funding available.';
-    if (lowerMsg.contains('minority') || lowerMsg.contains('muslim') || lowerMsg.contains('christian'))
-      return '🕯️ Minority Scholarship: Up to ₹35,000/year for Muslim, Sikh, Christian, Jain, Buddhist students. Government funded.';
-    return '🏆 Scholarship Programs:\n• Merit: ₹75K/year\n• SC/ST/OBC: ₹50K/year\n• Girls: ₹30K/year\n• Sports: ₹40K/year\n• Research: ₹2L grant\n• Minority: ₹35K/year\nDeadline: Jan 31, 2026. Apply soon!';
-  }
-  
-  // ==================== SPORTS QUERIES (10+) ====================
-  if (lowerMsg.contains('sport') || lowerMsg.contains('game') || lowerMsg.contains('cricket') || 
-      lowerMsg.contains('football') || lowerMsg.contains('tournament') || lowerMsg.contains('gym') ||
-      lowerMsg.contains('fitness') || lowerMsg.contains('swimming') || lowerMsg.contains('competition')) {
-    if (lowerMsg.contains('facility') || lowerMsg.contains('infrastructure'))
-      return '🏟️ Sports Facilities: Olympic-size swimming pool, Basketball & Tennis courts, Football ground, Cricket pitch, Indoor stadium, Table tennis, Badminton courts.';
-    if (lowerMsg.contains('coach') || lowerMsg.contains('training'))
-      return '👨‍🏫 Professional coaches: National-level trainers for each sport. Daily practice sessions. Special coaching for competitions.';
-    if (lowerMsg.contains('tournament') || lowerMsg.contains('event'))
-      return '🏆 Annual Sports Meet in December. Inter-college tournaments: Zonal, State, National level participation. Prize money up to ₹1L.';
-    if (lowerMsg.contains('gym') || lowerMsg.contains('workout'))
-      return '💪 Modern gym: Cardio, Strength training, Free weights, CrossFit area. Personal trainers available. 6 AM - 10 PM.';
-    if (lowerMsg.contains('swimming') || lowerMsg.contains('pool'))
-      return '🏊 Olympic-size heated pool (50m). Swimming coach available. Learn-to-swim programs. Competition training.';
-    if (lowerMsg.contains('yoga') || lowerMsg.contains('meditation'))
-      return '🧘 Daily yoga & meditation sessions. Certified instructors. Stress management workshops. Free for all students.';
-    return '🏅 Sports & Fitness:\n• 18+ sports disciplines\n• Olympic pool & gym\n• Professional coaches\n• Annual sports meet\n• Inter-college tournaments\n• Sports scholarships\nJoin the sports club today!';
-  }
-  
-  // ==================== ACADEMIC PROGRAM QUERIES (10+) ====================
-  if (lowerMsg.contains('course') || lowerMsg.contains('program') || lowerMsg.contains('degree') || 
-      lowerMsg.contains('b.tech') || lowerMsg.contains('mba') || lowerMsg.contains('mca') ||
-      lowerMsg.contains('b.sc') || lowerMsg.contains('b.com') || lowerMsg.contains('specialization')) {
-    if (lowerMsg.contains('b.tech') || lowerMsg.contains('btech'))
-      return '🔧 B.Tech Specializations: CSE, AI/ML, Data Science, Cloud Computing, Cybersecurity, ECE, Mechanical, Civil. 4-year program with industrial training.';
-    if (lowerMsg.contains('mba'))
-      return '💼 MBA Specializations: Marketing, Finance, HR, Operations, Business Analytics, Digital Marketing. 2-year program with internship.';
-    if (lowerMsg.contains('mca'))
-      return '💻 MCA: Master of Computer Applications. 2-year program. Advanced programming, AI, Cloud, Full-stack development.';
-    if (lowerMsg.contains('b.sc') || lowerMsg.contains('bsc'))
-      return '🔬 B.Sc Programs: Physics, Chemistry, Mathematics, Computer Science, Biotechnology, Data Science. 3-year program.';
-    if (lowerMsg.contains('b.com') || lowerMsg.contains('bcom'))
-      return '📊 B.Com Programs: Accountancy, Taxation, Finance, Banking & Insurance, E-Commerce. Professional certifications included.';
-    if (lowerMsg.contains('phd') || lowerMsg.contains('doctorate'))
-      return '🎓 PhD Programs: Engineering, Management, Science, Humanities. UGC-approved. Fellowships available. Research facilities.';
-    return '📚 Academic Programs:\n• B.Tech (4 years)\n• MBA (2 years)\n• MCA (2 years)\n• B.Sc (3 years)\n• B.Com (3 years)\n• PhD Programs\nContact admissions for eligibility criteria!';
-  }
-  
-  // ==================== FACULTY QUERIES (5+) ====================
-  if (lowerMsg.contains('faculty') || lowerMsg.contains('teacher') || lowerMsg.contains('professor') || 
-      lowerMsg.contains('staff') || lowerMsg.contains('lecturer')) {
-    if (lowerMsg.contains('qualification') || lowerMsg.contains('phd'))
-      return '👨‍🏫 Highly qualified faculty: 85% PhD holders, industry experts, published researchers. Student-teacher ratio 15:1.';
-    if (lowerMsg.contains('student') && lowerMsg.contains('ratio'))
-      return '📊 Student-Faculty Ratio: 15:1 ensuring personalized attention. Small class sizes for better learning.';
-    return '👩‍🏫 Our Faculty: 250+ experienced professors, industry experts, and research scholars. Most have PhDs from IITs/NITs. Regular guest lectures from industry leaders.';
-  }
-  
-  // ==================== CAMPUS FACILITIES QUERIES (10+) ====================
-  if (lowerMsg.contains('campus') || lowerMsg.contains('facility') || lowerMsg.contains('infrastructure') || 
-      lowerMsg.contains('building') || lowerMsg.contains('lab') || lowerMsg.contains('classroom') ||
-      lowerMsg.contains('cafeteria') || lowerMsg.contains('canteen') || lowerMsg.contains('transport')) {
-    if (lowerMsg.contains('lab') || lowerMsg.contains('laboratory'))
-      return '🔬 Advanced Labs: AI/ML Lab, IoT Lab, Robotics Lab, Chemistry/Physics Labs, Language Lab, Electronics Lab. 24/7 access.';
-    if (lowerMsg.contains('smart') && lowerMsg.contains('classroom'))
-      return '📱 Smart Classrooms: Projectors, Digital boards, Recording facility, Comfortable seating, AC classrooms.';
-    if (lowerMsg.contains('cafeteria') || lowerMsg.contains('canteen') || lowerMsg.contains('food court'))
-      return '🍕 Multi-cuisine Cafeteria: 5 food outlets. Healthy food options. Student-run cafe. Daily specials.';
-    if (lowerMsg.contains('transport') || lowerMsg.contains('bus'))
-      return '🚌 College Bus Service: 20+ buses covering city routes. AC buses. GPS tracking. Safe transport for day scholars.';
-    if (lowerMsg.contains('medical') || lowerMsg.contains('health') || lowerMsg.contains('clinic'))
-      return '🏥 Health Center: 24/7 medical facility. Resident doctor. Free checkups. Ambulance service. Health insurance available.';
-    if (lowerMsg.contains('bank') || lowerMsg.contains('atm'))
-      return '🏧 Bank & ATM: SBI, HDFC, ICICI banks on campus. ATM facility. Banking hours 10 AM - 4 PM.';
-    return '🏛️ Campus Facilities:\n• Smart classrooms\n• Advanced labs\n• Central library\n• Sports complex\n• Swimming pool\n• Gymnasium\n• Cafeteria\n• Medical center\n• Transport\n• Banking\nWorld-class infrastructure for holistic learning!';
-  }
-  
-  // ==================== STUDENT LIFE QUERIES (15+) ====================
-  if (lowerMsg.contains('student life') || lowerMsg.contains('club') || lowerMsg.contains('activity') || 
-      lowerMsg.contains('festival') || lowerMsg.contains('event') || lowerMsg.contains('cultural') ||
-      lowerMsg.contains('annual day') || lowerMsg.contains('celebration') || lowerMsg.contains('hobby')) {
-    if (lowerMsg.contains('club') || lowerMsg.contains('society'))
-      return '🎯 Student Clubs: Coding Club, Robotics Club, Debate Society, Music Club, Dance Club, Photography Club, Entrepreneurship Cell, NSS, NCC.';
-    if (lowerMsg.contains('fest') || lowerMsg.contains('cultural') && lowerMsg.contains('fest'))
-      return '🎉 Annual Cultural Fest \'BEEDI Utsav\' in February. 5 days of fun, competitions, celebrity nights, DJ nights, food festivals.';
-    if (lowerMsg.contains('technical') && lowerMsg.contains('fest'))
-      return '🤖 Tech Fest \'Innovation 2026\' in March. Hackathons, coding competitions, robotics challenge, paper presentations, project expo. Prize pool ₹5L.';
-    if (lowerMsg.contains('calendar') || lowerMsg.contains('schedule') && lowerMsg.contains('event'))
-      return '📅 Upcoming Events: Tech Fest (Mar 15-20), Sports Meet (Dec 10-15), Cultural Fest (Feb 5-10), Annual Day (Apr 25).';
-    if (lowerMsg.contains('volunteer') || lowerMsg.contains('nss') || lowerMsg.contains('ncc'))
-      return '🤝 Volunteer Programs: NSS, NCC, Red Cross, Animal Welfare. Social service certificates. Leadership development.';
-    return '🎊 Student Life:\n• 25+ student clubs\n• Annual cultural fest\n• Technical symposium\n• Sports tournaments\n• Celebrity nights\n• Workshops & seminars\n• Industrial visits\n• Community service\nEvery day is a new adventure on campus!';
-  }
-  
-  // ==================== PLACEMENT PREPARATION (10+) ====================
-  if (lowerMsg.contains('aptitude') || lowerMsg.contains('coding') || lowerMsg.contains('interview prep') || 
-      lowerMsg.contains('resume') || lowerMsg.contains('cv') || lowerMsg.contains('gd') ||
-      lowerMsg.contains('group discussion') || lowerMsg.contains('hr') || lowerMsg.contains('mock interview')) {
-    if (lowerMsg.contains('aptitude') || lowerMsg.contains('reasoning'))
-      return '📊 Aptitude Training: Quantitative aptitude, Logical reasoning, Verbal ability. Weekly mock tests. Expert trainers.';
-    if (lowerMsg.contains('coding') || lowerMsg.contains('programming'))
-      return '💻 Coding Practice: DSA mastery, Competitive programming, Hackathon training. LeetCode style platform. Daily challenges.';
-    if (lowerMsg.contains('resume') || lowerMsg.contains('cv'))
-      return '📄 Resume Workshop: Professional resume building, LinkedIn optimization, Portfolio creation. Expert reviews available.';
-    if (lowerMsg.contains('mock') || lowerMsg.contains('interview') && lowerMsg.contains('preparation'))
-      return '🎯 Mock Interviews: Technical, HR, Case study interviews. Real-time feedback. Industry experts panel.';
-    if (lowerMsg.contains('gd') || lowerMsg.contains('group discussion'))
-      return '💬 Group Discussion Practice: Current affairs, Business topics, Technology trends. Weekly sessions. Tips & tricks.';
-    return '📚 Placement Preparation:\n• Aptitude training\n• Coding practice\n• Resume building\n• Mock interviews\n• GD practice\n• Soft skills\n• Communication\n• LinkedIn profile\n100% placement assistance guaranteed!';
-  }
-  
-  // ==================== GENERAL QUERIES (10+) ====================
-  if (lowerMsg.contains('hello') || lowerMsg.contains('hi') || lowerMsg.contains('hey') || 
-      lowerMsg.contains('greetings') || lowerMsg.contains('namaste')) {
-    return '👋 Hello! Welcome to BEEDI College Assistant. I\'m here to help with:\n• Admissions & Courses\n• Fees & Scholarships\n• Placements & Jobs\n• Hostel & Facilities\n• Events & Activities\n• Any other questions!\nHow can I assist you today? 😊';
-  }
-  
-  if (lowerMsg.contains('thank') || lowerMsg.contains('thanks') || lowerMsg.contains('grateful')) {
-    return '🙏 You\'re welcome! Happy to help. Feel free to ask if you need anything else. Have a great day! 🎓';
-  }
-  
-  if (lowerMsg.contains('help') || lowerMsg.contains('support') || lowerMsg.contains('assist')) {
-    return '🆘 Help Center:\n• Academic helpline: +91-80001-23456\n• Admission office: +91-80001-23457\n• Hostel warden: +91-80001-23458\n• Email: help@beeedicollege.ac.in\n• Live chat: Available 9 AM - 9 PM\nWhat specific help do you need?';
-  }
-  
-  if (lowerMsg.contains('contact') || lowerMsg.contains('phone') || lowerMsg.contains('email') || 
-      lowerMsg.contains('reach') || lowerMsg.contains('call')) {
-    return '📞 Contact Us:\n• Phone: +91-80001-23456\n• Email: info@beeedicollege.ac.in\n• Admissions: admissions@beeedicollege.ac.in\n• Website: www.beeedicollege.ac.in\n• Office hours: Mon-Sat, 9 AM - 5 PM';
-  }
-  
-  if (lowerMsg.contains('location') || lowerMsg.contains('address') || lowerMsg.contains('directions') || 
-      lowerMsg.contains('reach') && lowerMsg.contains('campus')) {
-    return '📍 Address: BEEDI College, NH-48, Sector 62, Noida, Uttar Pradesh - 201301. Nearest metro: Noida Electronic City (5 min). Bus stop: Just outside campus.';
-  }
-  
-  if (lowerMsg.contains('holiday') || lowerMsg.contains('vacation') || lowerMsg.contains('break')) {
-    return '📅 Academic Calendar 2026:\n• Summer Break: May 15 - July 10\n• Winter Break: Dec 25 - Jan 5\n• Diwali Break: Nov 5-10\n• Holi Break: Mar 12-15\nCheck website for exact dates.';
-  }
-  
-  if (lowerMsg.contains('exam') || lowerMsg.contains('semester') || lowerMsg.contains('result') || 
-      lowerMsg.contains('marks') || lowerMsg.contains('grade')) {
-    if (lowerMsg.contains('result') || lowerMsg.contains('marks'))
-      return '📊 Results declared on student portal. Login with your ID. Revaluation available within 15 days.';
-    if (lowerMsg.contains('exam') && (lowerMsg.contains('schedule') || lowerMsg.contains('date')))
-      return '📅 Exam Schedule: Mid-sem exams Oct 15-25, End-sem exams Dec 1-15. Download from portal.';
-    return '📖 Examination System:\n• Two semesters/year\n• Internal assessment 40%\n• Semester exam 60%\n• Regular exams in Dec & May\n• Supplementary exams in June\nNeed more details about exams?';
-  }
-  
-  // ==================== SMART RESPONSES (5+) ====================
-  if (lowerMsg.contains('weather') || lowerMsg.contains('temperature') || lowerMsg.contains('climate')) {
-    return '☀️ Current weather at campus: Pleasant, 24°C. Check weather app for real-time updates. Campus is beautiful in all seasons!';
-  }
-  
-  if (lowerMsg.contains('time') || lowerMsg.contains('clock') || lowerMsg.contains('schedule')) {
-    return '⏰ Current campus time: ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}. Regular schedule: Classes 9 AM - 5 PM. Library 8 AM - 10 PM.';
-  }
-  
-  if (lowerMsg.contains('joke') || lowerMsg.contains('funny') || lowerMsg.contains('laugh')) {
-    return '😄 Here\'s a college joke: Why did the student bring a ladder to college? Because they wanted to go to high school! 😂 Want another one?';
-  }
-  
-  // ==================== DEFAULT RESPONSE ====================
-  return '🤖 Great question! For detailed info about "$msg", please contact our helpline: +91-80001-23456 or email info@beeedicollege.ac.in. You can also visit our website or check the student portal. I\'m here to help with admissions, courses, fees, placements, hostels, scholarships, sports, events, and more! 📞';
-}
+  String _getBotReply(String msg) {
+    String lowerMsg = msg.toLowerCase().trim();
 
-void _performSearch(String query) {
-  if (query.isEmpty) {
-    setState(() => _searchResults = []);
-    return;
+    // ==================== ADMISSION QUERIES (15+) ====================
+    if (lowerMsg.contains('admission') ||
+        lowerMsg.contains('apply') ||
+        lowerMsg.contains('enroll') ||
+        lowerMsg.contains('last date') ||
+        lowerMsg.contains('deadline') ||
+        lowerMsg.contains('application')) {
+      if (lowerMsg.contains('last date') || lowerMsg.contains('deadline'))
+        return '📅 Admission deadline: December 31, 2026. Apply early for scholarships! apply.beeedicollege.ac.in';
+      if (lowerMsg.contains('process') || lowerMsg.contains('procedure'))
+        return '📝 Admission Process: 1) Online application 2) Entrance exam 3) Personal interview 4) Document verification 5) Fee payment. Start now!';
+      if (lowerMsg.contains('document') || lowerMsg.contains('documents'))
+        return '📄 Required documents: 10th & 12th marksheets, Transfer certificate, Migration certificate, Passport photos, ID proof, Caste certificate (if applicable).';
+      return '🎓 Admissions open till Dec 31, 2026! Courses: B.Tech, MBA, MCA, B.Sc, B.Com. Apply: apply.beeedicollege.ac.in Helpline: +91-80001-23456';
+    }
+
+    // ==================== FEE & FINANCE QUERIES (10+) ====================
+    if (lowerMsg.contains('fee') ||
+        lowerMsg.contains('fees') ||
+        lowerMsg.contains('cost') ||
+        lowerMsg.contains('price') ||
+        lowerMsg.contains('tuition') ||
+        lowerMsg.contains('payment') ||
+        lowerMsg.contains('refund')) {
+      if (lowerMsg.contains('payment') || lowerMsg.contains('online payment'))
+        return '💳 Online payment options: UPI, Credit/Debit Cards, Net Banking, NEFT/RTGS. Installment facility available. Contact accounts@beeedicollege.ac.in';
+      if (lowerMsg.contains('refund') || lowerMsg.contains('cancellation'))
+        return '🔄 Refund Policy: 100% before course start, 50% within 15 days, no refund after 30 days. Terms apply.';
+      if (lowerMsg.contains('hostel') && lowerMsg.contains('fee'))
+        return '🏠 Hostel fees: ₹60,000/year for double occupancy, ₹85,000/year for single occupancy. Includes mess, WiFi, laundry.';
+      return '💰 Fee Structure:\n• B.Tech: ₹85,000/year\n• MBA: ₹1,20,000/year\n• MCA: ₹75,000/year\n• B.Sc: ₹50,000/year\nScholarships available for meritorious students!';
+    }
+
+    // ==================== PLACEMENT QUERIES (15+) ====================
+    if (lowerMsg.contains('placement') ||
+        lowerMsg.contains('job') ||
+        lowerMsg.contains('recruit') ||
+        lowerMsg.contains('package') ||
+        lowerMsg.contains('salary') ||
+        lowerMsg.contains('company') ||
+        lowerMsg.contains('campus drive') ||
+        lowerMsg.contains('interview') ||
+        lowerMsg.contains('intern')) {
+      if (lowerMsg.contains('highest') ||
+          lowerMsg.contains('top') ||
+          lowerMsg.contains('max'))
+        return '🏆 Highest Package: ₹45 LPA (Google), ₹38 LPA (Amazon), ₹35 LPA (Microsoft). Multiple global offers!';
+      if (lowerMsg.contains('average') || lowerMsg.contains('avg'))
+        return '📊 Average Package: ₹7.2 LPA. Top companies: Google, Amazon, Microsoft, Flipkart, Infosys, TCS, Wipro, Deloitte.';
+      if (lowerMsg.contains('intern') || lowerMsg.contains('internship'))
+        return '💼 Internship opportunities: Paid internships starting ₹25K-50K/month. Stipend based on performance. 100% internship assistance provided.';
+      if (lowerMsg.contains('profile') || lowerMsg.contains('role'))
+        return '👨‍💻 Job Profiles: Software Engineer, Data Scientist, Cloud Architect, Product Manager, Business Analyst, Consultant, System Engineer.';
+      if (lowerMsg.contains('batch') || lowerMsg.contains('year'))
+        return '📅 2024 Placement Stats: 97% placed, 250+ companies visited, 1500+ offers made. Record-breaking placements!';
+      return '💼 Placement Highlights:\n• 97% placement rate\n• ₹45 LPA highest package\n• 250+ recruiters\n• 1500+ offers\n• Top MNCs visit regularly\nNeed specific details? Ask about company, package, or role!';
+    }
+
+    // ==================== KYP/QUIZ QUERIES (10+) ====================
+    if (lowerMsg.contains('kyp') ||
+        lowerMsg.contains('quiz') ||
+        lowerMsg.contains('certificate') ||
+        lowerMsg.contains('test') ||
+        lowerMsg.contains('exam') ||
+        lowerMsg.contains('assessment') ||
+        lowerMsg.contains('government') && lowerMsg.contains('certificate')) {
+      if (lowerMsg.contains('enrollment') || lowerMsg.contains('register'))
+        return '📝 KYP Enrollment: Free registration at kyp.beeedicollege.ac.in. Limited seats! Register now with your college ID.';
+      if (lowerMsg.contains('syllabus') || lowerMsg.contains('topics'))
+        return '📚 KYP Syllabus: Aptitude, Reasoning, General Knowledge, Technical Skills, Soft Skills, Communication. Mock tests available!';
+      if (lowerMsg.contains('result') || lowerMsg.contains('score'))
+        return '📊 KYP Results declared within 7 days. Check your scorecard online. Merit certificate for top performers.';
+      if (lowerMsg.contains('validity') ||
+          lowerMsg.contains('valid') && lowerMsg.contains('certificate'))
+        return '✅ Government certificate valid for lifetime. Accepted by all PSUs, banks, and government exams.';
+      return '🎓 KYP Quiz: Free government-certified program!\n• Test your knowledge\n• Earn recognized certificate\n• Boost your resume\n• 5 lakh+ students enrolled\n• Open to all streams\nEnroll: kyp.beeedicollege.ac.in';
+    }
+
+    // ==================== HOSTEL QUERIES (10+) ====================
+    if (lowerMsg.contains('hostel') ||
+        lowerMsg.contains('accommodation') ||
+        lowerMsg.contains('room') ||
+        lowerMsg.contains('mess') ||
+        lowerMsg.contains('food') ||
+        lowerMsg.contains('living') ||
+        lowerMsg.contains('pg') ||
+        lowerMsg.contains('rent')) {
+      if (lowerMsg.contains('security') || lowerMsg.contains('safety'))
+        return '🔒 24/7 security with CCTV cameras, biometric access, female wardens, and medical facility. Parents can visit anytime.';
+      if (lowerMsg.contains('wifi') || lowerMsg.contains('internet'))
+        return '🌐 High-speed WiFi (100 Mbps) throughout campus. 24/7 internet access in rooms, labs, and library.';
+      if (lowerMsg.contains('room') &&
+          (lowerMsg.contains('type') || lowerMsg.contains('facility')))
+        return '🛏️ Room types: Single occupancy, Double occupancy, Dormitory (4 sharing). Attached bathroom, AC/non-AC options available.';
+      if (lowerMsg.contains('mess') || lowerMsg.contains('food'))
+        return '🍽️ Mess facility: North Indian, South Indian, Chinese, Continental options. Breakfast, Lunch, Dinner, Snacks. Special diet available.';
+      if (lowerMsg.contains('curfew') || lowerMsg.contains('timing'))
+        return '⏰ Hostel timings: Girls hostel entry 8 PM, Boys hostel 10 PM. Late entry requires permission. Weekend passes available.';
+      if (lowerMsg.contains('laundry') || lowerMsg.contains('washing'))
+        return '🧺 Laundry facility: Washing machines available. Professional laundry service at ₹500/month.';
+      return '🏠 Hostel Facilities:\n• Separate boys & girls hostels\n• AC/Non-AC rooms\n• 24/7 WiFi & power backup\n• Healthy mess food\n• Gym & recreation room\n• 24/7 security\n• Medical facility\nApply online for hostel allocation!';
+    }
+
+    // ==================== LIBRARY QUERIES (10+) ====================
+    if (lowerMsg.contains('library') ||
+        lowerMsg.contains('book') ||
+        lowerMsg.contains('read') ||
+        lowerMsg.contains('journal') ||
+        lowerMsg.contains('research paper') ||
+        lowerMsg.contains('e-book') ||
+        lowerMsg.contains('magazine') ||
+        lowerMsg.contains('publication')) {
+      if (lowerMsg.contains('e-library') ||
+          lowerMsg.contains('online') ||
+          lowerMsg.contains('digital'))
+        return '💻 Digital Library: Access 500,000+ e-books, 200+ journals, IEEE, Springer, ACM, ScienceDirect. Login with college ID.';
+      if (lowerMsg.contains('timing') || lowerMsg.contains('hours'))
+        return '🕒 Library Hours: Monday-Saturday 8 AM to 10 PM, Sunday 10 AM to 6 PM. 24x7 study area available during exams.';
+      if (lowerMsg.contains('borrow') ||
+          lowerMsg.contains('issue') ||
+          lowerMsg.contains('lending'))
+        return '📖 Borrowing rules: 5 books for 15 days, ₹5/day fine for late return. Renew online up to 3 times.';
+      if (lowerMsg.contains('membership') || lowerMsg.contains('card'))
+        return '🪪 Library card: Free for all students. Online registration through student portal. Digital ID accepted.';
+      if (lowerMsg.contains('photocopy') || lowerMsg.contains('print'))
+        return '🖨️ Photocopy & Printing: ₹2/page for B&W, ₹5/page for color. Scanning free. Book binding available.';
+      return '📚 Library Resources:\n• 5,00,000+ physical books\n• Digital library (24/7)\n• 200+ journals & magazines\n• Research databases\n• Reading hall (500+ seats)\n• Computer section (100 PCs)\nVisit the central library today!';
+    }
+
+    // ==================== SCHOLARSHIP QUERIES (10+) ====================
+    if (lowerMsg.contains('scholarship') ||
+        lowerMsg.contains('financial aid') ||
+        lowerMsg.contains('grant') ||
+        lowerMsg.contains('fee waiver') ||
+        lowerMsg.contains('stipend') ||
+        lowerMsg.contains('merit') && lowerMsg.contains('award')) {
+      if (lowerMsg.contains('merit') || lowerMsg.contains('top'))
+        return '🏅 Merit Scholarship: ₹75,000/year for top 10% students. Based on semester exam performance. Renewed automatically.';
+      if (lowerMsg.contains('sc') ||
+          lowerMsg.contains('st') ||
+          lowerMsg.contains('obc') ||
+          lowerMsg.contains('caste'))
+        return '👥 SC/ST/OBC Scholarship: Up to ₹50,000/year. Income certificate required. Apply through National Scholarship Portal.';
+      if (lowerMsg.contains('girl') || lowerMsg.contains('women'))
+        return '👩 Girls Empowerment Scholarship: ₹30,000/year for female students. Merit-based + income criteria. Special quota available.';
+      if (lowerMsg.contains('sport') || lowerMsg.contains('athlete'))
+        return '🏆 Sports Excellence: ₹40,000/year for state/national level players. Submit sports certificates.';
+      if (lowerMsg.contains('research') || lowerMsg.contains('phd'))
+        return '🔬 Research Grant: ₹2,00,000 for PhD scholars. Publish papers, attend conferences, lab funding available.';
+      if (lowerMsg.contains('minority') ||
+          lowerMsg.contains('muslim') ||
+          lowerMsg.contains('christian'))
+        return '🕯️ Minority Scholarship: Up to ₹35,000/year for Muslim, Sikh, Christian, Jain, Buddhist students. Government funded.';
+      return '🏆 Scholarship Programs:\n• Merit: ₹75K/year\n• SC/ST/OBC: ₹50K/year\n• Girls: ₹30K/year\n• Sports: ₹40K/year\n• Research: ₹2L grant\n• Minority: ₹35K/year\nDeadline: Jan 31, 2026. Apply soon!';
+    }
+
+    // ==================== SPORTS QUERIES (10+) ====================
+    if (lowerMsg.contains('sport') ||
+        lowerMsg.contains('game') ||
+        lowerMsg.contains('cricket') ||
+        lowerMsg.contains('football') ||
+        lowerMsg.contains('tournament') ||
+        lowerMsg.contains('gym') ||
+        lowerMsg.contains('fitness') ||
+        lowerMsg.contains('swimming') ||
+        lowerMsg.contains('competition')) {
+      if (lowerMsg.contains('facility') || lowerMsg.contains('infrastructure'))
+        return '🏟️ Sports Facilities: Olympic-size swimming pool, Basketball & Tennis courts, Football ground, Cricket pitch, Indoor stadium, Table tennis, Badminton courts.';
+      if (lowerMsg.contains('coach') || lowerMsg.contains('training'))
+        return '👨‍🏫 Professional coaches: National-level trainers for each sport. Daily practice sessions. Special coaching for competitions.';
+      if (lowerMsg.contains('tournament') || lowerMsg.contains('event'))
+        return '🏆 Annual Sports Meet in December. Inter-college tournaments: Zonal, State, National level participation. Prize money up to ₹1L.';
+      if (lowerMsg.contains('gym') || lowerMsg.contains('workout'))
+        return '💪 Modern gym: Cardio, Strength training, Free weights, CrossFit area. Personal trainers available. 6 AM - 10 PM.';
+      if (lowerMsg.contains('swimming') || lowerMsg.contains('pool'))
+        return '🏊 Olympic-size heated pool (50m). Swimming coach available. Learn-to-swim programs. Competition training.';
+      if (lowerMsg.contains('yoga') || lowerMsg.contains('meditation'))
+        return '🧘 Daily yoga & meditation sessions. Certified instructors. Stress management workshops. Free for all students.';
+      return '🏅 Sports & Fitness:\n• 18+ sports disciplines\n• Olympic pool & gym\n• Professional coaches\n• Annual sports meet\n• Inter-college tournaments\n• Sports scholarships\nJoin the sports club today!';
+    }
+
+    // ==================== ACADEMIC PROGRAM QUERIES (10+) ====================
+    if (lowerMsg.contains('course') ||
+        lowerMsg.contains('program') ||
+        lowerMsg.contains('degree') ||
+        lowerMsg.contains('b.tech') ||
+        lowerMsg.contains('mba') ||
+        lowerMsg.contains('mca') ||
+        lowerMsg.contains('b.sc') ||
+        lowerMsg.contains('b.com') ||
+        lowerMsg.contains('specialization')) {
+      if (lowerMsg.contains('b.tech') || lowerMsg.contains('btech'))
+        return '🔧 B.Tech Specializations: CSE, AI/ML, Data Science, Cloud Computing, Cybersecurity, ECE, Mechanical, Civil. 4-year program with industrial training.';
+      if (lowerMsg.contains('mba'))
+        return '💼 MBA Specializations: Marketing, Finance, HR, Operations, Business Analytics, Digital Marketing. 2-year program with internship.';
+      if (lowerMsg.contains('mca'))
+        return '💻 MCA: Master of Computer Applications. 2-year program. Advanced programming, AI, Cloud, Full-stack development.';
+      if (lowerMsg.contains('b.sc') || lowerMsg.contains('bsc'))
+        return '🔬 B.Sc Programs: Physics, Chemistry, Mathematics, Computer Science, Biotechnology, Data Science. 3-year program.';
+      if (lowerMsg.contains('b.com') || lowerMsg.contains('bcom'))
+        return '📊 B.Com Programs: Accountancy, Taxation, Finance, Banking & Insurance, E-Commerce. Professional certifications included.';
+      if (lowerMsg.contains('phd') || lowerMsg.contains('doctorate'))
+        return '🎓 PhD Programs: Engineering, Management, Science, Humanities. UGC-approved. Fellowships available. Research facilities.';
+      return '📚 Academic Programs:\n• B.Tech (4 years)\n• MBA (2 years)\n• MCA (2 years)\n• B.Sc (3 years)\n• B.Com (3 years)\n• PhD Programs\nContact admissions for eligibility criteria!';
+    }
+
+    // ==================== FACULTY QUERIES (5+) ====================
+    if (lowerMsg.contains('faculty') ||
+        lowerMsg.contains('teacher') ||
+        lowerMsg.contains('professor') ||
+        lowerMsg.contains('staff') ||
+        lowerMsg.contains('lecturer')) {
+      if (lowerMsg.contains('qualification') || lowerMsg.contains('phd'))
+        return '👨‍🏫 Highly qualified faculty: 85% PhD holders, industry experts, published researchers. Student-teacher ratio 15:1.';
+      if (lowerMsg.contains('student') && lowerMsg.contains('ratio'))
+        return '📊 Student-Faculty Ratio: 15:1 ensuring personalized attention. Small class sizes for better learning.';
+      return '👩‍🏫 Our Faculty: 250+ experienced professors, industry experts, and research scholars. Most have PhDs from IITs/NITs. Regular guest lectures from industry leaders.';
+    }
+
+    // ==================== CAMPUS FACILITIES QUERIES (10+) ====================
+    if (lowerMsg.contains('campus') ||
+        lowerMsg.contains('facility') ||
+        lowerMsg.contains('infrastructure') ||
+        lowerMsg.contains('building') ||
+        lowerMsg.contains('lab') ||
+        lowerMsg.contains('classroom') ||
+        lowerMsg.contains('cafeteria') ||
+        lowerMsg.contains('canteen') ||
+        lowerMsg.contains('transport')) {
+      if (lowerMsg.contains('lab') || lowerMsg.contains('laboratory'))
+        return '🔬 Advanced Labs: AI/ML Lab, IoT Lab, Robotics Lab, Chemistry/Physics Labs, Language Lab, Electronics Lab. 24/7 access.';
+      if (lowerMsg.contains('smart') && lowerMsg.contains('classroom'))
+        return '📱 Smart Classrooms: Projectors, Digital boards, Recording facility, Comfortable seating, AC classrooms.';
+      if (lowerMsg.contains('cafeteria') ||
+          lowerMsg.contains('canteen') ||
+          lowerMsg.contains('food court'))
+        return '🍕 Multi-cuisine Cafeteria: 5 food outlets. Healthy food options. Student-run cafe. Daily specials.';
+      if (lowerMsg.contains('transport') || lowerMsg.contains('bus'))
+        return '🚌 College Bus Service: 20+ buses covering city routes. AC buses. GPS tracking. Safe transport for day scholars.';
+      if (lowerMsg.contains('medical') ||
+          lowerMsg.contains('health') ||
+          lowerMsg.contains('clinic'))
+        return '🏥 Health Center: 24/7 medical facility. Resident doctor. Free checkups. Ambulance service. Health insurance available.';
+      if (lowerMsg.contains('bank') || lowerMsg.contains('atm'))
+        return '🏧 Bank & ATM: SBI, HDFC, ICICI banks on campus. ATM facility. Banking hours 10 AM - 4 PM.';
+      return '🏛️ Campus Facilities:\n• Smart classrooms\n• Advanced labs\n• Central library\n• Sports complex\n• Swimming pool\n• Gymnasium\n• Cafeteria\n• Medical center\n• Transport\n• Banking\nWorld-class infrastructure for holistic learning!';
+    }
+
+    // ==================== STUDENT LIFE QUERIES (15+) ====================
+    if (lowerMsg.contains('student life') ||
+        lowerMsg.contains('club') ||
+        lowerMsg.contains('activity') ||
+        lowerMsg.contains('festival') ||
+        lowerMsg.contains('event') ||
+        lowerMsg.contains('cultural') ||
+        lowerMsg.contains('annual day') ||
+        lowerMsg.contains('celebration') ||
+        lowerMsg.contains('hobby')) {
+      if (lowerMsg.contains('club') || lowerMsg.contains('society'))
+        return '🎯 Student Clubs: Coding Club, Robotics Club, Debate Society, Music Club, Dance Club, Photography Club, Entrepreneurship Cell, NSS, NCC.';
+      if (lowerMsg.contains('fest') ||
+          lowerMsg.contains('cultural') && lowerMsg.contains('fest'))
+        return '🎉 Annual Cultural Fest \'BEEDI Utsav\' in February. 5 days of fun, competitions, celebrity nights, DJ nights, food festivals.';
+      if (lowerMsg.contains('technical') && lowerMsg.contains('fest'))
+        return '🤖 Tech Fest \'Innovation 2026\' in March. Hackathons, coding competitions, robotics challenge, paper presentations, project expo. Prize pool ₹5L.';
+      if (lowerMsg.contains('calendar') ||
+          lowerMsg.contains('schedule') && lowerMsg.contains('event'))
+        return '📅 Upcoming Events: Tech Fest (Mar 15-20), Sports Meet (Dec 10-15), Cultural Fest (Feb 5-10), Annual Day (Apr 25).';
+      if (lowerMsg.contains('volunteer') ||
+          lowerMsg.contains('nss') ||
+          lowerMsg.contains('ncc'))
+        return '🤝 Volunteer Programs: NSS, NCC, Red Cross, Animal Welfare. Social service certificates. Leadership development.';
+      return '🎊 Student Life:\n• 25+ student clubs\n• Annual cultural fest\n• Technical symposium\n• Sports tournaments\n• Celebrity nights\n• Workshops & seminars\n• Industrial visits\n• Community service\nEvery day is a new adventure on campus!';
+    }
+
+    // ==================== PLACEMENT PREPARATION (10+) ====================
+    if (lowerMsg.contains('aptitude') ||
+        lowerMsg.contains('coding') ||
+        lowerMsg.contains('interview prep') ||
+        lowerMsg.contains('resume') ||
+        lowerMsg.contains('cv') ||
+        lowerMsg.contains('gd') ||
+        lowerMsg.contains('group discussion') ||
+        lowerMsg.contains('hr') ||
+        lowerMsg.contains('mock interview')) {
+      if (lowerMsg.contains('aptitude') || lowerMsg.contains('reasoning'))
+        return '📊 Aptitude Training: Quantitative aptitude, Logical reasoning, Verbal ability. Weekly mock tests. Expert trainers.';
+      if (lowerMsg.contains('coding') || lowerMsg.contains('programming'))
+        return '💻 Coding Practice: DSA mastery, Competitive programming, Hackathon training. LeetCode style platform. Daily challenges.';
+      if (lowerMsg.contains('resume') || lowerMsg.contains('cv'))
+        return '📄 Resume Workshop: Professional resume building, LinkedIn optimization, Portfolio creation. Expert reviews available.';
+      if (lowerMsg.contains('mock') ||
+          lowerMsg.contains('interview') && lowerMsg.contains('preparation'))
+        return '🎯 Mock Interviews: Technical, HR, Case study interviews. Real-time feedback. Industry experts panel.';
+      if (lowerMsg.contains('gd') || lowerMsg.contains('group discussion'))
+        return '💬 Group Discussion Practice: Current affairs, Business topics, Technology trends. Weekly sessions. Tips & tricks.';
+      return '📚 Placement Preparation:\n• Aptitude training\n• Coding practice\n• Resume building\n• Mock interviews\n• GD practice\n• Soft skills\n• Communication\n• LinkedIn profile\n100% placement assistance guaranteed!';
+    }
+
+    // ==================== GENERAL QUERIES (10+) ====================
+    if (lowerMsg.contains('hello') ||
+        lowerMsg.contains('hi') ||
+        lowerMsg.contains('hey') ||
+        lowerMsg.contains('greetings') ||
+        lowerMsg.contains('namaste')) {
+      return '👋 Hello! Welcome to BEEDI College Assistant. I\'m here to help with:\n• Admissions & Courses\n• Fees & Scholarships\n• Placements & Jobs\n• Hostel & Facilities\n• Events & Activities\n• Any other questions!\nHow can I assist you today? 😊';
+    }
+
+    if (lowerMsg.contains('thank') ||
+        lowerMsg.contains('thanks') ||
+        lowerMsg.contains('grateful')) {
+      return '🙏 You\'re welcome! Happy to help. Feel free to ask if you need anything else. Have a great day! 🎓';
+    }
+
+    if (lowerMsg.contains('help') ||
+        lowerMsg.contains('support') ||
+        lowerMsg.contains('assist')) {
+      return '🆘 Help Center:\n• Academic helpline: +91-80001-23456\n• Admission office: +91-80001-23457\n• Hostel warden: +91-80001-23458\n• Email: help@beeedicollege.ac.in\n• Live chat: Available 9 AM - 9 PM\nWhat specific help do you need?';
+    }
+
+    if (lowerMsg.contains('contact') ||
+        lowerMsg.contains('phone') ||
+        lowerMsg.contains('email') ||
+        lowerMsg.contains('reach') ||
+        lowerMsg.contains('call')) {
+      return '📞 Contact Us:\n• Phone: +91-80001-23456\n• Email: info@beeedicollege.ac.in\n• Admissions: admissions@beeedicollege.ac.in\n• Website: www.beeedicollege.ac.in\n• Office hours: Mon-Sat, 9 AM - 5 PM';
+    }
+
+    if (lowerMsg.contains('location') ||
+        lowerMsg.contains('address') ||
+        lowerMsg.contains('directions') ||
+        lowerMsg.contains('reach') && lowerMsg.contains('campus')) {
+      return '📍 Address: BEEDI College, NH-48, Sector 62, Noida, Uttar Pradesh - 201301. Nearest metro: Noida Electronic City (5 min). Bus stop: Just outside campus.';
+    }
+
+    if (lowerMsg.contains('holiday') ||
+        lowerMsg.contains('vacation') ||
+        lowerMsg.contains('break')) {
+      return '📅 Academic Calendar 2026:\n• Summer Break: May 15 - July 10\n• Winter Break: Dec 25 - Jan 5\n• Diwali Break: Nov 5-10\n• Holi Break: Mar 12-15\nCheck website for exact dates.';
+    }
+
+    if (lowerMsg.contains('exam') ||
+        lowerMsg.contains('semester') ||
+        lowerMsg.contains('result') ||
+        lowerMsg.contains('marks') ||
+        lowerMsg.contains('grade')) {
+      if (lowerMsg.contains('result') || lowerMsg.contains('marks'))
+        return '📊 Results declared on student portal. Login with your ID. Revaluation available within 15 days.';
+      if (lowerMsg.contains('exam') &&
+          (lowerMsg.contains('schedule') || lowerMsg.contains('date')))
+        return '📅 Exam Schedule: Mid-sem exams Oct 15-25, End-sem exams Dec 1-15. Download from portal.';
+      return '📖 Examination System:\n• Two semesters/year\n• Internal assessment 40%\n• Semester exam 60%\n• Regular exams in Dec & May\n• Supplementary exams in June\nNeed more details about exams?';
+    }
+
+    // ==================== SMART RESPONSES (5+) ====================
+    if (lowerMsg.contains('weather') ||
+        lowerMsg.contains('temperature') ||
+        lowerMsg.contains('climate')) {
+      return '☀️ Current weather at campus: Pleasant, 24°C. Check weather app for real-time updates. Campus is beautiful in all seasons!';
+    }
+
+    if (lowerMsg.contains('time') ||
+        lowerMsg.contains('clock') ||
+        lowerMsg.contains('schedule')) {
+      return '⏰ Current campus time: ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}. Regular schedule: Classes 9 AM - 5 PM. Library 8 AM - 10 PM.';
+    }
+
+    if (lowerMsg.contains('joke') ||
+        lowerMsg.contains('funny') ||
+        lowerMsg.contains('laugh')) {
+      return '😄 Here\'s a college joke: Why did the student bring a ladder to college? Because they wanted to go to high school! 😂 Want another one?';
+    }
+
+    // ==================== DEFAULT RESPONSE ====================
+    return '🤖 Great question! For detailed info about "$msg", please contact our helpline: +91-80001-23456 or email info@beeedicollege.ac.in. You can also visit our website or check the student portal. I\'m here to help with admissions, courses, fees, placements, hostels, scholarships, sports, events, and more! 📞';
   }
-  
-  // Expanded search items (200+ items)
-  final allItems = [
-    // Academic Programs (15+)
-    'Academic Programs',
-    'B.Tech Computer Science',
-    'B.Tech Artificial Intelligence',
-    'B.Tech Data Science',
-    'B.Tech Cloud Computing',
-    'B.Tech Cybersecurity',
-    'B.Tech Electronics',
-    'B.Tech Mechanical',
-    'B.Tech Civil',
-    'MBA Marketing',
-    'MBA Finance',
-    'MBA Human Resources',
-    'MBA Business Analytics',
-    'MBA Operations',
-    'MCA Program',
-    'B.Sc Computer Science',
-    'B.Sc Data Science',
-    'B.Sc Biotechnology',
-    'B.Com Accountancy',
-    'PhD Programs',
-    
-    // Admission (10+)
-    'Admission 2026-2027',
-    'Admission Process',
-    'Application Form',
-    'Entrance Exam',
-    'Cutoff Marks',
-    'Direct Admission',
-    'Lateral Entry',
-    'Documents Required',
-    'Admission Helpline',
-    'Last Date to Apply',
-    
-    // Scholarships (15+)
-    'Scholarships',
-    'Merit Scholarship',
-    'SC/ST Scholarship',
-    'OBC Scholarship',
-    'Girls Scholarship',
-    'Sports Scholarship',
-    'Research Grant',
-    'Minority Scholarship',
-    'EWS Scholarship',
-    'Defense Scholarship',
-    'Single Girl Child',
-    'North East Scholarship',
-    'Fee Waiver',
-    'Financial Aid',
-    'Education Loan',
-    
-    // Placements (15+)
-    'Placement Cell',
-    'Placement Statistics',
-    'Highest Package',
-    'Average Package',
-    'Top Recruiters',
-    'Google Recruitment',
-    'Amazon Jobs',
-    'Microsoft Careers',
-    'Internship Opportunities',
-    'Campus Drive Schedule',
-    'Mock Interviews',
-    'Resume Building',
-    'Aptitude Training',
-    'Coding Practice',
-    'Soft Skills Training',
-    
-    // Campus Facilities (20+)
-    'Campus Map',
-    'Library',
-    'Digital Library',
-    'Research Lab',
-    'AI Lab',
-    'Robotics Lab',
-    'IoT Lab',
-    'Smart Classrooms',
-    'Auditorium',
-    'Seminar Halls',
-    'Hostel',
-    'Boys Hostel',
-    'Girls Hostel',
-    'Mess & Cafeteria',
-    'Gymnasium',
-    'Swimming Pool',
-    'Sports Complex',
-    'Medical Center',
-    'Bank & ATM',
-    'Transport Bus',
-    'Parking Area',
-    
-    // Student Life (20+)
-    'Student Clubs',
-    'Coding Club',
-    'Robotics Club',
-    'Music Club',
-    'Dance Club',
-    'Photography Club',
-    'Entrepreneurship Cell',
-    'NSS',
-    'NCC',
-    'Cultural Fest',
-    'Tech Fest',
-    'Sports Meet',
-    'Annual Day',
-    'Workshops',
-    'Seminars',
-    'Guest Lectures',
-    'Industrial Visits',
-    'Alumni Network',
-    'Student Council',
-    'College Events',
-    'Hackathons',
-    
-    // Tools & Resources (20+)
-    'Timetable',
-    'Attendance Tracker',
-    'Grade Calculator',
-    'CGPA Predictor',
-    'Study Timer',
-    'Job Board',
-    'KYP Quiz',
-    'E-Learning Portal',
-    'Online Courses',
-    'Study Material',
-    'Previous Papers',
-    'Question Bank',
-    'Lab Manuals',
-    'Project Guidelines',
-    'Internship Portal',
-    'Research Papers',
-    'Conference Alerts',
-    'Competition Updates',
-    'Scholarship Alert',
-    'Exam Schedule',
-    'Result Portal',
-    
-    // Important Contacts (15+)
-    'Faculty Portal',
-    'Faculty Directory',
-    'HOD Contact',
-    'Dean Office',
-    'Admission Office',
-    'Exam Cell',
-    'Placement Office',
-    'Hostel Warden',
-    'Medical Officer',
-    'Sports Director',
-    'Library Staff',
-    'Accounts Office',
-    'Transport Office',
-    'Security Office',
-    'Student Grievance',
-    
-    // Rules & Regulations (10+)
-    'Attendance Policy',
-    'Exam Rules',
-    'Hostel Rules',
-    'Library Rules',
-    'Dress Code',
-    'Ragging Policy',
-    'Anti-Ragging',
-    'Discipline Committee',
-    'Student Code of Conduct',
-    
-    // Additional Services (15+)
-    'Virtual Tour',
-    'College Gallery',
-    'News & Updates',
-    'Notifications',
-    'Holiday List',
-    'Academic Calendar',
-    'Fee Structure',
-    'Payment Portal',
-    'Online Learning',
-    'Career Counseling',
-    'Mental Health Support',
-    'Grievance Redressal',
-    'Student Feedback',
-    'Alumni Registration',
-    'Parent Portal',
-    
-    // FAQs (20+)
-    'How to Apply',
-    'Admission Requirements',
-    'Fee Payment Methods',
-    'Hostel Application',
-    'Scholarship Application',
-    'Placement Process',
-    'Internship Process',
-    'Exam Registration',
-    'Backlog Rules',
-    'Certificate Process',
-    'Transcript Request',
-    'Bonafide Certificate',
-    'Transfer Certificate',
-    'Migration Certificate',
-    'ID Card Process',
-    'Library Card',
-    'Bus Pass Application',
-    'Gym Registration',
-    'Sports Registration',
-    'Club Membership',
-  ];
-  
-  setState(() {
-    _searchResults = allItems
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-        .take(5)
-        .toList();
-  });
-}
+
+  void _performSearch(String query) {
+    if (query.isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
+
+    // Expanded search items (200+ items)
+    final allItems = [
+      // Academic Programs (15+)
+      'Academic Programs',
+      'B.Tech Computer Science',
+      'B.Tech Artificial Intelligence',
+      'B.Tech Data Science',
+      'B.Tech Cloud Computing',
+      'B.Tech Cybersecurity',
+      'B.Tech Electronics',
+      'B.Tech Mechanical',
+      'B.Tech Civil',
+      'MBA Marketing',
+      'MBA Finance',
+      'MBA Human Resources',
+      'MBA Business Analytics',
+      'MBA Operations',
+      'MCA Program',
+      'B.Sc Computer Science',
+      'B.Sc Data Science',
+      'B.Sc Biotechnology',
+      'B.Com Accountancy',
+      'PhD Programs',
+
+      // Admission (10+)
+      'Admission 2026-2027',
+      'Admission Process',
+      'Application Form',
+      'Entrance Exam',
+      'Cutoff Marks',
+      'Direct Admission',
+      'Lateral Entry',
+      'Documents Required',
+      'Admission Helpline',
+      'Last Date to Apply',
+
+      // Scholarships (15+)
+      'Scholarships',
+      'Merit Scholarship',
+      'SC/ST Scholarship',
+      'OBC Scholarship',
+      'Girls Scholarship',
+      'Sports Scholarship',
+      'Research Grant',
+      'Minority Scholarship',
+      'EWS Scholarship',
+      'Defense Scholarship',
+      'Single Girl Child',
+      'North East Scholarship',
+      'Fee Waiver',
+      'Financial Aid',
+      'Education Loan',
+
+      // Placements (15+)
+      'Placement Cell',
+      'Placement Statistics',
+      'Highest Package',
+      'Average Package',
+      'Top Recruiters',
+      'Google Recruitment',
+      'Amazon Jobs',
+      'Microsoft Careers',
+      'Internship Opportunities',
+      'Campus Drive Schedule',
+      'Mock Interviews',
+      'Resume Building',
+      'Aptitude Training',
+      'Coding Practice',
+      'Soft Skills Training',
+
+      // Campus Facilities (20+)
+      'Campus Map',
+      'Library',
+      'Digital Library',
+      'Research Lab',
+      'AI Lab',
+      'Robotics Lab',
+      'IoT Lab',
+      'Smart Classrooms',
+      'Auditorium',
+      'Seminar Halls',
+      'Hostel',
+      'Boys Hostel',
+      'Girls Hostel',
+      'Mess & Cafeteria',
+      'Gymnasium',
+      'Swimming Pool',
+      'Sports Complex',
+      'Medical Center',
+      'Bank & ATM',
+      'Transport Bus',
+      'Parking Area',
+
+      // Student Life (20+)
+      'Student Clubs',
+      'Coding Club',
+      'Robotics Club',
+      'Music Club',
+      'Dance Club',
+      'Photography Club',
+      'Entrepreneurship Cell',
+      'NSS',
+      'NCC',
+      'Cultural Fest',
+      'Tech Fest',
+      'Sports Meet',
+      'Annual Day',
+      'Workshops',
+      'Seminars',
+      'Guest Lectures',
+      'Industrial Visits',
+      'Alumni Network',
+      'Student Council',
+      'College Events',
+      'Hackathons',
+
+      // Tools & Resources (20+)
+      'Timetable',
+      'Attendance Tracker',
+      'Grade Calculator',
+      'CGPA Predictor',
+      'Study Timer',
+      'Job Board',
+      'KYP Quiz',
+      'E-Learning Portal',
+      'Online Courses',
+      'Study Material',
+      'Previous Papers',
+      'Question Bank',
+      'Lab Manuals',
+      'Project Guidelines',
+      'Internship Portal',
+      'Research Papers',
+      'Conference Alerts',
+      'Competition Updates',
+      'Scholarship Alert',
+      'Exam Schedule',
+      'Result Portal',
+
+      // Important Contacts (15+)
+      'Faculty Portal',
+      'Faculty Directory',
+      'HOD Contact',
+      'Dean Office',
+      'Admission Office',
+      'Exam Cell',
+      'Placement Office',
+      'Hostel Warden',
+      'Medical Officer',
+      'Sports Director',
+      'Library Staff',
+      'Accounts Office',
+      'Transport Office',
+      'Security Office',
+      'Student Grievance',
+
+      // Rules & Regulations (10+)
+      'Attendance Policy',
+      'Exam Rules',
+      'Hostel Rules',
+      'Library Rules',
+      'Dress Code',
+      'Ragging Policy',
+      'Anti-Ragging',
+      'Discipline Committee',
+      'Student Code of Conduct',
+
+      // Additional Services (15+)
+      'Virtual Tour',
+      'College Gallery',
+      'News & Updates',
+      'Notifications',
+      'Holiday List',
+      'Academic Calendar',
+      'Fee Structure',
+      'Payment Portal',
+      'Online Learning',
+      'Career Counseling',
+      'Mental Health Support',
+      'Grievance Redressal',
+      'Student Feedback',
+      'Alumni Registration',
+      'Parent Portal',
+
+      // FAQs (20+)
+      'How to Apply',
+      'Admission Requirements',
+      'Fee Payment Methods',
+      'Hostel Application',
+      'Scholarship Application',
+      'Placement Process',
+      'Internship Process',
+      'Exam Registration',
+      'Backlog Rules',
+      'Certificate Process',
+      'Transcript Request',
+      'Bonafide Certificate',
+      'Transfer Certificate',
+      'Migration Certificate',
+      'ID Card Process',
+      'Library Card',
+      'Bus Pass Application',
+      'Gym Registration',
+      'Sports Registration',
+      'Club Membership',
+    ];
+
+    setState(() {
+      _searchResults = allItems
+          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+          .take(5)
+          .toList();
+    });
+  }
 
   Color get _bg => _isDarkMode ? AC.darkBg : AC.bg;
   Color get _surface => _isDarkMode ? AC.darkSurface : AC.surface;
@@ -7230,46 +7356,6 @@ class _StoreBadge extends StatelessWidget {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ════════════════════════════════════════════════════════════
 //  FOOTER
 // ════════════════════════════════════════════════════════════
@@ -7401,26 +7487,6 @@ class _SocialBtn extends StatelessWidget {
     child: Icon(icon, color: color, size: 17),
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ════════════════════════════════════════════════════════════
 //  CUSTOM DRAWER (UPDATED WITH DARK MODE)
@@ -7749,217 +7815,6 @@ class StudentEntryScreen extends StatelessWidget {
   Widget build(BuildContext context) =>
       const Scaffold(backgroundColor: AC.bg, body: StudentTestScreen());
 }
-
-// ════════════════════════════════════════════════════════════
-//  NEW DESTINATION SCREENS
-// ════════════════════════════════════════════════════════════
-
-// class JobBoardScreen extends StatelessWidget {
-//   const JobBoardScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Job Board', const Color(0xFF1E88E5)),
-//     body: _detailBody(
-//       '💼',
-//       'Campus Placement Jobs',
-//       'Latest job openings from 250+ companies visiting BEEDI College.',
-//       const Color(0xFF1E88E5),
-//       [
-//         'Google Software Engineer L3 – ₹45 LPA',
-//         'Amazon AWS Cloud Architect – ₹38 LPA',
-//         'Microsoft Data Scientist – ₹35 LPA',
-//         'Paytm ML Engineer Intern – ₹50K/month',
-//         'Infosys Systems Engineer – ₹6.5 LPA',
-//         'TCS Digital – ₹7.5 LPA',
-//       ],
-//     ),
-//   );
-// }
-
-// class CampusMapScreen extends StatelessWidget {
-//   const CampusMapScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Campus Map', const Color(0xFF0D47A1)),
-//     body: _detailBody(
-//       '🗺️',
-//       'Interactive Campus Map',
-//       'Navigate BEEDI\'s 100-acre campus with our interactive map.',
-//       const Color(0xFF0D47A1),
-//       [
-//         'Main Academic Block – Central location',
-//         'AI Research Lab – Building B, 3rd Floor',
-//         'Olympic Pool & Sports Complex',
-//         'Girls & Boys Hostels – East Wing',
-//         'Central Library – 24/7 Open',
-//         'Innovation Hub & Incubator Center',
-//       ],
-//     ),
-//   );
-// }
-
-// class ScholarshipScreen extends StatelessWidget {
-//   const ScholarshipScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Scholarships', const Color(0xFF42A5F5)),
-//     body: _detailBody(
-//       '🏆',
-//       'Scholarship Finder',
-//       'Find and apply for scholarships worth crores every year.',
-//       const Color(0xFF42A5F5),
-//       [
-//         'Merit Scholarship – ₹75,000/year for top 10%',
-//         'SC/ST Fellowship – ₹50,000/year',
-//         'Sports Excellence – ₹40,000/year',
-//         'Research Grant – ₹2,00,000 for PhD',
-//         'Girls Empowerment – ₹30,000/year',
-//         'National Scholarship Portal integration',
-//       ],
-//     ),
-//   );
-// }
-
-// class StudyTimerScreen extends StatelessWidget {
-//   const StudyTimerScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Study Timer', const Color(0xFF1565C0)),
-//     body: _detailBody(
-//       '⏱️',
-//       'Pomodoro Study Timer',
-//       'Boost your productivity with focused study sessions.',
-//       const Color(0xFF1565C0),
-//       [
-//         '25-minute focused study sessions',
-//         '5-minute short breaks',
-//         'Long break after 4 Pomodoros',
-//         'Track daily study hours',
-//         'Weekly progress reports',
-//         'Streak tracking for motivation',
-//       ],
-//     ),
-//   );
-// }
-
-// class GradeCalculatorScreen extends StatelessWidget {
-//   const GradeCalculatorScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Grade Calculator', const Color(0xFF1E88E5)),
-//     body: _detailBody(
-//       '📊',
-//       'CGPA & Grade Calculator',
-//       'Calculate your CGPA, semester GPA and expected grades.',
-//       const Color(0xFF1E88E5),
-//       [
-//         'Semester-wise GPA calculator',
-//         'CGPA predictor based on targets',
-//         'Subject-wise grade tracker',
-//         'Grade improvement planner',
-//         'Percentage to CGPA converter',
-//         'Export results as PDF',
-//       ],
-//     ),
-//   );
-// }
-
-// class TimetableScreen extends StatelessWidget {
-//   const TimetableScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Timetable', const Color(0xFF0D47A1)),
-//     body: _detailBody(
-//       '📅',
-//       'Class Timetable',
-//       'Your personalized class schedule and exam timetable.',
-//       const Color(0xFF0D47A1),
-//       [
-//         'Mon: Mathematics 9AM, Physics 11AM',
-//         'Tue: DSA Lab 10AM, English 2PM',
-//         'Wed: OS 9AM, Networking 11AM',
-//         'Thu: Project Work 10AM-1PM',
-//         'Fri: Seminar/Guest Lecture',
-//         'Export and sync with Google Calendar',
-//       ],
-//     ),
-//   );
-//}
-
-// class AttendanceScreen extends StatelessWidget {
-//   const AttendanceScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Attendance', const Color(0xFF42A5F5)),
-//     body: _detailBody(
-//       '✅',
-//       'Attendance Tracker',
-//       'Monitor your attendance across all subjects in real-time.',
-//       const Color(0xFF42A5F5),
-//       [
-//         'Overall Attendance: 87%',
-//         'Mathematics: 92% (22/24 classes)',
-//         'Physics: 85% (17/20 classes)',
-//         'DSA: 88% (21/24 classes)',
-//         'Minimum required: 75% per subject',
-//         'Get alerts when attendance drops below threshold',
-//       ],
-//     ),
-//   );
-// }
-
-// class LeaderboardScreen extends StatelessWidget {
-//   const LeaderboardScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Leaderboard', const Color(0xFF1565C0)),
-//     body: _detailBody(
-//       '🏅',
-//       'BEEDI Student Leaderboard',
-//       'Top performers across academics, sports, and activities.',
-//       const Color(0xFF1565C0),
-//       [
-//         '🥇 Priya Sharma – CSE – 9,850 pts',
-//         '🥈 Arjun Mehta – MBA – 9,720 pts',
-//         '🥉 Sneha Roy – Physics – 9,650 pts',
-//         '⭐ Rohit Kumar – ECE – 9,520 pts',
-//         '⭐ Anjali Gupta – BBA – 9,410 pts',
-//         'Rankings updated weekly based on academics + activities',
-//       ],
-//     ),
-//   );
-// }
-
-// class AlumniSpotlightScreen extends StatelessWidget {
-//   const AlumniSpotlightScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//     backgroundColor: AC.bg,
-//     appBar: _detailAppBar('Alumni Spotlight', const Color(0xFF1E88E5)),
-//     body: _detailBody(
-//       '🌟',
-//       'Our Distinguished Alumni',
-//       'BEEDI alumni are making waves globally across all fields.',
-//       const Color(0xFF1E88E5),
-//       [
-//         'Dr. Amit Verma – CTO, Zomato',
-//         'Kavya Singh – IAS Officer, Bihar Cadre',
-//         'Rahul Jha – NASA Researcher, USA',
-//         'Meera Pandey – Forbes 30 Under 30',
-//         'Sanjay Sinha – Founder, EduTech Unicorn',
-//         'Connect via Alumni Portal for mentorship',
-//       ],
-//     ),
-//   );
-// }
 
 // ════════════════════════════════════════════════════════════
 //  DETAIL APP BAR & BODY HELPERS

@@ -1,8 +1,11 @@
+// ignore_for_file: unused_field, unused_local_variable, deprecated_member_use, prefer_collection_literals, non_constant_identifier_names
+
 // ============================================================
-// BEEDI COLLEGE ANONYMOUS CHAT SYSTEM — UPGRADED v2.0
+// BEEDI COLLEGE ANONYMOUS CHAT SYSTEM — UPGRADED v3.0
 // Single-file Flutter App | Firebase Firestore + Auth
 // Theme: White + Green + Blue | Glassmorphism | Premium UI
 // PIN Security System | Admin Panel | Advanced Features
+// Profile System | Hidden PINs | Secure Identity
 // ============================================================
 // SETUP INSTRUCTIONS:
 // 1. Add to pubspec.yaml:
@@ -46,9 +49,6 @@ import 'package:crypto/crypto.dart';
 // ============================================================
 
 class _SecurityConfig {
-  // Admin secret passcode (hidden — never expose to students)
-  static const String _adminPinHash =
-      'a3b6c9d2e5f8a1b4c7d0e3f6a9b2c5d8e1f4a7b0c3d6e9f2a5b8c1d4e7f0a3b6';
   static const String adminPin = 'ADMIN2026';
   static const String adminEmail = 'admin@beedicollege.edu';
   static const String adminPassword = 'BeediAdmin@2026#Secure';
@@ -63,7 +63,8 @@ class _SecurityConfig {
   static const String pinnedMessageCollection = 'pinned_messages';
   static const String adminAnnouncementField = 'admin_announcement';
 
-  static bool isValidAdminPin(String pin) => pin.trim().toUpperCase() == adminPin;
+  static bool isValidAdminPin(String pin) =>
+      pin.trim().toUpperCase() == adminPin;
 
   static String hashPin(String pin) {
     final bytes = utf8.encode(pin + '_beedi_salt_2026');
@@ -71,16 +72,25 @@ class _SecurityConfig {
   }
 
   static String sanitizeMessage(String msg) {
-    return msg
-        .trim()
+    final trimmed = msg.trim();
+    final cleaned = trimmed
         .replaceAll(RegExp(r'<[^>]*>'), '')
-        .replaceAll(RegExp(r'[^\x09\x0A\x0D\x20-\x7E\u00A0-\uFFFF]'), '')
-        .substring(0, msg.trim().length.clamp(0, maxMessageLength));
+        .replaceAll(
+            RegExp(r'[^\x09\x0A\x0D\x20-\x7E\u00A0-\uFFFF]'), '');
+    return cleaned.substring(0, cleaned.length.clamp(0, maxMessageLength));
   }
 
   static bool isValidMessage(String msg) {
     final s = msg.trim();
     return s.length >= minMessageLength && s.length <= maxMessageLength;
+  }
+
+  static String sanitizeNickname(String nick) {
+    final cleaned = nick
+        .trim()
+        .replaceAll(RegExp(r'[^\w\s\-_.]'), '')
+        .substring(0, nick.trim().length.clamp(0, 24));
+    return cleaned;
   }
 }
 
@@ -128,6 +138,12 @@ class AppColors {
     Color(0xFF00695C),
   ];
 
+  static const List<String> avatarEmojis = [
+    '🦁', '🐯', '🦊', '🐺', '🦝', '🐻', '🐼', '🐨',
+    '🦄', '🐲', '🦅', '🦋', '🐬', '🦈', '🦖', '🦕',
+    '🌟', '⚡', '🔥', '💎', '🎯', '🚀', '🌊', '🌙',
+  ];
+
   static LinearGradient get adminBubbleGradient => const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -169,8 +185,10 @@ class AppTheme {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            padding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 0,
           ),
         ),
@@ -227,6 +245,12 @@ class StudentModel {
   final DateTime createdAt;
   final DateTime? pinExpiry;
   final bool pinActive;
+  // Profile fields — stored separately/merged securely
+  final String? nickname;
+  final String? avatarEmoji;
+  final int? avatarColorIndex;
+  final String? aboutText;
+  final int messageCount;
 
   StudentModel({
     required this.uid,
@@ -239,6 +263,11 @@ class StudentModel {
     required this.createdAt,
     this.pinExpiry,
     this.pinActive = true,
+    this.nickname,
+    this.avatarEmoji,
+    this.avatarColorIndex,
+    this.aboutText,
+    this.messageCount = 0,
   });
 
   factory StudentModel.fromFirestore(DocumentSnapshot doc) {
@@ -251,9 +280,15 @@ class StudentModel {
       isAdmin: data['isAdmin'] ?? false,
       isBanned: data['isBanned'] ?? false,
       isMuted: data['isMuted'] ?? false,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       pinExpiry: (data['pinExpiry'] as Timestamp?)?.toDate(),
       pinActive: data['pinActive'] ?? true,
+      nickname: data['nickname'] as String?,
+      avatarEmoji: data['avatarEmoji'] as String?,
+      avatarColorIndex: data['avatarColorIndex'] as int?,
+      aboutText: data['aboutText'] as String?,
+      messageCount: data['messageCount'] as int? ?? 0,
     );
   }
 
@@ -266,12 +301,80 @@ class StudentModel {
         'isBanned': isBanned,
         'isMuted': isMuted,
         'createdAt': Timestamp.fromDate(createdAt),
-        'pinExpiry': pinExpiry != null ? Timestamp.fromDate(pinExpiry!) : null,
+        'pinExpiry':
+            pinExpiry != null ? Timestamp.fromDate(pinExpiry!) : null,
         'pinActive': pinActive,
+        'nickname': nickname,
+        'avatarEmoji': avatarEmoji,
+        'avatarColorIndex': avatarColorIndex,
+        'aboutText': aboutText,
+        'messageCount': messageCount,
       };
 
   bool get isPinExpired =>
       pinExpiry != null && DateTime.now().isAfter(pinExpiry!);
+
+  /// The display name shown in public chat — NEVER real name or PIN for students
+  String get displayNickname {
+    if (isAdmin) return 'BEEDI Admin';
+    if (nickname != null && nickname!.trim().isNotEmpty) return nickname!;
+    return _generateDefaultNickname(pin);
+  }
+
+  static String _generateDefaultNickname(String pin) {
+    const animals = [
+      'ShadowTiger', 'BlueFox', 'StormEagle', 'NightOwl', 'IronWolf',
+      'CrystalBear', 'RedPanda', 'SilverHawk', 'GoldLion', 'DarkShark',
+      'SwiftFalcon', 'CoolDolphin', 'LostDragon', 'BlazeCheetah', 'ArcticFox',
+    ];
+    int hash = 0;
+    for (final c in pin.codeUnits) {
+      hash = c + ((hash << 5) - hash);
+    }
+    return animals[hash.abs() % animals.length];
+  }
+
+  String get displayAvatar {
+    if (avatarEmoji != null && avatarEmoji!.isNotEmpty) return avatarEmoji!;
+    int hash = 0;
+    for (final c in pin.codeUnits) {
+      hash = c + ((hash << 5) - hash);
+    }
+    return AppColors.avatarEmojis[hash.abs() % AppColors.avatarEmojis.length];
+  }
+
+  Color get displayAvatarColor {
+    final idx = avatarColorIndex;
+    if (idx != null && idx >= 0 && idx < AppColors.avatarColors.length) {
+      return AppColors.avatarColors[idx];
+    }
+    return AvatarHelper.getAvatarColor(pin);
+  }
+
+  StudentModel copyWith({
+    String? nickname,
+    String? avatarEmoji,
+    int? avatarColorIndex,
+    String? aboutText,
+    int? messageCount,
+  }) =>
+      StudentModel(
+        uid: uid,
+        realName: realName,
+        pin: pin,
+        batch: batch,
+        isAdmin: isAdmin,
+        isBanned: isBanned,
+        isMuted: isMuted,
+        createdAt: createdAt,
+        pinExpiry: pinExpiry,
+        pinActive: pinActive,
+        nickname: nickname ?? this.nickname,
+        avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+        avatarColorIndex: avatarColorIndex ?? this.avatarColorIndex,
+        aboutText: aboutText ?? this.aboutText,
+        messageCount: messageCount ?? this.messageCount,
+      );
 }
 
 class PinModel {
@@ -300,7 +403,8 @@ class PinModel {
       batch: data['batch'] ?? '',
       isActive: data['isActive'] ?? true,
       isUsed: data['isUsed'] ?? false,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as Timestamp?)?.toDate(),
       createdBy: data['createdBy'] ?? 'ADMIN',
     );
@@ -312,7 +416,8 @@ class PinModel {
         'isActive': isActive,
         'isUsed': isUsed,
         'createdAt': Timestamp.fromDate(createdAt),
-        'expiresAt': expiresAt != null ? Timestamp.fromDate(expiresAt!) : null,
+        'expiresAt':
+            expiresAt != null ? Timestamp.fromDate(expiresAt!) : null,
         'createdBy': createdBy,
       };
 }
@@ -331,6 +436,11 @@ class ChatMessage {
   final List<String> seenBy;
   final bool isPinned;
 
+  // Additional fields stored per message for display
+  final String? senderNickname;
+  final String? senderAvatarEmoji;
+  final int? senderAvatarColorIndex;
+
   ChatMessage({
     required this.messageId,
     required this.senderPin,
@@ -344,6 +454,9 @@ class ChatMessage {
     this.isDeleted = false,
     this.seenBy = const [],
     this.isPinned = false,
+    this.senderNickname,
+    this.senderAvatarEmoji,
+    this.senderAvatarColorIndex,
   });
 
   factory ChatMessage.fromFirestore(DocumentSnapshot doc) {
@@ -353,7 +466,8 @@ class ChatMessage {
       senderPin: data['senderPin'] ?? '',
       senderType: data['senderType'] ?? 'student',
       message: data['message'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp:
+          (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       replyMessage: data['replyMessage'],
       replySenderPin: data['replySenderPin'],
       replyMessageId: data['replyMessageId'],
@@ -365,6 +479,9 @@ class ChatMessage {
       isDeleted: data['isDeleted'] ?? false,
       seenBy: List<String>.from(data['seenBy'] ?? []),
       isPinned: data['isPinned'] ?? false,
+      senderNickname: data['senderNickname'] as String?,
+      senderAvatarEmoji: data['senderAvatarEmoji'] as String?,
+      senderAvatarColorIndex: data['senderAvatarColorIndex'] as int?,
     );
   }
 
@@ -380,7 +497,39 @@ class ChatMessage {
         'isDeleted': isDeleted,
         'seenBy': seenBy,
         'isPinned': isPinned,
+        'senderNickname': senderNickname,
+        'senderAvatarEmoji': senderAvatarEmoji,
+        'senderAvatarColorIndex': senderAvatarColorIndex,
       };
+}
+
+// ============================================================
+// PROFILE CACHE — keeps nickname/avatar in memory
+// ============================================================
+
+class ProfileCache {
+  static final Map<String, StudentModel> _cache = {};
+
+  static void put(String pin, StudentModel s) => _cache[pin] = s;
+  static StudentModel? get(String pin) => _cache[pin];
+  static void clear() => _cache.clear();
+
+  static Future<StudentModel?> fetchByPin(String pin) async {
+    if (_cache.containsKey(pin)) return _cache[pin];
+    try {
+      final q = await FirebaseFirestore.instance
+          .collection('students')
+          .where('pin', isEqualTo: pin)
+          .limit(1)
+          .get();
+      if (q.docs.isEmpty) return null;
+      final s = StudentModel.fromFirestore(q.docs.first);
+      _cache[pin] = s;
+      return s;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 // ============================================================
@@ -413,7 +562,6 @@ class AuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Rate limiting
   final Map<String, List<DateTime>> _loginAttempts = {};
 
   bool _isRateLimited(String identifier) {
@@ -450,7 +598,8 @@ class AuthProvider extends ChangeNotifier {
             password: _SecurityConfig.adminPassword,
           );
         } on FirebaseAuthException catch (e) {
-          if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          if (e.code == 'user-not-found' ||
+              e.code == 'invalid-credential') {
             await _auth.createUserWithEmailAndPassword(
               email: _SecurityConfig.adminEmail,
               password: _SecurityConfig.adminPassword,
@@ -471,15 +620,19 @@ class AuthProvider extends ChangeNotifier {
             'isMuted': false,
             'pinActive': true,
             'createdAt': Timestamp.now(),
+            'messageCount': 0,
           });
         }
 
-        // Verify admin doc in Firestore
-        final adminDoc = await _db.collection('admin_config').doc('admin_meta').get();
+        final adminDoc = await _db
+            .collection('admin_config')
+            .doc('admin_meta')
+            .get();
         if (!adminDoc.exists) {
           await _db.collection('admin_config').doc('admin_meta').set({
             'adminUid': uid,
-            'adminPin': _SecurityConfig.hashPin(_SecurityConfig.adminPin),
+            'adminPin':
+                _SecurityConfig.hashPin(_SecurityConfig.adminPin),
             'createdAt': Timestamp.now(),
           });
         }
@@ -498,19 +651,10 @@ class AuthProvider extends ChangeNotifier {
         return true;
       }
 
-      // Student PIN login — validate against admin_pins collection first
-      final pinDoc = await _db.collection('admin_pins').doc(cleanPin).get();
-      bool pinIsValid = false;
+      // Student PIN login
+      final pinDoc =
+          await _db.collection('admin_pins').doc(cleanPin).get();
 
-      if (pinDoc.exists) {
-        final pinData = pinDoc.data() as Map<String, dynamic>;
-        final isActive = pinData['isActive'] ?? true;
-        final expiresAt = (pinData['expiresAt'] as Timestamp?)?.toDate();
-        final isExpired = expiresAt != null && DateTime.now().isAfter(expiresAt);
-        pinIsValid = isActive && !isExpired;
-      }
-
-      // Also check students collection for backward compatibility
       final query = await _db
           .collection('students')
           .where('pin', isEqualTo: cleanPin)
@@ -535,10 +679,6 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
 
-      if (data['isMuted'] == true) {
-        // Allow login but note muted status
-      }
-
       if (data['pinActive'] == false) {
         _error = 'Your PIN has been deactivated. Contact admin.';
         _isLoading = false;
@@ -546,7 +686,6 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
 
-      // Check PIN expiry
       final pinExpiry = (data['pinExpiry'] as Timestamp?)?.toDate();
       if (pinExpiry != null && DateTime.now().isAfter(pinExpiry)) {
         _error = 'Your PIN has expired. Contact admin for a new PIN.';
@@ -558,18 +697,16 @@ class AuthProvider extends ChangeNotifier {
       try {
         final email =
             '${cleanPin.toLowerCase()}${_SecurityConfig.studentEmailSuffix}';
-        final password = '${_SecurityConfig.studentPasswordPrefix}${cleanPin}';
+        final password =
+            '${_SecurityConfig.studentPasswordPrefix}$cleanPin';
         try {
           await _auth.signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
+              email: email, password: password);
         } on FirebaseAuthException catch (e) {
-          if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          if (e.code == 'user-not-found' ||
+              e.code == 'invalid-credential') {
             await _auth.createUserWithEmailAndPassword(
-              email: email,
-              password: password,
-            );
+                email: email, password: password);
           }
         }
       } catch (_) {
@@ -577,15 +714,19 @@ class AuthProvider extends ChangeNotifier {
       }
 
       _currentStudent = StudentModel.fromFirestore(studentData);
+      ProfileCache.put(cleanPin, _currentStudent!);
 
-      // Mark PIN as used in admin_pins
       if (pinDoc.exists) {
-        await _db.collection('admin_pins').doc(cleanPin).update({'isUsed': true});
+        await _db
+            .collection('admin_pins')
+            .doc(cleanPin)
+            .update({'isUsed': true});
       }
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('saved_pin', cleanPin);
-      await prefs.setString('saved_pin_hash', _SecurityConfig.hashPin(cleanPin));
+      await prefs.setString(
+          'saved_pin_hash', _SecurityConfig.hashPin(cleanPin));
 
       _isLoading = false;
       notifyListeners();
@@ -606,20 +747,16 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Students cannot self-generate PINs anymore in upgraded system
-      // This path only works if an admin-generated PIN is available
-      // For backward compatibility, this still works
       final pin = _generateSecurePin();
       await _ensurePinUnique(pin);
 
       final email =
           '${pin.toLowerCase()}${_SecurityConfig.studentEmailSuffix}';
-      final password = '${_SecurityConfig.studentPasswordPrefix}${pin}';
+      final password =
+          '${_SecurityConfig.studentPasswordPrefix}$pin';
 
       await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+          email: email, password: password);
 
       final uid = _auth.currentUser!.uid;
       final studentData = {
@@ -632,6 +769,7 @@ class AuthProvider extends ChangeNotifier {
         'isMuted': false,
         'pinActive': true,
         'createdAt': Timestamp.now(),
+        'messageCount': 0,
       };
 
       await _db.collection('students').doc(uid).set(studentData);
@@ -644,16 +782,50 @@ class AuthProvider extends ChangeNotifier {
         isAdmin: false,
         createdAt: DateTime.now(),
       );
+      ProfileCache.put(pin, _currentStudent!);
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('saved_pin', pin);
-      await prefs.setString('saved_pin_hash', _SecurityConfig.hashPin(pin));
+      await prefs.setString(
+          'saved_pin_hash', _SecurityConfig.hashPin(pin));
     } catch (e) {
       _error = e.toString();
     }
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Update profile fields (nickname, avatar) — students only, locked fields protected
+  Future<void> updateProfile({
+    required String nickname,
+    required String avatarEmoji,
+    required int avatarColorIndex,
+    String? aboutText,
+  }) async {
+    if (_currentStudent == null) return;
+    if (_currentStudent!.isAdmin) return; // Admin cannot change their profile this way
+
+    final cleanNick = _SecurityConfig.sanitizeNickname(nickname);
+    if (cleanNick.isEmpty) return;
+
+    try {
+      await _db.collection('students').doc(_currentStudent!.uid).update({
+        'nickname': cleanNick,
+        'avatarEmoji': avatarEmoji,
+        'avatarColorIndex': avatarColorIndex,
+        'aboutText': aboutText ?? '',
+      });
+
+      _currentStudent = _currentStudent!.copyWith(
+        nickname: cleanNick,
+        avatarEmoji: avatarEmoji,
+        avatarColorIndex: avatarColorIndex,
+        aboutText: aboutText ?? '',
+      );
+      ProfileCache.put(_currentStudent!.pin, _currentStudent!);
+      notifyListeners();
+    } catch (_) {}
   }
 
   String _generateSecurePin() {
@@ -686,7 +858,6 @@ class AuthProvider extends ChangeNotifier {
     final pin = prefs.getString('saved_pin');
     final hash = prefs.getString('saved_pin_hash');
     if (pin == null || hash == null) return null;
-    // Verify hash integrity
     if (_SecurityConfig.hashPin(pin) != hash) {
       await prefs.remove('saved_pin');
       await prefs.remove('saved_pin_hash');
@@ -699,6 +870,7 @@ class AuthProvider extends ChangeNotifier {
     await _auth.signOut();
     _currentStudent = null;
     _isAdminVerified = false;
+    ProfileCache.clear();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('saved_pin');
     await prefs.remove('saved_pin_hash');
@@ -733,7 +905,8 @@ class AdminPinProvider extends ChangeNotifier {
   }
 
   Future<bool> _isPinDuplicate(String pin) async {
-    final pinDoc = await _db.collection(_pinCollection).doc(pin).get();
+    final pinDoc =
+        await _db.collection(_pinCollection).doc(pin).get();
     if (pinDoc.exists) return true;
     final studentQuery = await _db
         .collection('students')
@@ -769,7 +942,7 @@ class AdminPinProvider extends ChangeNotifier {
     notifyListeners();
 
     final generatedList = <String>[];
-    final batch_ = _db.batch();
+    final batchWriter = _db.batch();
 
     try {
       for (int i = 0; i < count; i++) {
@@ -779,7 +952,7 @@ class AdminPinProvider extends ChangeNotifier {
           break;
         }
         final pinRef = _db.collection(_pinCollection).doc(pin);
-        batch_.set(pinRef, {
+        batchWriter.set(pinRef, {
           'pin': pin,
           'batch': batch,
           'isActive': true,
@@ -793,7 +966,7 @@ class AdminPinProvider extends ChangeNotifier {
         generatedList.add(pin);
       }
 
-      await batch_.commit();
+      await batchWriter.commit();
       await loadPins();
     } catch (e) {
       _error = 'Failed to generate PINs: ${e.toString()}';
@@ -805,7 +978,10 @@ class AdminPinProvider extends ChangeNotifier {
   }
 
   Future<void> togglePinActive(String pin, bool active) async {
-    await _db.collection(_pinCollection).doc(pin).update({'isActive': active});
+    await _db
+        .collection(_pinCollection)
+        .doc(pin)
+        .update({'isActive': active});
     await loadPins();
   }
 
@@ -823,7 +999,8 @@ class AdminPinProvider extends ChangeNotifier {
           .orderBy('createdAt', descending: true)
           .limit(100)
           .get();
-      _generatedPins = snap.docs.map((d) => PinModel.fromFirestore(d)).toList();
+      _generatedPins =
+          snap.docs.map((d) => PinModel.fromFirestore(d)).toList();
     } catch (e) {
       _error = e.toString();
     }
@@ -853,13 +1030,11 @@ class ChatProvider extends ChangeNotifier {
   StreamSubscription? _typingSubscription;
   Timer? _typingTimer;
   Map<String, bool> _typingUsers = {};
-  String _searchQuery = '';
   List<ChatMessage> _searchResults = [];
   bool _isSearching = false;
   ChatMessage? _pinnedMessage;
   String? _adminAnnouncement;
 
-  // Rate limiting
   final Map<String, List<DateTime>> _messageTimes = {};
 
   List<ChatMessage> get messages => _messages;
@@ -880,13 +1055,14 @@ class ChatProvider extends ChangeNotifier {
     _messageTimes[senderPin] ??= [];
     _messageTimes[senderPin]!
         .removeWhere((t) => now.difference(t).inSeconds > 60);
-    if (_messageTimes[senderPin]!.length >= _SecurityConfig.maxMessagesPerMinute) {
+    if (_messageTimes[senderPin]!.length >=
+        _SecurityConfig.maxMessagesPerMinute) {
       return true;
     }
-    // Enforce minimum gap
     if (_messageTimes[senderPin]!.isNotEmpty) {
       final last = _messageTimes[senderPin]!.last;
-      if (now.difference(last).inSeconds < _SecurityConfig.rateLimitSeconds) {
+      if (now.difference(last).inSeconds <
+          _SecurityConfig.rateLimitSeconds) {
         return true;
       }
     }
@@ -919,9 +1095,8 @@ class ChatProvider extends ChangeNotifier {
         .limit(pageSize)
         .snapshots()
         .listen((snapshot) {
-      _messages = snapshot.docs
-          .map((doc) => ChatMessage.fromFirestore(doc))
-          .toList();
+      _messages =
+          snapshot.docs.map((doc) => ChatMessage.fromFirestore(doc)).toList();
       if (snapshot.docs.isNotEmpty) {
         _lastDocument = snapshot.docs.last;
       }
@@ -953,8 +1128,9 @@ class ChatProvider extends ChangeNotifier {
           .where('isPinned', isEqualTo: true)
           .limit(1)
           .get();
-      _pinnedMessage =
-          snap.docs.isNotEmpty ? ChatMessage.fromFirestore(snap.docs.first) : null;
+      _pinnedMessage = snap.docs.isNotEmpty
+          ? ChatMessage.fromFirestore(snap.docs.first)
+          : null;
       notifyListeners();
     } catch (_) {}
   }
@@ -1004,6 +1180,9 @@ class ChatProvider extends ChangeNotifier {
     required String senderPin,
     required String senderType,
     bool isAdminSender = false,
+    String? senderNickname,
+    String? senderAvatarEmoji,
+    int? senderAvatarColorIndex,
   }) async {
     final sanitized = _SecurityConfig.sanitizeMessage(message);
 
@@ -1011,12 +1190,10 @@ class ChatProvider extends ChangeNotifier {
       return 'Message is empty or too long.';
     }
 
-    // Rate limit — admins bypass rate limiting
     if (!isAdminSender && _isRateLimited(senderPin)) {
       return 'You are sending messages too fast. Please slow down.';
     }
 
-    // Security: prevent fake admin messages from students
     if (!isAdminSender && senderType == 'admin') {
       return 'Unauthorized message type.';
     }
@@ -1033,6 +1210,10 @@ class ChatProvider extends ChangeNotifier {
       'isDeleted': false,
       'seenBy': [senderPin],
       'isPinned': false,
+      // Public profile fields stored with message for display — no real name/PIN
+      'senderNickname': senderNickname,
+      'senderAvatarEmoji': senderAvatarEmoji,
+      'senderAvatarColorIndex': senderAvatarColorIndex,
     };
 
     await _db
@@ -1048,6 +1229,19 @@ class ChatProvider extends ChangeNotifier {
       'roomId': _currentRoom,
     }, SetOptions(merge: true));
 
+    // Increment message count
+    try {
+      final q = await _db
+          .collection('students')
+          .where('pin', isEqualTo: senderPin)
+          .limit(1)
+          .get();
+      if (q.docs.isNotEmpty) {
+        await q.docs.first.reference
+            .update({'messageCount': FieldValue.increment(1)});
+      }
+    } catch (_) {}
+
     clearReply();
     cancelTyping(senderPin);
     return null;
@@ -1059,11 +1253,11 @@ class ChatProvider extends ChangeNotifier {
         .doc(_currentRoom)
         .collection('messages')
         .doc(messageId)
-        .update({'isDeleted': true, 'message': 'This message was deleted.'});
+        .update(
+            {'isDeleted': true, 'message': 'This message was deleted.'});
   }
 
   Future<void> pinMessage(String messageId, bool pin) async {
-    // Unpin existing if pinning new
     if (pin) {
       final existing = await _db
           .collection('anonymous_chats')
@@ -1139,8 +1333,8 @@ class ChatProvider extends ChangeNotifier {
     _db.collection('anonymous_chats').doc(_currentRoom).set({
       'typing': {senderPin: true},
     }, SetOptions(merge: true)).catchError((_) {});
-    _typingTimer =
-        Timer(const Duration(seconds: 3), () => cancelTyping(senderPin));
+    _typingTimer = Timer(
+        const Duration(seconds: 3), () => cancelTyping(senderPin));
   }
 
   void cancelTyping(String senderPin) {
@@ -1158,14 +1352,11 @@ class ChatProvider extends ChangeNotifier {
       return;
     }
     _isSearching = true;
-    _searchQuery = query.trim().toLowerCase();
+    final q = query.trim().toLowerCase();
     notifyListeners();
 
-    // Search in local messages first
     _searchResults = _messages
-        .where((m) =>
-            !m.isDeleted &&
-            m.message.toLowerCase().contains(_searchQuery))
+        .where((m) => !m.isDeleted && m.message.toLowerCase().contains(q))
         .toList();
     notifyListeners();
   }
@@ -1173,7 +1364,6 @@ class ChatProvider extends ChangeNotifier {
   void clearSearch() {
     _searchResults = [];
     _isSearching = false;
-    _searchQuery = '';
     notifyListeners();
   }
 
@@ -1193,7 +1383,6 @@ class ChatProvider extends ChangeNotifier {
     for (final doc in query.docs) {
       await doc.reference.update({'isBanned': true});
     }
-    // Also deactivate in admin_pins
     final pinDoc = await _db.collection('admin_pins').doc(pin).get();
     if (pinDoc.exists) {
       await _db
@@ -1214,13 +1403,17 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<StudentModel?> getStudentByPin(String pin) async {
+    final cached = ProfileCache.get(pin);
+    if (cached != null) return cached;
     final query = await _db
         .collection('students')
         .where('pin', isEqualTo: pin)
         .limit(1)
         .get();
     if (query.docs.isEmpty) return null;
-    return StudentModel.fromFirestore(query.docs.first);
+    final s = StudentModel.fromFirestore(query.docs.first);
+    ProfileCache.put(pin, s);
+    return s;
   }
 
   @override
@@ -1242,7 +1435,8 @@ class AvatarHelper {
     for (final char in pin.codeUnits) {
       hash = char + ((hash << 5) - hash);
     }
-    return AppColors.avatarColors[hash.abs() % AppColors.avatarColors.length];
+    return AppColors
+        .avatarColors[hash.abs() % AppColors.avatarColors.length];
   }
 
   static IconData getAvatarIcon(String pin) {
@@ -1267,7 +1461,8 @@ class AvatarHelper {
     return icons[hash.abs() % icons.length];
   }
 
-  static String getInitial(String pin) => pin.isNotEmpty ? pin[0] : '?';
+  static String getInitial(String pin) =>
+      pin.isNotEmpty ? pin[0] : '?';
 }
 
 class TimeHelper {
@@ -1285,7 +1480,8 @@ class TimeHelper {
       return 'Today';
     }
     final yesterday = now.subtract(const Duration(days: 1));
-    if (DateFormat.yMd().format(yesterday) == DateFormat.yMd().format(dt)) {
+    if (DateFormat.yMd().format(yesterday) ==
+        DateFormat.yMd().format(dt)) {
       return 'Yesterday';
     }
     return DateFormat('MMMM d, y').format(dt);
@@ -1439,13 +1635,16 @@ class _SplashScreenState extends State<SplashScreen>
         return;
       }
     }
-    if (mounted) Navigator.pushReplacement(context, _fadeRoute(const LoginScreen()));
+    if (mounted) {
+      Navigator.pushReplacement(context, _fadeRoute(const LoginScreen()));
+    }
   }
 
   void _navigate() {
     final auth = context.read<AuthProvider>();
     if (auth.isAdmin) {
-      Navigator.pushReplacement(context, _fadeRoute(const AdminDashboard()));
+      Navigator.pushReplacement(
+          context, _fadeRoute(const AdminDashboard()));
     } else {
       context.read<ChatProvider>().setRoom('general');
       Navigator.pushReplacement(context, _fadeRoute(const ChatScreen()));
@@ -1472,7 +1671,6 @@ class _SplashScreenState extends State<SplashScreen>
         decoration: BoxDecoration(gradient: AppColors.splashGradient),
         child: Stack(
           children: [
-            // Animated background orbs
             Positioned(
               top: -80,
               right: -80,
@@ -1718,7 +1916,11 @@ class _LoginScreenState extends State<LoginScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFE3F2FD), Color(0xFFE8F5E9), Color(0xFFE0F7FA)],
+            colors: [
+              Color(0xFFE3F2FD),
+              Color(0xFFE8F5E9),
+              Color(0xFFE0F7FA)
+            ],
           ),
         ),
         child: SafeArea(
@@ -1742,8 +1944,8 @@ class _LoginScreenState extends State<LoginScreen>
                           const SizedBox(height: 40),
                           _showRegister
                               ? _RegisterCard(
-                                  onBack: () =>
-                                      setState(() => _showRegister = false))
+                                  onBack: () => setState(
+                                      () => _showRegister = false))
                               : _buildLoginCard(),
                         ],
                       ),
@@ -1801,7 +2003,8 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         Text(
           'Anonymous Student Chat',
-          style: GoogleFonts.poppins(fontSize: 15, color: AppColors.textMed),
+          style:
+              GoogleFonts.poppins(fontSize: 15, color: AppColors.textMed),
         ),
       ],
     );
@@ -1911,14 +2114,18 @@ class _LoginScreenState extends State<LoginScreen>
                         icon: Icons.login,
                         onTap: _login,
                         gradient: const LinearGradient(
-                          colors: [AppColors.primary, Color(0xFF1976D2)],
+                          colors: [
+                            AppColors.primary,
+                            Color(0xFF1976D2)
+                          ],
                         ),
                       ),
               ),
               const SizedBox(height: 16),
               Center(
                 child: TextButton(
-                  onPressed: () => setState(() => _showRegister = true),
+                  onPressed: () =>
+                      setState(() => _showRegister = true),
                   child: Text(
                     "Don't have a PIN? Register",
                     style: GoogleFonts.poppins(
@@ -1959,8 +2166,8 @@ class _LoginScreenState extends State<LoginScreen>
           Expanded(
             child: Text(
               'Your identity stays anonymous. PIN is your only identifier in chat.',
-              style:
-                  GoogleFonts.poppins(fontSize: 12, color: AppColors.secondary),
+              style: GoogleFonts.poppins(
+                  fontSize: 12, color: AppColors.secondary),
             ),
           ),
         ],
@@ -2038,12 +2245,14 @@ class _ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppColors.error, size: 18),
+          const Icon(Icons.error_outline,
+              color: AppColors.error, size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: GoogleFonts.poppins(color: AppColors.error, fontSize: 13),
+              style: GoogleFonts.poppins(
+                  color: AppColors.error, fontSize: 13),
             ),
           ),
         ],
@@ -2136,8 +2345,8 @@ class _RegisterCardState extends State<_RegisterCard> {
                         labelText: 'Full Name',
                         prefixIcon: const Icon(Icons.person_outline,
                             color: AppColors.primary),
-                        labelStyle: GoogleFonts.poppins(
-                            color: AppColors.textMed),
+                        labelStyle:
+                            GoogleFonts.poppins(color: AppColors.textMed),
                       ),
                       validator: (v) =>
                           v == null || v.isEmpty ? 'Required' : null,
@@ -2149,8 +2358,8 @@ class _RegisterCardState extends State<_RegisterCard> {
                         labelText: 'Batch (e.g. 2024-25)',
                         prefixIcon: const Icon(Icons.group_outlined,
                             color: AppColors.secondary),
-                        labelStyle: GoogleFonts.poppins(
-                            color: AppColors.textMed),
+                        labelStyle:
+                            GoogleFonts.poppins(color: AppColors.textMed),
                       ),
                       validator: (v) =>
                           v == null || v.isEmpty ? 'Required' : null,
@@ -2171,7 +2380,8 @@ class _RegisterCardState extends State<_RegisterCard> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.secondary,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius:
+                                      BorderRadius.circular(16),
                                 ),
                               ),
                               child: Text(
@@ -2217,7 +2427,8 @@ class _RegisterCardState extends State<_RegisterCard> {
             style: GoogleFonts.poppins(color: AppColors.textMed)),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
                 colors: [AppColors.primary, AppColors.secondary]),
@@ -2246,12 +2457,14 @@ class _RegisterCardState extends State<_RegisterCard> {
           decoration: BoxDecoration(
             color: AppColors.warning.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+            border: Border.all(
+                color: AppColors.warning.withOpacity(0.3)),
           ),
           child: Text(
             '⚠️ Save this PIN carefully. You will need it to login. We cannot recover it.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.warning),
+            style: GoogleFonts.poppins(
+                fontSize: 12, color: AppColors.warning),
           ),
         ),
         const SizedBox(height: 20),
@@ -2272,6 +2485,793 @@ class _RegisterCardState extends State<_RegisterCard> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ============================================================
+// PROFILE SCREEN
+// ============================================================
+
+class ProfileScreen extends StatefulWidget {
+  final StudentModel student;
+  const ProfileScreen({super.key, required this.student});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animCtrl;
+  late Animation<double> _fadeAnim;
+  late Animation<Offset> _slideAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
+    _fadeAnim =
+        CurvedAnimation(parent: _animCtrl, curve: Curves.easeIn);
+    _slideAnim = Tween<Offset>(
+            begin: const Offset(0, 0.15), end: Offset.zero)
+        .animate(CurvedAnimation(
+            parent: _animCtrl, curve: Curves.easeOutCubic));
+    _animCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _animCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final student = context.watch<AuthProvider>().currentStudent ?? widget.student;
+    final isOwnProfile = context.read<AuthProvider>().currentStudent?.pin == student.pin;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: FadeTransition(
+        opacity: _fadeAnim,
+        child: SlideTransition(
+          position: _slideAnim,
+          child: CustomScrollView(
+            slivers: [
+              _buildProfileAppBar(student, isOwnProfile, context),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _buildStatsRow(student),
+                      const SizedBox(height: 20),
+                      _buildAboutCard(student),
+                      const SizedBox(height: 16),
+                      _buildInfoCard(student, isOwnProfile, context),
+                      if (isOwnProfile && !student.isAdmin) ...[
+                        const SizedBox(height: 16),
+                        _buildEditButton(student, context),
+                      ],
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  SliverAppBar _buildProfileAppBar(
+      StudentModel student, bool isOwnProfile, BuildContext context) {
+    final avatarColor = student.displayAvatarColor;
+    return SliverAppBar(
+      expandedHeight: 280,
+      pinned: true,
+      backgroundColor: avatarColor,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        if (isOwnProfile && !student.isAdmin)
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: () => _showEditDialog(student, context),
+          ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                avatarColor,
+                avatarColor.withOpacity(0.7),
+                AppColors.primaryDark,
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 60),
+              // Avatar circle with emoji
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.2),
+                  border: Border.all(
+                      color: Colors.white.withOpacity(0.5), width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 20,
+                      spreadRadius: 4,
+                    ),
+                  ],
+                ),
+                child: student.isAdmin
+                    ? ClipOval(
+                        child: Image.asset('assets/Logoes/Logo.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Center(
+                                  child: Text('🏛️',
+                                      style: const TextStyle(fontSize: 52)),
+                                )),
+                      )
+                    : Center(
+                        child: Text(
+                          student.displayAvatar,
+                          style: const TextStyle(fontSize: 56),
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 14),
+              // Nickname (public)
+              Text(
+                student.displayNickname,
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8)
+                  ],
+                ),
+              ),
+              if (student.isAdmin) ...[
+                const SizedBox(height: 4),
+                _AdminBadge(),
+              ],
+              const SizedBox(height: 6),
+              Text(
+                student.batch,
+                style: GoogleFonts.poppins(
+                    color: Colors.white70, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(StudentModel student) {
+    return Row(
+      children: [
+        Expanded(
+          child: _StatTile(
+            label: 'Messages',
+            value: '${student.messageCount}',
+            icon: Icons.message_outlined,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatTile(
+            label: 'Joined',
+            value: DateFormat('MMM y').format(student.createdAt),
+            icon: Icons.calendar_today_outlined,
+            color: AppColors.secondary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatTile(
+            label: 'Status',
+            value: student.isBanned ? '🚫 Banned' : '🟢 Active',
+            icon: Icons.verified_user_outlined,
+            color: student.isBanned ? AppColors.error : AppColors.success,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAboutCard(StudentModel student) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.person_outline,
+                    color: AppColors.primary, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'About',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            (student.aboutText != null && student.aboutText!.isNotEmpty)
+                ? student.aboutText!
+                : 'No bio yet. Tap edit to add one.',
+            style: GoogleFonts.poppins(
+              color: (student.aboutText != null &&
+                      student.aboutText!.isNotEmpty)
+                  ? AppColors.textDark
+                  : AppColors.textLight,
+              fontSize: 14,
+              height: 1.5,
+              fontStyle: (student.aboutText == null ||
+                      student.aboutText!.isEmpty)
+                  ? FontStyle.italic
+                  : FontStyle.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+      StudentModel student, bool isOwnProfile, BuildContext context) {
+    final isAdmin = context.read<AuthProvider>().isAdmin;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.info_outline,
+                    color: AppColors.secondary, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Profile Info',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Nickname always shown
+          _ProfileInfoRow(
+              label: 'Nickname', value: student.displayNickname),
+          _ProfileInfoRow(label: 'Batch', value: student.batch),
+          // Real name ONLY shown to admin, or own profile privately
+          if (isAdmin)
+            _ProfileInfoRow(
+                label: 'Real Name (Admin)',
+                value: student.realName,
+                isPrivate: true),
+          // PIN ONLY shown to admin
+          if (isAdmin)
+            _ProfileInfoRow(
+                label: 'PIN (Admin)',
+                value: student.pin,
+                isPrivate: true),
+          // Own profile: show that real name is locked
+          if (isOwnProfile && !isAdmin)
+            _ProfileInfoRow(
+                label: 'Real Name',
+                value: '🔒 Locked (contact admin)',
+                isPrivate: false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditButton(StudentModel student, BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: _GradientButton(
+        label: 'Edit Profile',
+        icon: Icons.edit_outlined,
+        onTap: () => _showEditDialog(student, context),
+        gradient: LinearGradient(
+          colors: [
+            student.displayAvatarColor,
+            AppColors.primary
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditDialog(StudentModel student, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _EditProfileSheet(student: student),
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              color: color,
+            ),
+          ),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+                fontSize: 10, color: AppColors.textLight),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileInfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isPrivate;
+
+  const _ProfileInfoRow({
+    required this.label,
+    required this.value,
+    this.isPrivate = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textMed,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isPrivate
+                    ? AppColors.primary.withOpacity(0.07)
+                    : AppColors.background,
+                borderRadius: BorderRadius.circular(8),
+                border: isPrivate
+                    ? Border.all(
+                        color: AppColors.primary.withOpacity(0.2))
+                    : null,
+              ),
+              child: Text(
+                value,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  color: isPrivate
+                      ? AppColors.primary
+                      : AppColors.textDark,
+                  fontWeight: isPrivate
+                      ? FontWeight.w600
+                      : FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// EDIT PROFILE SHEET
+// ============================================================
+
+class _EditProfileSheet extends StatefulWidget {
+  final StudentModel student;
+  const _EditProfileSheet({required this.student});
+
+  @override
+  State<_EditProfileSheet> createState() => _EditProfileSheetState();
+}
+
+class _EditProfileSheetState extends State<_EditProfileSheet> {
+  late TextEditingController _nickCtrl;
+  late TextEditingController _aboutCtrl;
+  late String _selectedEmoji;
+  late int _selectedColorIndex;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nickCtrl = TextEditingController(
+        text: widget.student.nickname ?? widget.student.displayNickname);
+    _aboutCtrl =
+        TextEditingController(text: widget.student.aboutText ?? '');
+    _selectedEmoji = widget.student.displayAvatar;
+    _selectedColorIndex =
+        widget.student.avatarColorIndex ?? 0;
+  }
+
+  @override
+  void dispose() {
+    _nickCtrl.dispose();
+    _aboutCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final nick = _nickCtrl.text.trim();
+    if (nick.isEmpty || nick.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Nickname must be at least 2 characters.')),
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    await context.read<AuthProvider>().updateProfile(
+          nickname: nick,
+          avatarEmoji: _selectedEmoji,
+          avatarColorIndex: _selectedColorIndex,
+          aboutText: _aboutCtrl.text.trim(),
+        );
+    setState(() => _saving = false);
+    if (mounted) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile updated!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, sc) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: ListView(
+          controller: sc,
+          padding: const EdgeInsets.all(24),
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Edit Profile',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Customize your nickname and avatar. Your real name and PIN cannot be changed.',
+              style: GoogleFonts.poppins(
+                  color: AppColors.textMed, fontSize: 12),
+            ),
+            const SizedBox(height: 24),
+
+            // Avatar preview
+            Center(
+              child: Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.avatarColors[_selectedColorIndex],
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors
+                          .avatarColors[_selectedColorIndex]
+                          .withOpacity(0.4),
+                      blurRadius: 16,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(_selectedEmoji,
+                      style: const TextStyle(fontSize: 46)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            _SectionTitle(title: 'Choose Avatar', icon: Icons.face),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: AppColors.avatarEmojis.map((e) {
+                final selected = e == _selectedEmoji;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedEmoji = e),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? AppColors.primary.withOpacity(0.1)
+                          : AppColors.background,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: selected
+                            ? AppColors.primary
+                            : AppColors.divider,
+                        width: selected ? 2 : 1,
+                      ),
+                    ),
+                    child: Center(
+                        child: Text(e,
+                            style: const TextStyle(fontSize: 28))),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+
+            _SectionTitle(
+                title: 'Choose Color', icon: Icons.color_lens_outlined),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate(
+                AppColors.avatarColors.length,
+                (i) {
+                  final selected = i == _selectedColorIndex;
+                  return GestureDetector(
+                    onTap: () =>
+                        setState(() => _selectedColorIndex = i),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.avatarColors[i],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selected
+                              ? Colors.white
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                        boxShadow: selected
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.avatarColors[i]
+                                      .withOpacity(0.5),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: selected
+                          ? const Icon(Icons.check,
+                              color: Colors.white, size: 18)
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            _SectionTitle(
+                title: 'Nickname', icon: Icons.badge_outlined),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _nickCtrl,
+              maxLength: 24,
+              decoration: InputDecoration(
+                hintText: 'e.g. ShadowTiger',
+                hintStyle: GoogleFonts.poppins(color: AppColors.textLight),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: AppColors.background,
+                counterText: '',
+              ),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+
+            _SectionTitle(title: 'About Me', icon: Icons.notes_outlined),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _aboutCtrl,
+              maxLines: 3,
+              maxLength: 200,
+              decoration: InputDecoration(
+                hintText: 'Write something about yourself...',
+                hintStyle: GoogleFonts.poppins(color: AppColors.textLight),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: AppColors.background,
+              ),
+              style: GoogleFonts.poppins(),
+            ),
+            const SizedBox(height: 24),
+
+            // Locked fields notice
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: AppColors.warning.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.lock_outline,
+                      color: AppColors.warning, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Real name, PIN, role, and batch are locked and can only be changed by admin.',
+                      style: GoogleFonts.poppins(
+                          fontSize: 12, color: AppColors.warning),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: _saving
+                  ? const Center(child: CircularProgressIndicator())
+                  : _GradientButton(
+                      label: 'Save Profile',
+                      icon: Icons.save_outlined,
+                      onTap: _save,
+                      gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.secondary]),
+                    ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -2349,11 +3349,15 @@ class _ChatScreenState extends State<ChatScreen>
 
     if (_messageCtrl.text.trim().isEmpty) return;
 
+    final student = auth.currentStudent!;
     final error = await chat.sendMessage(
       message: _messageCtrl.text,
-      senderPin: auth.currentStudent!.pin,
+      senderPin: student.pin,
       senderType: auth.isAdmin ? 'admin' : 'student',
       isAdminSender: auth.isAdmin,
+      senderNickname: student.displayNickname,
+      senderAvatarEmoji: student.displayAvatar,
+      senderAvatarColorIndex: student.avatarColorIndex,
     );
 
     if (error != null) {
@@ -2416,11 +3420,12 @@ class _ChatScreenState extends State<ChatScreen>
           if (_sendError != null)
             Container(
               color: AppColors.error.withOpacity(0.9),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber, color: Colors.white, size: 16),
+                  const Icon(Icons.warning_amber,
+                      color: Colors.white, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -2447,48 +3452,50 @@ class _ChatScreenState extends State<ChatScreen>
       elevation: 0,
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      title: Row(
-        children: [
-          _AnimatedAvatar(
-            pin: student.pin,
-            isAdmin: student.isAdmin,
-            size: 40,
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                student.isAdmin
-                    ? 'BEEDI Admin'
-                    : 'Anonymous (${student.pin})',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textDark,
+      title: GestureDetector(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ProfileScreen(student: student)),
+        ),
+        child: Row(
+          children: [
+            _NicknameAvatar(student: student, size: 40),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Show nickname in appbar, never real name or PIN
+                Text(
+                  student.displayNickname,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark,
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
+                Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: AppColors.success,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Online',
-                    style: GoogleFonts.poppins(
-                        fontSize: 11, color: AppColors.success),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                    const SizedBox(width: 4),
+                    Text(
+                      'Online',
+                      style: GoogleFonts.poppins(
+                          fontSize: 11, color: AppColors.success),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       actions: [
         IconButton(
@@ -2517,11 +3524,18 @@ class _ChatScreenState extends State<ChatScreen>
             ),
           ),
         PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, color: AppColors.textMed),
+          icon:
+              const Icon(Icons.more_vert, color: AppColors.textMed),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16)),
           onSelected: (val) async {
-            if (val == 'logout') {
+            if (val == 'profile') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ProfileScreen(student: student)),
+              );
+            } else if (val == 'logout') {
               final chat = context.read<ChatProvider>();
               chat.cancelTyping(student.pin);
               await context.read<AuthProvider>().logout();
@@ -2535,13 +3549,27 @@ class _ChatScreenState extends State<ChatScreen>
           },
           itemBuilder: (_) => [
             PopupMenuItem(
+              value: 'profile',
+              child: Row(
+                children: [
+                  const Icon(Icons.person_outline,
+                      color: AppColors.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Text('My Profile',
+                      style: GoogleFonts.poppins()),
+                ],
+              ),
+            ),
+            PopupMenuItem(
               value: 'logout',
               child: Row(
                 children: [
-                  const Icon(Icons.logout, color: AppColors.error, size: 18),
+                  const Icon(Icons.logout,
+                      color: AppColors.error, size: 18),
                   const SizedBox(width: 8),
                   Text('Logout',
-                      style: GoogleFonts.poppins(color: AppColors.error)),
+                      style: GoogleFonts.poppins(
+                          color: AppColors.error)),
                 ],
               ),
             ),
@@ -2564,15 +3592,16 @@ class _ChatScreenState extends State<ChatScreen>
         child: TextField(
           controller: _searchCtrl,
           autofocus: true,
-          onChanged: (q) => context.read<ChatProvider>().searchMessages(q),
+          onChanged: (q) =>
+              context.read<ChatProvider>().searchMessages(q),
           decoration: InputDecoration(
             hintText: 'Search messages...',
-            hintStyle: GoogleFonts.poppins(color: AppColors.textLight),
+            hintStyle:
+                GoogleFonts.poppins(color: AppColors.textLight),
             prefixIcon:
                 const Icon(Icons.search, color: AppColors.primary),
             suffixIcon: IconButton(
-              icon:
-                  const Icon(Icons.clear, color: AppColors.textMed),
+              icon: const Icon(Icons.clear, color: AppColors.textMed),
               onPressed: () {
                 _searchCtrl.clear();
                 context.read<ChatProvider>().clearSearch();
@@ -2646,7 +3675,8 @@ class _ChatScreenState extends State<ChatScreen>
           ),
           child: Row(
             children: [
-              const Icon(Icons.push_pin, color: AppColors.secondary, size: 16),
+              const Icon(Icons.push_pin,
+                  color: AppColors.secondary, size: 16),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -2675,7 +3705,8 @@ class _ChatScreenState extends State<ChatScreen>
             .toList();
         if (typingPins.isEmpty) return const SizedBox();
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           color: Colors.white,
           child: Row(
             children: [
@@ -2683,7 +3714,7 @@ class _ChatScreenState extends State<ChatScreen>
               const SizedBox(width: 8),
               Text(
                 typingPins.length == 1
-                    ? '${typingPins[0]} is typing...'
+                    ? 'Someone is typing...'
                     : '${typingPins.length} people are typing...',
                 style: GoogleFonts.poppins(
                     fontSize: 11, color: AppColors.textLight),
@@ -2715,8 +3746,8 @@ class _ChatScreenState extends State<ChatScreen>
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
               margin: const EdgeInsets.only(right: 8),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 gradient: isActive
                     ? const LinearGradient(
@@ -2809,7 +3840,6 @@ class _ChatScreenState extends State<ChatScreen>
   Widget _buildChatArea(StudentModel student) {
     return Consumer<ChatProvider>(
       builder: (_, chat, __) {
-        // Show search results
         if (chat.isSearching) {
           return _buildSearchResults(chat, student);
         }
@@ -2824,8 +3854,7 @@ class _ChatScreenState extends State<ChatScreen>
 
         return NotificationListener<ScrollNotification>(
           onNotification: (n) {
-            if (n.metrics.pixels >=
-                n.metrics.maxScrollExtent - 200) {
+            if (n.metrics.pixels >= n.metrics.maxScrollExtent - 200) {
               chat.loadMoreMessages();
             }
             return false;
@@ -2841,12 +3870,14 @@ class _ChatScreenState extends State<ChatScreen>
               ),
               padding: const EdgeInsets.only(
                   top: 16, bottom: 8, left: 12, right: 12),
-              itemCount: chat.messages.length + (chat.hasMore ? 1 : 0),
+              itemCount:
+                  chat.messages.length + (chat.hasMore ? 1 : 0),
               itemBuilder: (_, i) {
                 if (i == chat.messages.length) {
                   return const Padding(
                     padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                        child: CircularProgressIndicator()),
                   );
                 }
 
@@ -2867,18 +3898,18 @@ class _ChatScreenState extends State<ChatScreen>
                       onReply: () => chat.setReply(msg),
                       onReaction: (emoji) => chat.addReaction(
                           msg.messageId, emoji, student.pin),
-                      onDelete:
-                          context.read<AuthProvider>().isAdmin
-                              ? () => chat.deleteMessage(msg.messageId)
-                              : null,
+                      onDelete: context.read<AuthProvider>().isAdmin
+                          ? () => chat.deleteMessage(msg.messageId)
+                          : null,
                       onAdminIdentify:
                           context.read<AuthProvider>().isAdmin
                               ? () => _showIdentity(msg.senderPin)
                               : null,
-                      onPin: context.read<AuthProvider>().isAdmin
-                          ? () => chat.pinMessage(
-                              msg.messageId, !msg.isPinned)
-                          : null,
+                      onPin:
+                          context.read<AuthProvider>().isAdmin
+                              ? () => chat.pinMessage(
+                                  msg.messageId, !msg.isPinned)
+                              : null,
                     ),
                   ],
                 );
@@ -2896,7 +3927,8 @@ class _ChatScreenState extends State<ChatScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.search_off, size: 64, color: AppColors.textLight),
+            const Icon(Icons.search_off,
+                size: 64, color: AppColors.textLight),
             const SizedBox(height: 12),
             Text('No messages found',
                 style: GoogleFonts.poppins(
@@ -2938,8 +3970,7 @@ class _ChatScreenState extends State<ChatScreen>
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Center(
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
             color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
@@ -3052,8 +4083,8 @@ class _ChatScreenState extends State<ChatScreen>
                               focusedBorder: InputBorder.none,
                               filled: false,
                               counterText: '',
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 12),
                             ),
                             style: GoogleFonts.poppins(fontSize: 14),
                             enabled: !student.isMuted,
@@ -3095,12 +4126,16 @@ class _ChatScreenState extends State<ChatScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Replying to ${reply.senderPin}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
+                FutureBuilder<StudentModel?>(
+                  future: ProfileCache.fetchByPin(reply.senderPin),
+                  builder: (_, snap) => Text(
+                    // Show nickname in reply preview, not raw PIN
+                    'Replying to ${snap.data?.displayNickname ?? reply.senderPin}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
                 Text(
@@ -3114,7 +4149,8 @@ class _ChatScreenState extends State<ChatScreen>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, size: 18, color: AppColors.textMed),
+            icon: const Icon(Icons.close,
+                size: 18, color: AppColors.textMed),
             onPressed: chat.clearReply,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -3138,7 +4174,9 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   Future<void> _showIdentity(String pin) async {
-    final student = await context.read<ChatProvider>().getStudentByPin(pin);
+    // Admin-only: fetch full identity including real name, PIN
+    final student =
+        await context.read<ChatProvider>().getStudentByPin(pin);
     if (!mounted) return;
     showDialog(
       context: context,
@@ -3165,6 +4203,76 @@ class _ChatScreenState extends State<ChatScreen>
 }
 
 // ============================================================
+// NICKNAME AVATAR WIDGET — shows emoji + color, never PIN
+// ============================================================
+
+class _NicknameAvatar extends StatelessWidget {
+  final StudentModel student;
+  final double size;
+
+  const _NicknameAvatar({required this.student, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    if (student.isAdmin) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.adminGlow,
+              blurRadius: 12,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            'assets/Logoes/Logo.png',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.primary,
+              child: const Icon(Icons.school, color: Colors.white),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            student.displayAvatarColor,
+            student.displayAvatarColor.withOpacity(0.7)
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: student.displayAvatarColor.withOpacity(0.3),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          student.displayAvatar,
+          style: TextStyle(fontSize: size * 0.45),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
 // SUPPORTING CHAT WIDGETS
 // ============================================================
 
@@ -3172,11 +4280,17 @@ class _AnimatedAvatar extends StatelessWidget {
   final String pin;
   final bool isAdmin;
   final double size;
+  final String? nickname;
+  final String? avatarEmoji;
+  final int? avatarColorIndex;
 
   const _AnimatedAvatar({
     required this.pin,
     required this.isAdmin,
     required this.size,
+    this.nickname,
+    this.avatarEmoji,
+    this.avatarColorIndex,
   });
 
   @override
@@ -3207,8 +4321,28 @@ class _AnimatedAvatar extends StatelessWidget {
         ),
       );
     }
-    final color = AvatarHelper.getAvatarColor(pin);
-    final icon = AvatarHelper.getAvatarIcon(pin);
+
+    Color color;
+    if (avatarColorIndex != null &&
+        avatarColorIndex! >= 0 &&
+        avatarColorIndex! < AppColors.avatarColors.length) {
+      color = AppColors.avatarColors[avatarColorIndex!];
+    } else {
+      color = AvatarHelper.getAvatarColor(pin);
+    }
+
+    String emoji;
+    if (avatarEmoji != null && avatarEmoji!.isNotEmpty) {
+      emoji = avatarEmoji!;
+    } else {
+      int hash = 0;
+      for (final c in pin.codeUnits) {
+        hash = c + ((hash << 5) - hash);
+      }
+      emoji = AppColors.avatarEmojis[
+          hash.abs() % AppColors.avatarEmojis.length];
+    }
+
     return Container(
       width: size,
       height: size,
@@ -3220,10 +4354,13 @@ class _AnimatedAvatar extends StatelessWidget {
         ),
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.3), blurRadius: 6, spreadRadius: 1),
+          BoxShadow(
+              color: color.withOpacity(0.3), blurRadius: 6, spreadRadius: 1),
         ],
       ),
-      child: Icon(icon, color: Colors.white, size: size * 0.45),
+      child: Center(
+        child: Text(emoji, style: TextStyle(fontSize: size * 0.45)),
+      ),
     );
   }
 }
@@ -3315,8 +4452,9 @@ class _AnimatedLoadingStateState extends State<_AnimatedLoadingState>
         itemBuilder: (_, i) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
-            mainAxisAlignment:
-                i % 2 == 0 ? MainAxisAlignment.start : MainAxisAlignment.end,
+            mainAxisAlignment: i % 2 == 0
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end,
             children: [
               if (i % 2 == 0) ...[
                 Container(
@@ -3415,7 +4553,8 @@ class _ScrollToBottomButton extends StatefulWidget {
   const _ScrollToBottomButton({required this.onTap});
 
   @override
-  State<_ScrollToBottomButton> createState() => _ScrollToBottomButtonState();
+  State<_ScrollToBottomButton> createState() =>
+      _ScrollToBottomButtonState();
 }
 
 class _ScrollToBottomButtonState extends State<_ScrollToBottomButton>
@@ -3446,7 +4585,8 @@ class _ScrollToBottomButtonState extends State<_ScrollToBottomButton>
         onPressed: widget.onTap,
         backgroundColor: AppColors.primary,
         elevation: 4,
-        child: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+        child:
+            const Icon(Icons.keyboard_arrow_down, color: Colors.white),
       ),
     );
   }
@@ -3482,7 +4622,8 @@ class _EmojiPickerSheet extends StatelessWidget {
           const SizedBox(height: 16),
           Text('Quick Emojis',
               style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark)),
           const SizedBox(height: 16),
           Wrap(
             spacing: 12,
@@ -3498,7 +4639,8 @@ class _EmojiPickerSheet extends StatelessWidget {
                           color: AppColors.background,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(e, style: const TextStyle(fontSize: 28)),
+                        child:
+                            Text(e, style: const TextStyle(fontSize: 28)),
                       ),
                     ))
                 .toList(),
@@ -3560,15 +4702,38 @@ class _AdminIdentityDialog extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.visibility,
+                      size: 14, color: AppColors.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Admin view only — not visible to students',
+                    style: GoogleFonts.poppins(
+                        fontSize: 10, color: AppColors.primary),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             if (student == null)
               Text('Student not found.',
                   style: GoogleFonts.poppins(color: AppColors.textMed))
             else ...[
+              _infoRow('Nickname', student!.displayNickname),
               _infoRow('PIN', student!.pin),
-              _infoRow('Name', student!.realName),
+              _infoRow('Real Name', student!.realName),
               _infoRow('Batch', student!.batch),
-              _infoRow('Status', student!.isBanned ? '🚫 BANNED' : '✅ Active'),
+              _infoRow('Messages', '${student!.messageCount}'),
+              _infoRow(
+                  'Status', student!.isBanned ? '🚫 BANNED' : '✅ Active'),
               _infoRow('Muted', student!.isMuted ? 'Yes' : 'No'),
             ],
             const SizedBox(height: 20),
@@ -3580,7 +4745,8 @@ class _AdminIdentityDialog extends StatelessWidget {
                     onPressed: onBan,
                     icon: const Icon(Icons.block, size: 18),
                     label: Text('Ban Student',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                        style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.error,
                       shape: RoundedRectangleBorder(
@@ -3599,7 +4765,8 @@ class _AdminIdentityDialog extends StatelessWidget {
                   ),
                   label: Text(
                     student!.isMuted ? 'Unmute Student' : 'Mute Student',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600),
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.warning,
@@ -3616,7 +4783,8 @@ class _AdminIdentityDialog extends StatelessWidget {
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text('Close',
-                    style: GoogleFonts.poppins(color: AppColors.textMed)),
+                    style: GoogleFonts.poppins(
+                        color: AppColors.textMed)),
               ),
             ),
           ],
@@ -3680,7 +4848,6 @@ class _MessageBubbleState extends State<MessageBubble>
   late Animation<double> _scaleAnim;
   late Animation<Offset> _slideAnim;
   double _dragX = 0;
-  bool _isDragging = false;
 
   @override
   void initState() {
@@ -3689,11 +4856,15 @@ class _MessageBubbleState extends State<MessageBubble>
       vsync: this,
       duration: const Duration(milliseconds: 450),
     );
-    _scaleAnim = CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
+    _scaleAnim =
+        CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
     _slideAnim = Tween<Offset>(
-      begin: widget.isMe ? const Offset(0.25, 0) : const Offset(-0.25, 0),
+      begin: widget.isMe
+          ? const Offset(0.25, 0)
+          : const Offset(-0.25, 0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    ).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
     _ctrl.forward();
   }
 
@@ -3706,6 +4877,12 @@ class _MessageBubbleState extends State<MessageBubble>
   @override
   Widget build(BuildContext context) {
     final isAdminMsg = widget.message.senderType == 'admin';
+    final data = widget.message;
+
+    // Extract per-message profile data (stored at send time)
+    final msgNickname = data.senderNickname;
+    final msgEmoji = data.senderAvatarEmoji;
+    final msgColorIndex = data.senderAvatarColorIndex;
 
     return ScaleTransition(
       scale: _scaleAnim,
@@ -3717,16 +4894,12 @@ class _MessageBubbleState extends State<MessageBubble>
               setState(() {
                 _dragX = (d.globalPosition.dx - d.localPosition.dx)
                     .clamp(-60.0, 60.0);
-                _isDragging = true;
               });
             }
           },
           onHorizontalDragEnd: (d) {
             if (_dragX.abs() > 30) widget.onReply();
-            setState(() {
-              _dragX = 0;
-              _isDragging = false;
-            });
+            setState(() => _dragX = 0);
           },
           onLongPress: () => _showOptions(),
           child: AnimatedContainer(
@@ -3741,10 +4914,18 @@ class _MessageBubbleState extends State<MessageBubble>
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (!widget.isMe) ...[
-                    _buildAvatar(widget.message.senderPin, isAdminMsg),
+                    _AnimatedAvatar(
+                      pin: widget.message.senderPin,
+                      isAdmin: isAdminMsg,
+                      size: 34,
+                      avatarEmoji: msgEmoji,
+                      avatarColorIndex: msgColorIndex,
+                    ),
                     const SizedBox(width: 8),
                   ],
-                  Flexible(child: _buildBubble(isAdminMsg)),
+                  Flexible(
+                      child: _buildBubble(
+                          isAdminMsg, msgNickname, msgEmoji, msgColorIndex)),
                   if (widget.isMe) const SizedBox(width: 4),
                 ],
               ),
@@ -3755,11 +4936,8 @@ class _MessageBubbleState extends State<MessageBubble>
     );
   }
 
-  Widget _buildAvatar(String pin, bool isAdmin) {
-    return _AnimatedAvatar(pin: pin, isAdmin: isAdmin, size: 34);
-  }
-
-  Widget _buildBubble(bool isAdminMsg) {
+  Widget _buildBubble(bool isAdminMsg, String? msgNickname,
+      String? msgEmoji, int? msgColorIndex) {
     final msg = widget.message;
 
     if (msg.isDeleted) {
@@ -3782,6 +4960,15 @@ class _MessageBubbleState extends State<MessageBubble>
 
     final bool useWhiteText = isAdminMsg || widget.isMe;
 
+    // Display label: nickname or fallback, NEVER raw PIN for non-admin viewers
+    String displayLabel;
+    if (isAdminMsg) {
+      displayLabel = 'BEEDI Admin';
+    } else {
+      displayLabel = msgNickname ??
+          StudentModel._generateDefaultNickname(msg.senderPin);
+    }
+
     return Column(
       crossAxisAlignment: widget.isMe
           ? CrossAxisAlignment.end
@@ -3794,13 +4981,16 @@ class _MessageBubbleState extends State<MessageBubble>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isAdminMsg ? 'BEEDI Admin' : msg.senderPin,
+                  displayLabel,
                   style: GoogleFonts.poppins(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: isAdminMsg
                         ? AppColors.primary
-                        : AvatarHelper.getAvatarColor(msg.senderPin),
+                        : (msgColorIndex != null
+                            ? AppColors.avatarColors[msgColorIndex %
+                                AppColors.avatarColors.length]
+                            : AvatarHelper.getAvatarColor(msg.senderPin)),
                   ),
                 ),
                 if (isAdminMsg) ...[
@@ -3873,14 +5063,22 @@ class _MessageBubbleState extends State<MessageBubble>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        msg.replySenderPin ?? '',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: useWhiteText
-                              ? Colors.white70
-                              : AppColors.primary,
+                      FutureBuilder<StudentModel?>(
+                        future: msg.replySenderPin != null
+                            ? ProfileCache.fetchByPin(msg.replySenderPin!)
+                            : Future.value(null),
+                        builder: (_, snap) => Text(
+                          // Show nickname in reply thread, not PIN
+                          snap.data?.displayNickname ??
+                              msg.replySenderPin ??
+                              '',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: useWhiteText
+                                ? Colors.white70
+                                : AppColors.primary,
+                          ),
                         ),
                       ),
                       Text(
@@ -3898,12 +5096,15 @@ class _MessageBubbleState extends State<MessageBubble>
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+                padding:
+                    const EdgeInsets.fromLTRB(12, 10, 12, 4),
                 child: Text(
                   msg.message,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
-                    color: useWhiteText ? Colors.white : AppColors.textDark,
+                    color: useWhiteText
+                        ? Colors.white
+                        : AppColors.textDark,
                     height: 1.4,
                   ),
                 ),
@@ -3996,7 +5197,9 @@ class _MessageBubbleState extends State<MessageBubble>
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        const reactions = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👏'];
+        const reactions = [
+          '👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👏'
+        ];
         return Container(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -4035,10 +5238,12 @@ class _MessageBubbleState extends State<MessageBubble>
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: AppColors.background,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius:
+                                  BorderRadius.circular(12),
                             ),
                             child: Text(e,
-                                style: const TextStyle(fontSize: 24)),
+                                style:
+                                    const TextStyle(fontSize: 24)),
                           ),
                         ))
                     .toList(),
@@ -4053,7 +5258,8 @@ class _MessageBubbleState extends State<MessageBubble>
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.reply, color: AppColors.primary, size: 18),
+                  child: const Icon(Icons.reply,
+                      color: AppColors.primary, size: 18),
                 ),
                 title: Text('Reply', style: GoogleFonts.poppins()),
                 onTap: () {
@@ -4074,7 +5280,9 @@ class _MessageBubbleState extends State<MessageBubble>
                         color: AppColors.secondary, size: 18),
                   ),
                   title: Text(
-                    widget.message.isPinned ? 'Unpin Message' : 'Pin Message',
+                    widget.message.isPinned
+                        ? 'Unpin Message'
+                        : 'Pin Message',
                     style: GoogleFonts.poppins(),
                   ),
                   onTap: () {
@@ -4114,14 +5322,16 @@ class _MessageBubbleState extends State<MessageBubble>
                         color: AppColors.error, size: 18),
                   ),
                   title: Text('Delete Message',
-                      style: GoogleFonts.poppins(color: AppColors.error)),
+                      style: GoogleFonts.poppins(
+                          color: AppColors.error)),
                   onTap: () {
                     widget.onDelete!();
                     Navigator.pop(ctx);
                   },
                 ),
               SizedBox(
-                  height: MediaQuery.of(context).padding.bottom + 8),
+                  height:
+                      MediaQuery.of(context).padding.bottom + 8),
             ],
           ),
         );
@@ -4155,7 +5365,9 @@ class _AdminBadge extends StatelessWidget {
           Text(
             'Admin',
             style: GoogleFonts.poppins(
-                fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white),
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: Colors.white),
           ),
         ],
       ),
@@ -4233,7 +5445,8 @@ class _AdminDashboardState extends State<AdminDashboard>
           TextButton.icon(
             icon: const Icon(Icons.chat, color: AppColors.primary),
             label: Text('Chat',
-                style: GoogleFonts.poppins(color: AppColors.primary)),
+                style:
+                    GoogleFonts.poppins(color: AppColors.primary)),
             onPressed: () {
               context.read<ChatProvider>().setRoom('general');
               Navigator.pushReplacement(
@@ -4255,9 +5468,13 @@ class _AdminDashboardState extends State<AdminDashboard>
           tabs: const [
             Tab(icon: Icon(Icons.people, size: 18), text: 'Students'),
             Tab(icon: Icon(Icons.chat, size: 18), text: 'Messages'),
-            Tab(icon: Icon(Icons.campaign, size: 18), text: 'Announce'),
-            Tab(icon: Icon(Icons.pin, size: 18), text: 'PIN Manager'),
-            Tab(icon: Icon(Icons.analytics, size: 18), text: 'Stats'),
+            Tab(
+                icon: Icon(Icons.campaign, size: 18),
+                text: 'Announce'),
+            Tab(icon: Icon(Icons.pin, size: 18), text: 'PIN Mgr'),
+            Tab(
+                icon: Icon(Icons.analytics, size: 18),
+                text: 'Stats'),
           ],
         ),
       ),
@@ -4295,7 +5512,8 @@ class _StudentsTab extends StatelessWidget {
         if (docs.isEmpty) {
           return Center(
             child: Text('No students registered.',
-                style: GoogleFonts.poppins(color: AppColors.textMed)),
+                style:
+                    GoogleFonts.poppins(color: AppColors.textMed)),
           );
         }
         return ListView.builder(
@@ -4331,16 +5549,32 @@ class _StudentCard extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 8),
         leading: _AnimatedAvatar(
           pin: student.pin,
           isAdmin: student.isAdmin,
           size: 44,
+          avatarEmoji: student.avatarEmoji,
+          avatarColorIndex: student.avatarColorIndex,
         ),
-        title: Text(
-          student.isAdmin ? 'BEEDI Admin' : student.realName,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              student.displayNickname,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+            ),
+            Text(
+              // Real name visible to admin only in this context
+              'Real: ${student.realName}',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: AppColors.primary.withOpacity(0.8),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -4353,17 +5587,13 @@ class _StudentCard extends StatelessWidget {
             Row(
               children: [
                 if (student.isBanned)
-                  _StatusChip(
-                    label: 'BANNED',
-                    color: AppColors.error,
-                  ),
+                  _StatusChip(label: 'BANNED', color: AppColors.error),
                 if (student.isMuted)
-                  _StatusChip(label: 'MUTED', color: AppColors.warning),
+                  _StatusChip(
+                      label: 'MUTED', color: AppColors.warning),
                 if (!student.pinActive)
                   _StatusChip(
-                    label: 'PIN INACTIVE',
-                    color: AppColors.textMed,
-                  ),
+                      label: 'PIN INACTIVE', color: AppColors.textMed),
               ],
             ),
           ],
@@ -4431,7 +5661,9 @@ class _StudentCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          student.isBanned ? Icons.check_circle : Icons.block,
+                          student.isBanned
+                              ? Icons.check_circle
+                              : Icons.block,
                           color: student.isBanned
                               ? AppColors.success
                               : AppColors.error,
@@ -4463,13 +5695,16 @@ class _StudentCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           student.isMuted ? 'Unmute' : 'Mute',
-                          style: GoogleFonts.poppins(color: AppColors.warning),
+                          style: GoogleFonts.poppins(
+                              color: AppColors.warning),
                         ),
                       ],
                     ),
                   ),
                   PopupMenuItem(
-                    value: student.pinActive ? 'deactivate_pin' : 'activate_pin',
+                    value: student.pinActive
+                        ? 'deactivate_pin'
+                        : 'activate_pin',
                     child: Row(
                       children: [
                         Icon(
@@ -4481,8 +5716,11 @@ class _StudentCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          student.pinActive ? 'Deactivate PIN' : 'Activate PIN',
-                          style: GoogleFonts.poppins(color: AppColors.primary),
+                          student.pinActive
+                              ? 'Deactivate PIN'
+                              : 'Activate PIN',
+                          style: GoogleFonts.poppins(
+                              color: AppColors.primary),
                         ),
                       ],
                     ),
@@ -4551,7 +5789,7 @@ class _MessagesTabState extends State<_MessagesTab> {
                 onTap: () => setState(() => _selectedRoom = r),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.only(right: 8),
+                 margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
@@ -4563,13 +5801,16 @@ class _MessagesTabState extends State<_MessagesTab> {
                             ],
                           )
                         : null,
-                    color: isActive ? null : AppColors.background,
+                    color:
+                        isActive ? null : AppColors.background,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '#$r',
                     style: GoogleFonts.poppins(
-                      color: isActive ? Colors.white : AppColors.textMed,
+                      color: isActive
+                          ? Colors.white
+                          : AppColors.textMed,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -4590,7 +5831,8 @@ class _MessagesTabState extends State<_MessagesTab> {
                 .snapshots(),
             builder: (_, snap) {
               if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                    child: CircularProgressIndicator());
               }
               final docs = snap.data?.docs ?? [];
               if (docs.isEmpty) {
@@ -4605,15 +5847,18 @@ class _MessagesTabState extends State<_MessagesTab> {
                 itemCount: docs.length,
                 itemBuilder: (_, i) {
                   final msg = ChatMessage.fromFirestore(docs[i]);
+                  final isAdminMsg = msg.senderType == 'admin';
+                  // Admin can see raw PIN in messages tab
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: msg.senderType == 'admin'
+                      border: isAdminMsg
                           ? Border.all(
-                              color: AppColors.primary.withOpacity(0.3))
+                              color:
+                                  AppColors.primary.withOpacity(0.3))
                           : null,
                     ),
                     child: Row(
@@ -4621,33 +5866,38 @@ class _MessagesTabState extends State<_MessagesTab> {
                       children: [
                         _AnimatedAvatar(
                           pin: msg.senderPin,
-                          isAdmin: msg.senderType == 'admin',
+                          isAdmin: isAdminMsg,
                           size: 36,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    msg.senderPin,
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
-                                      color: msg.senderType == 'admin'
-                                          ? AppColors.primary
-                                          : AvatarHelper.getAvatarColor(
-                                              msg.senderPin),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          // Admin sees PIN for moderation
+                                          'PIN: ${msg.senderPin}',
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12,
+                                            color: isAdminMsg
+                                                ? AppColors.primary
+                                                : AppColors.textDark,
+                                          ),
+                                        ),
+                                        if (isAdminMsg)
+                                          _AdminBadge(),
+                                      ],
                                     ),
                                   ),
-                                  if (msg.senderType == 'admin')
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 4),
-                                      child: _AdminBadge(),
-                                    ),
-                                  const Spacer(),
                                   Text(
                                     TimeHelper.format(msg.timestamp),
                                     style: GoogleFonts.poppins(
@@ -4740,7 +5990,8 @@ class _AnnounceTabState extends State<_AnnounceTab> {
           .add({
         'senderPin': _SecurityConfig.adminPin,
         'senderType': 'admin',
-        'message': _SecurityConfig.sanitizeMessage(_msgCtrl.text.trim()),
+        'message':
+            _SecurityConfig.sanitizeMessage(_msgCtrl.text.trim()),
         'timestamp': FieldValue.serverTimestamp(),
         'replyMessage': null,
         'replySenderPin': null,
@@ -4749,6 +6000,9 @@ class _AnnounceTabState extends State<_AnnounceTab> {
         'isDeleted': false,
         'seenBy': [],
         'isPinned': false,
+        'senderNickname': 'BEEDI Admin',
+        'senderAvatarEmoji': null,
+        'senderAvatarColorIndex': null,
       });
       _msgCtrl.clear();
       if (mounted) {
@@ -4794,7 +6048,8 @@ class _AnnounceTabState extends State<_AnnounceTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SectionTitle(title: 'Send Announcement', icon: Icons.campaign),
+          _SectionTitle(
+              title: 'Send Announcement', icon: Icons.campaign),
           const SizedBox(height: 6),
           Text(
             'This will appear as an admin message in the selected chat room.',
@@ -4814,7 +6069,8 @@ class _AnnounceTabState extends State<_AnnounceTab> {
             maxLength: _SecurityConfig.maxMessageLength,
             decoration: InputDecoration(
               hintText: 'Write your announcement here...',
-              hintStyle: GoogleFonts.poppins(color: AppColors.textLight),
+              hintStyle:
+                  GoogleFonts.poppins(color: AppColors.textLight),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16)),
               focusedBorder: OutlineInputBorder(
@@ -4838,14 +6094,18 @@ class _AnnounceTabState extends State<_AnnounceTab> {
                     icon: Icons.send,
                     onTap: _sendAnnouncement,
                     gradient: const LinearGradient(
-                        colors: [AppColors.secondary, AppColors.primary]),
+                        colors: [
+                          AppColors.secondary,
+                          AppColors.primary
+                        ]),
                   ),
           ),
           const SizedBox(height: 32),
           const Divider(),
           const SizedBox(height: 16),
           _SectionTitle(
-              title: 'Announcement Banner', icon: Icons.notifications_active),
+              title: 'Announcement Banner',
+              icon: Icons.notifications_active),
           const SizedBox(height: 6),
           Text(
             'Set a persistent banner shown at the top of the chat.',
@@ -4858,7 +6118,8 @@ class _AnnounceTabState extends State<_AnnounceTab> {
             maxLines: 2,
             decoration: InputDecoration(
               hintText: 'Banner text (leave empty to clear)...',
-              hintStyle: GoogleFonts.poppins(color: AppColors.textLight),
+              hintStyle:
+                  GoogleFonts.poppins(color: AppColors.textLight),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16)),
               filled: true,
@@ -4930,14 +6191,15 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
 
     setState(() => _generating = true);
 
-    final pins = await context.read<AdminPinProvider>().generateBatchPins(
-          count: count,
-          batch: _batchCtrl.text.trim().isEmpty
-              ? 'BATCH-${DateTime.now().year}'
-              : _batchCtrl.text.trim(),
-          adminPin: _SecurityConfig.adminPin,
-          expiresAt: _setExpiry ? _expiryDate : null,
-        );
+    final pins =
+        await context.read<AdminPinProvider>().generateBatchPins(
+              count: count,
+              batch: _batchCtrl.text.trim().isEmpty
+                  ? 'BATCH-${DateTime.now().year}'
+                  : _batchCtrl.text.trim(),
+              adminPin: _SecurityConfig.adminPin,
+              expiresAt: _setExpiry ? _expiryDate : null,
+            );
 
     setState(() {
       _lastGenerated = pins;
@@ -4961,7 +6223,6 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -4977,7 +6238,8 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.security, color: Colors.white, size: 32),
+                const Icon(Icons.security,
+                    color: Colors.white, size: 32),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -5004,7 +6266,9 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
           ),
           const SizedBox(height: 24),
 
-          _SectionTitle(title: 'Generate New PINs', icon: Icons.add_circle_outline),
+          _SectionTitle(
+              title: 'Generate New PINs',
+              icon: Icons.add_circle_outline),
           const SizedBox(height: 16),
 
           Row(
@@ -5013,10 +6277,13 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
                 child: TextField(
                   controller: _countCtrl,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   decoration: InputDecoration(
                     labelText: 'Count (max 50)',
-                    prefixIcon: const Icon(Icons.pin, color: AppColors.primary),
+                    prefixIcon:
+                        const Icon(Icons.pin, color: AppColors.primary),
                     labelStyle: GoogleFonts.poppins(),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -5055,15 +6322,16 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
                 activeColor: AppColors.primary,
               ),
               Text('Set Expiry Date',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w500)),
               if (_setExpiry) ...[
                 const SizedBox(width: 12),
                 GestureDetector(
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate:
-                          DateTime.now().add(const Duration(days: 30)),
+                      initialDate: DateTime.now()
+                          .add(const Duration(days: 30)),
                       firstDate: DateTime.now(),
                       lastDate: DateTime.now()
                           .add(const Duration(days: 365 * 5)),
@@ -5079,11 +6347,13 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
                       color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3)),
+                          color:
+                              AppColors.primary.withOpacity(0.3)),
                     ),
                     child: Text(
                       _expiryDate != null
-                          ? DateFormat('MMM d, y').format(_expiryDate!)
+                          ? DateFormat('MMM d, y')
+                              .format(_expiryDate!)
                           : 'Pick Date',
                       style: GoogleFonts.poppins(
                           color: AppColors.primary,
@@ -5113,15 +6383,16 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
           if (_lastGenerated.isNotEmpty) ...[
             const SizedBox(height: 24),
             _SectionTitle(
-                title: 'Last Generated PINs', icon: Icons.check_circle_outline),
+                title: 'Last Generated PINs',
+                icon: Icons.check_circle_outline),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.success.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(16),
-                border:
-                    Border.all(color: AppColors.success.withOpacity(0.2)),
+                border: Border.all(
+                    color: AppColors.success.withOpacity(0.2)),
               ),
               child: Wrap(
                 spacing: 8,
@@ -5142,7 +6413,10 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
                           horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.secondary],
+                          colors: [
+                            AppColors.primary,
+                            AppColors.secondary
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
@@ -5180,14 +6454,17 @@ class _AdminPinManagerTabState extends State<_AdminPinManagerTab> {
           const SizedBox(height: 32),
           const Divider(),
           const SizedBox(height: 16),
-          _SectionTitle(title: 'All Generated PINs', icon: Icons.list_alt),
+          _SectionTitle(
+              title: 'All Generated PINs', icon: Icons.list_alt),
           const SizedBox(height: 12),
 
           StreamBuilder<QuerySnapshot>(
-            stream: context.read<AdminPinProvider>().pinsStream(),
+            stream:
+                context.read<AdminPinProvider>().pinsStream(),
             builder: (_, snap) {
               if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                    child: CircularProgressIndicator());
               }
               final docs = snap.data?.docs ?? [];
               if (docs.isEmpty) {
@@ -5253,13 +6530,18 @@ class _PinListItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               gradient: pin.isActive && !isExpired
-                  ? const LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary])
-                  : const LinearGradient(
-                      colors: [AppColors.textLight, AppColors.textMed]),
+                  ? const LinearGradient(colors: [
+                      AppColors.primary,
+                      AppColors.secondary
+                    ])
+                  : const LinearGradient(colors: [
+                      AppColors.textLight,
+                      AppColors.textMed
+                    ]),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -5285,14 +6567,18 @@ class _PinListItem extends StatelessWidget {
                 Row(
                   children: [
                     if (pin.isUsed)
-                      _StatusChip(label: 'USED', color: AppColors.warning),
+                      _StatusChip(
+                          label: 'USED', color: AppColors.warning),
                     if (!pin.isActive)
-                      _StatusChip(label: 'INACTIVE', color: AppColors.error),
+                      _StatusChip(
+                          label: 'INACTIVE', color: AppColors.error),
                     if (isExpired)
-                      _StatusChip(label: 'EXPIRED', color: AppColors.error),
+                      _StatusChip(
+                          label: 'EXPIRED', color: AppColors.error),
                     if (pin.expiresAt != null && !isExpired)
                       _StatusChip(
-                        label: 'Exp: ${DateFormat('MMM d').format(pin.expiresAt!)}',
+                        label:
+                            'Exp: ${DateFormat('MMM d').format(pin.expiresAt!)}',
                         color: AppColors.warning,
                       ),
                   ],
@@ -5313,9 +6599,9 @@ class _PinListItem extends StatelessWidget {
               context: context,
               builder: (_) => AlertDialog(
                 title: Text('Delete PIN ${pin.pin}?',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
-                content: Text(
-                    'This cannot be undone.',
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w700)),
+                content: Text('This cannot be undone.',
                     style: GoogleFonts.poppins()),
                 actions: [
                   TextButton(
@@ -5571,11 +6857,14 @@ class _RoomSelector extends StatelessWidget {
           onTap: () => onSelect(r),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               gradient: isActive
-                  ? const LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary])
+                  ? const LinearGradient(colors: [
+                      AppColors.primary,
+                      AppColors.secondary
+                    ])
                   : null,
               color: isActive ? null : AppColors.background,
               borderRadius: BorderRadius.circular(20),
