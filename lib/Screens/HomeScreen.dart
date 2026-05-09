@@ -938,7 +938,7 @@ List<DrawerItem> get kDrawerItems => [
     label: 'AI Assistant',
     icon: Icons.smart_toy_rounded,
     color: const Color(0xFF7E57C2),
-    screen: const AIChatScreen(),
+    screen: const MainTesterScreen(),
   ),
 ];
 
