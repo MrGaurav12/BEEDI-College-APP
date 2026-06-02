@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -782,6 +783,11 @@ class FirebaseConnectionMonitor extends ChangeNotifier {
     }, onError: (_) {});
   }
 
+
+
+
+
+
   void _updateStatus(FirebaseConnectionStatus s) {
     if (_status != s) {
       _status = s;
@@ -899,16 +905,21 @@ class FirebaseService {
   }
 
   // ─── Students ───────────────────────────────────────────────────────────────
-  static Stream<List<StudentModel>> watchStudents({String? batchId}) {
-    try {
-      Query q = _students.orderBy('studentName');
-      if (batchId != null && batchId.isNotEmpty) {
-        q = q.where('batchId', isEqualTo: batchId);
-      }
-      return q
-          .snapshots(includeMetadataChanges: false)
-          .map(
-            (s) => s.docs
+// ─── Students ───────────────────────────────────────────────────────────────
+static Stream<List<StudentModel>> watchStudents({String? batchId}) {
+  try {
+    Query q = _students;
+    if (batchId != null && batchId.isNotEmpty) {
+      q = q.where('batchId', isEqualTo: batchId);
+    }
+    // Remove orderBy to avoid composite index requirement
+    // Sort in memory instead
+    
+    return q
+        .snapshots(includeMetadataChanges: false)
+        .map(
+          (s) {
+            final students = s.docs
                 .map((d) {
                   try {
                     return StudentModel.fromFirestore(d);
@@ -917,12 +928,17 @@ class FirebaseService {
                   }
                 })
                 .whereType<StudentModel>()
-                .toList(),
-          );
-    } catch (_) {
-      return const Stream.empty();
-    }
+                .toList();
+            
+            // Sort by studentName in memory
+            students.sort((a, b) => a.studentName.compareTo(b.studentName));
+            return students;
+          },
+        );
+  } catch (_) {
+    return const Stream.empty();
   }
+}
 
   static Future<String> addStudent(
     StudentModel s,
@@ -1352,26 +1368,25 @@ class FirebaseService {
   }
 
   // ─── Streams ────────────────────────────────────────────────────────────────
-  static Stream<List<CallReport>> watchCallReports({
-    String? facultyId,
-    String? studentId,
-  }) {
-    try {
-      Query q = _callReports.orderBy('callDate', descending: true).limit(50);
-      if (studentId != null && studentId.isNotEmpty) {
-        q = _callReports
-            .where('studentId', isEqualTo: studentId)
-            .orderBy('callDate', descending: true);
-      } else if (facultyId != null && facultyId.isNotEmpty) {
-        q = _callReports
-            .where('facultyId', isEqualTo: facultyId)
-            .orderBy('callDate', descending: true)
-            .limit(50);
-      }
-      return q
-          .snapshots(includeMetadataChanges: false)
-          .map(
-            (s) => s.docs
+static Stream<List<CallReport>> watchCallReports({
+  String? facultyId,
+  String? studentId,
+}) {
+  try {
+    Query q = _callReports;
+    
+    if (studentId != null && studentId.isNotEmpty) {
+      q = q.where('studentId', isEqualTo: studentId);
+    } else if (facultyId != null && facultyId.isNotEmpty) {
+      q = q.where('facultyId', isEqualTo: facultyId);
+    }
+    
+    // Remove orderBy to avoid index requirements, sort in memory
+    return q
+        .snapshots(includeMetadataChanges: false)
+        .map(
+          (s) {
+            final reports = s.docs
                 .map((d) {
                   try {
                     return CallReport.fromFirestore(d);
@@ -1380,12 +1395,22 @@ class FirebaseService {
                   }
                 })
                 .whereType<CallReport>()
-                .toList(),
-          );
-    } catch (_) {
-      return const Stream.empty();
-    }
+                .toList();
+            
+            // Sort by callDate descending in memory
+            reports.sort((a, b) => b.callDate.compareTo(a.callDate));
+            
+            // Limit to 50 reports
+            if (reports.length > 50) {
+              return reports.sublist(0, 50);
+            }
+            return reports;
+          },
+        );
+  } catch (_) {
+    return const Stream.empty();
   }
+}
 
   static Stream<List<CallLog>> watchCallHistory(String studentId) {
     try {
@@ -1712,6 +1737,98 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
     _init();
   }
 
+
+  void _handleFirestoreError(Object error) {
+  final errorStr = error.toString();
+  print('Firestore Error: $errorStr');
+  
+  if (errorStr.contains('failed-precondition') && 
+      errorStr.contains('index')) {
+    // Extract the index creation link
+    final RegExp regex = RegExp(r'https://[^\s]+');
+    final match = regex.firstMatch(errorStr);
+    final link = match?.group(0);
+    
+    if (link != null) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          backgroundColor: GreenTheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Index Required',
+            style: GreenTheme.displayFont(size: 18, weight: FontWeight.w700),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Firestore requires an index for this query to work efficiently.',
+                style: GreenTheme.bodyFont(),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Click the button below to create it automatically.',
+                style: GreenTheme.bodyFont(size: 12, color: GreenTheme.textMuted),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: GreenTheme.cardAlt,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Note: After creating the index, please restart the app.',
+                  style: GreenTheme.bodyFont(
+                    size: 11,
+                    color: GreenTheme.statusFollowUp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: GreenTheme.bodyFont(color: GreenTheme.textMuted),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final uri = Uri.parse(link);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
+                } catch (e) {
+                  _snack('Could not open link. Please create index manually.', err: true);
+                }
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: GreenTheme.accent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Create Index',
+                style: GreenTheme.bodyFont(color: Colors.white, weight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+}
+
   void _refreshBatches() {
     print('Refreshing batches...');
     setState(() {
@@ -1724,6 +1841,40 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
       _StreamCache.refreshBatches(facultyId: _currentFacultyId);
     });
   }
+
+// Add this method to force refresh all streams
+void _refreshAllData() {
+  print('Refreshing all data...');
+  
+  // Clear all stream caches
+  _StreamCache.refreshAll();
+  
+  // Recreate all streams with current filters
+  _studentsStream = FirebaseService.watchStudents(
+    batchId: _selectedBatchId.isEmpty ? null : _selectedBatchId,
+  ).asBroadcastStream();
+  
+  _batchesStream = FirebaseService.watchBatches(
+    facultyId: _currentFacultyId,
+  ).asBroadcastStream();
+  
+  _facultiesStream = FirebaseService.watchFaculties().asBroadcastStream();
+  
+  _activityStream = FirebaseService.watchActivityLogs(
+    facultyId: _currentFacultyId,
+  ).asBroadcastStream();
+  
+  _callReportsStream = FirebaseService.watchCallReports(
+    facultyId: _currentFacultyId,
+  ).asBroadcastStream();
+  
+  // Force a rebuild of the swiper
+  setState(() {
+    _swiperKey = 'swiper_${_selectedBatchId}_${DateTime.now().millisecondsSinceEpoch}';
+  });
+}
+
+
 
   /// Create all streams once here. Never recreate them inside build().
   void _initStreams() {
@@ -1906,106 +2057,191 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
     }
   }
 
-  Future<void> _exportToExcel() async {
-    _snack('Preparing Excel export…');
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('students')
-          .get();
-      final students = snap.docs
-          .map((d) {
-            try {
-              return StudentModel.fromFirestore(d);
-            } catch (_) {
-              return null;
-            }
-          })
-          .whereType<StudentModel>()
-          .toList();
-
-      final ex = Excel.createExcel();
-      final sheet = ex['Students'];
-
-      final headers = [
-        'Student ID',
-        'Name',
-        'Batch',
-        'Mobile',
-        'Parent Mobile',
-        'Email',
-        'Attendance',
-        'Fee Status',
-        'Call Status',
-        'Call Attempts',
-        'Last Called',
-        'Notes',
-        'Created',
-      ];
-      for (int i = 0; i < headers.length; i++) {
-        sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0))
-          ..value = TextCellValue(headers[i])
-          ..cellStyle = CellStyle(
-            bold: true,
-            backgroundColorHex: ExcelColor.fromHexString('#1B5E20'),
-          );
-      }
-      for (int r = 0; r < students.length; r++) {
-        final s = students[r];
-        final row = [
-          s.studentId,
-          s.studentName,
-          s.batchName,
-          s.mobileNumber,
-          s.parentNumber,
-          s.email,
-          '${s.attendance.toStringAsFixed(1)}%',
-          s.feeStatus.name,
-          s.callingStatus.name,
-          s.callAttempts.toString(),
-          s.lastCalledAt != null
-              ? DateFormat('dd/MM/yyyy HH:mm').format(s.lastCalledAt!)
-              : '',
-          s.notes ?? '',
-          DateFormat('dd/MM/yyyy').format(s.createdAt),
-        ];
-        for (int c = 0; c < row.length; c++) {
-          sheet
-              .cell(CellIndex.indexByColumnRow(columnIndex: c, rowIndex: r + 1))
-              .value = TextCellValue(
-            row[c],
-          );
-        }
-      }
-
-      final bytes = ex.save();
-      if (bytes != null) {
-        final dir = await getApplicationDocumentsDirectory();
-        final fname =
-            'BEEDI_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.xlsx';
-        _snack('Exported: $fname (${students.length} students)');
-      } else {
-        _snack('Export failed: could not generate file', err: true);
-      }
-    } catch (e) {
-      _snack('Export failed. Please try again.', err: true);
-    }
-  }
-
-  void _snack(String msg, {bool err = false}) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg, style: GreenTheme.bodyFont(color: Colors.white)),
-        backgroundColor: err
-            ? GreenTheme.statusNotInterested
-            : GreenTheme.primaryLight,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: Duration(seconds: err ? 3 : 2),
+Future<void> _exportToExcel() async {
+  _snack('Preparing Excel export...');
+  
+  try {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: GreenTheme.surface,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                'Exporting student data...',
+                style: GreenTheme.bodyFont(),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+    
+    // Fetch all students
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('students')
+        .get();
+    
+    // Close loading dialog
+    if (mounted) Navigator.pop(context);
+    
+    if (snapshot.docs.isEmpty) {
+      _snack('No student data found to export', err: true);
+      return;
+    }
+    
+    print('Found ${snapshot.docs.length} students to export');
+    
+    // Create Excel file
+    final Excel excel = Excel.createExcel();
+    final Sheet sheet = excel['Students'];
+    
+    // Define headers
+    final List<String> headers = [
+      'Student ID',
+      'Student Name',
+      'Batch Name',
+      'Batch ID',
+      'Mobile Number',
+      'Parent Number',
+      'Email',
+      'Address',
+      'Course',
+      'Attendance (%)',
+      'Fee Status',
+      'Call Status',
+      'Call Attempts',
+      'Last Called By',
+      'Last Called At',
+      'Notes',
+      'Created Date',
+    ];
+    
+    // Add headers with styling
+    for (int i = 0; i < headers.length; i++) {
+      final cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
+      cell.value = TextCellValue(headers[i]);
+      cell.cellStyle = CellStyle(
+        bold: true,
+        backgroundColorHex: ExcelColor.fromHexString('#1B5E20'),
+        fontColorHex: ExcelColor.fromHexString('FFFFFFFF'),
+      );
+    }
+    
+    // Add data rows
+    int rowIndex = 1;
+    for (var doc in snapshot.docs) {
+      try {
+        final student = StudentModel.fromFirestore(doc);
+        
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIndex)).value = 
+            TextCellValue(student.studentId);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex)).value = 
+            TextCellValue(student.studentName);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: rowIndex)).value = 
+            TextCellValue(student.batchName);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: rowIndex)).value = 
+            TextCellValue(student.batchId);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: rowIndex)).value = 
+            TextCellValue(student.mobileNumber);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIndex)).value = 
+            TextCellValue(student.parentNumber);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: rowIndex)).value = 
+            TextCellValue(student.email);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: rowIndex)).value = 
+            TextCellValue(student.address);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: rowIndex)).value = 
+            TextCellValue(student.course);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: rowIndex)).value = 
+            TextCellValue(student.attendance.toStringAsFixed(1));
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 10, rowIndex: rowIndex)).value = 
+            TextCellValue(student.feeStatus.name);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 11, rowIndex: rowIndex)).value = 
+            TextCellValue(student.callingStatus.name);
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 12, rowIndex: rowIndex)).value = 
+            TextCellValue(student.callAttempts.toString());
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 13, rowIndex: rowIndex)).value = 
+            TextCellValue(student.lastCalledBy ?? '');
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 14, rowIndex: rowIndex)).value = 
+            TextCellValue(student.lastCalledAt != null 
+                ? DateFormat('dd/MM/yyyy HH:mm:ss').format(student.lastCalledAt!) 
+                : '');
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 15, rowIndex: rowIndex)).value = 
+            TextCellValue(student.notes ?? '');
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 16, rowIndex: rowIndex)).value = 
+            TextCellValue(DateFormat('dd/MM/yyyy HH:mm:ss').format(student.createdAt));
+        
+        rowIndex++;
+      } catch (e) {
+        print('Error processing student: $e');
+      }
+    }
+    
+    // Save the file
+    final List<int>? bytes = excel.save();
+    if (bytes == null) {
+      _snack('Failed to generate Excel file', err: true);
+      return;
+    }
+    
+    // Get documents directory
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName = 'BEEDI_Students_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.xlsx';
+    final filePath = '${directory.path}/$fileName';
+    
+    // Save file
+    final File file = File(filePath);
+    await file.writeAsBytes(bytes);
+    
+    _snack('✅ Exported ${rowIndex - 1} students to $fileName');
+    
+    // Show success dialog with option to share
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: GreenTheme.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            'Export Complete',
+            style: GreenTheme.displayFont(size: 18, weight: FontWeight.w700),
+          ),
+          content: Text(
+            '${rowIndex - 1} students exported successfully!\n\nFile saved to:\n$fileName',
+            style: GreenTheme.bodyFont(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK', style: GreenTheme.bodyFont()),
+            ),
+          ],
+        ),
+      );
+    }
+    
+  } catch (e) {
+    // Close loading dialog if still open
+    if (mounted) {
+      try {
+        Navigator.pop(context);
+      } catch (_) {}
+    }
+    
+    print('Export error details: $e');
+    _snack('Export failed: ${e.toString().replaceAll('Exception: ', '')}', err: true);
   }
+}
 
   // ─── Status helpers ─────────────────────────────────────────────────────────
   Color _statusColor(CallStatus s) {
@@ -2131,6 +2367,18 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
     if (d.inHours < 1) return '${d.inMinutes}m ago';
     if (d.inDays < 1) return '${d.inHours}h ago';
     return '${d.inDays}d ago';
+  }
+
+  // Simple snackbar helper
+  void _snack(String msg, {bool err = false}) {
+    if (!mounted) return;
+    final sb = SnackBar(
+      content: Text(msg),
+      backgroundColor: err ? GreenTheme.statusNotInterested : GreenTheme.accent,
+      duration: const Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(sb);
   }
 
   // ─── Build ──────────────────────────────────────────────────────────────────
@@ -2539,24 +2787,29 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
   // FIX: Uses StableStreamBuilder so previous data stays visible during
   // Firebase updates. Loading shimmer only shown on very first load.
   // ==========================================================================
+Widget _buildCallingTab() {
+  if (_isFirstLoad) return _shimmer();
 
-  Widget _buildCallingTab() {
-    if (_isFirstLoad) return _shimmer();
-
-    // Use FirebaseService directly with current batch filter
-    return StreamBuilder<List<StudentModel>>(
+  return RefreshIndicator(
+    onRefresh: () async {
+      _refreshAllData();
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: StreamBuilder<List<StudentModel>>(
       stream: FirebaseService.watchStudents(
         batchId: _selectedBatchId.isEmpty ? null : _selectedBatchId,
       ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting &&
             !snapshot.hasData) {
-          return _shimmer();
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
+          // Show the actual error for debugging
+          print('Stream error: ${snapshot.error}');
           return _errorWidget(
-            'Unable to load students. Please check your connection.',
+            'Error: ${snapshot.error}\nPlease check Firebase configuration.',
           );
         }
 
@@ -2583,7 +2836,7 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
         if (all.isEmpty) {
           return _emptyState(
             'No students found',
-            'Try changing filters or add new students.',
+            'Pull down to refresh or add new students.',
           );
         }
 
@@ -2592,6 +2845,7 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
 
         return Column(
           children: [
+            _buildCallingHeader(),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               child: Row(
@@ -2643,8 +2897,9 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
           ],
         );
       },
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildQuickStats(List<StudentModel> students) {
     final today = DateTime.now();
@@ -2723,6 +2978,43 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
       ),
     ),
   );
+
+// Add this method to show a refresh button in the calling tab
+Widget _buildCallingHeader() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Students',
+            style: GreenTheme.displayFont(size: 18, weight: FontWeight.w700),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            _refreshAllData();
+            _snack('Refreshing data...');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: GreenTheme.cardAlt,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: GreenTheme.border),
+            ),
+            child: const Icon(Icons.refresh_rounded, size: 20),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+
+
 
   // ─── Student Card ───────────────────────────────────────────────────────────
   Widget _buildStudentCard(StudentModel s) {
@@ -3857,8 +4149,14 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
   // Stats are computed inline – no setState called from stream callbacks.
   // ==========================================================================
 
-  Widget _buildDashboardTab() {
-    return SingleChildScrollView(
+Widget _buildDashboardTab() {
+  return RefreshIndicator(
+    onRefresh: () async {
+      _refreshAllData();
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -4018,7 +4316,7 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
           ),
           const SizedBox(height: 10),
           _buildActivityFeed(),
-        ],
+        ],),
       ),
     );
   }
@@ -4249,225 +4547,261 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
   // TAB 2 – REPORTS
   // ==========================================================================
 
-  Widget _buildReportsTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Reports',
-                style: GreenTheme.displayFont(
-                  size: 22,
-                  weight: FontWeight.w700,
+Widget _buildReportsTab() {
+  return RefreshIndicator(
+    onRefresh: () async {
+      _refreshAllData();
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Reports',
+                  style: GreenTheme.displayFont(
+                    size: 22,
+                    weight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              Text(
-                'Calling history & analytics',
-                style: GreenTheme.bodyFont(
-                  size: 12,
-                  color: GreenTheme.textMuted,
+                Text(
+                  'Calling history & analytics',
+                  style: GreenTheme.bodyFont(
+                    size: 12,
+                    color: GreenTheme.textMuted,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: ['Today', 'This Week', 'This Month'].map((p) {
-                  final sel = _selectedPeriod == p;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedPeriod = p),
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: sel ? GreenTheme.accentGradient : null,
-                        color: sel ? null : GreenTheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: sel
-                              ? GreenTheme.accentDark
-                              : GreenTheme.border,
+                const SizedBox(height: 12),
+                Row(
+                  children: ['Today', 'This Week', 'This Month'].map((p) {
+                    final sel = _selectedPeriod == p;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedPeriod = p),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: sel ? GreenTheme.accentGradient : null,
+                          color: sel ? null : GreenTheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: sel
+                                ? GreenTheme.accentDark
+                                : GreenTheme.border,
+                          ),
+                        ),
+                        child: Text(
+                          p,
+                          style: GreenTheme.bodyFont(
+                            size: 12,
+                            weight:
+                                sel ? FontWeight.w600 : FontWeight.w400,
+                            color: sel
+                                ? Colors.white
+                                : GreenTheme.textMuted,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        p,
-                        style: GreenTheme.bodyFont(
-                          size: 12,
-                          weight: sel ? FontWeight.w600 : FontWeight.w400,
-                          color: sel ? Colors.white : GreenTheme.textMuted,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: StableStreamBuilder<List<CallReport>>(
-            stream: _callReportsStream,
-            initialData: const [],
-            loadingBuilder: (_) =>
-                const Center(child: CircularProgressIndicator()),
-            errorBuilder: (_, __) => _errorWidget('Unable to load reports.'),
-            builder: (_, allReports) {
-              final now = DateTime.now();
-              final reports = allReports.where((r) {
-                if (_selectedPeriod == 'Today') {
-                  return r.callDate.year == now.year &&
-                      r.callDate.month == now.month &&
-                      r.callDate.day == now.day;
-                } else if (_selectedPeriod == 'This Week') {
-                  return r.callDate.isAfter(
-                    now.subtract(const Duration(days: 7)),
+          Expanded(
+            child: StableStreamBuilder<List<CallReport>>(
+              stream: _callReportsStream,
+              initialData: const [],
+              loadingBuilder: (_) =>
+                  const Center(child: CircularProgressIndicator()),
+              errorBuilder: (_, __) =>
+                  _errorWidget('Unable to load reports.'),
+              builder: (_, allReports) {
+                final now = DateTime.now();
+
+                final reports = allReports.where((r) {
+                  if (_selectedPeriod == 'Today') {
+                    return r.callDate.year == now.year &&
+                        r.callDate.month == now.month &&
+                        r.callDate.day == now.day;
+                  } else if (_selectedPeriod == 'This Week') {
+                    return r.callDate.isAfter(
+                      now.subtract(const Duration(days: 7)),
+                    );
+                  } else {
+                    return r.callDate.isAfter(
+                      DateTime(now.year, now.month, 1),
+                    );
+                  }
+                }).toList();
+
+                if (reports.isEmpty) {
+                  return _emptyState(
+                    'No reports for $_selectedPeriod',
+                    'Make some calls to see data here.',
                   );
-                } else {
-                  return r.callDate.isAfter(DateTime(now.year, now.month, 1));
                 }
-              }).toList();
 
-              if (reports.isEmpty) {
-                return _emptyState(
-                  'No reports for $_selectedPeriod',
-                  'Make some calls to see data here.',
-                );
-              }
+                return ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: reports.length,
+                  itemBuilder: (_, i) {
+                    final r = reports[i];
 
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: reports.length,
-                itemBuilder: (_, i) {
-                  final r = reports[i];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(12),
-                    decoration: GreenTheme.cardDecoration(),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: _statusColor(r.status).withOpacity(0.12),
-                            shape: BoxShape.circle,
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(12),
+                      decoration: GreenTheme.cardDecoration(),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: _statusColor(r.status)
+                                  .withOpacity(0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _statusIcon(r.status),
+                              color: _statusColor(r.status),
+                              size: 16,
+                            ),
                           ),
-                          child: Icon(
-                            _statusIcon(r.status),
-                            color: _statusColor(r.status),
-                            size: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                r.studentName.isNotEmpty
-                                    ? r.studentName
-                                    : 'Unknown',
-                                style: GreenTheme.bodyFont(
-                                  size: 13,
-                                  weight: FontWeight.w600,
-                                ),
-                              ),
-                              Text(
-                                r.batchName.isNotEmpty ? r.batchName : '—',
-                                style: GreenTheme.bodyFont(
-                                  size: 11,
-                                  color: GreenTheme.textMuted,
-                                ),
-                              ),
-                              if ((r.notes ?? '').isNotEmpty)
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  r.notes!,
+                                  r.studentName.isNotEmpty
+                                      ? r.studentName
+                                      : 'Unknown',
                                   style: GreenTheme.bodyFont(
-                                    size: 10,
+                                    size: 13,
+                                    weight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  r.batchName.isNotEmpty
+                                      ? r.batchName
+                                      : '—',
+                                  style: GreenTheme.bodyFont(
+                                    size: 11,
                                     color: GreenTheme.textMuted,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if ((r.notes ?? '').isNotEmpty)
+                                  Text(
+                                    r.notes!,
+                                    style: GreenTheme.bodyFont(
+                                      size: 10,
+                                      color:
+                                          GreenTheme.textMuted,
+                                    ),
+                                    maxLines: 1,
+                                    overflow:
+                                        TextOverflow.ellipsis,
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                _statusLabel(r.status),
+                                style: GreenTheme.bodyFont(
+                                  size: 11,
+                                  weight: FontWeight.w600,
+                                  color:
+                                      _statusColor(r.status),
+                                ),
+                              ),
+                              Text(
+                                DateFormat('dd/MM/yy HH:mm')
+                                    .format(r.callDate),
+                                style: GreenTheme.bodyFont(
+                                  size: 10,
+                                  color:
+                                      GreenTheme.textMuted,
+                                ),
+                              ),
+                              if (r.duration > 0)
+                                Text(
+                                  '${r.duration}s',
+                                  style: GreenTheme.bodyFont(
+                                    size: 9,
+                                    color:
+                                        GreenTheme.textMuted,
+                                  ),
+                                ),
+                              if (r.interested)
+                                const Icon(
+                                  Icons.thumb_up,
+                                  color: GreenTheme
+                                      .statusInterested,
+                                  size: 12,
                                 ),
                             ],
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              _statusLabel(r.status),
-                              style: GreenTheme.bodyFont(
-                                size: 11,
-                                weight: FontWeight.w600,
-                                color: _statusColor(r.status),
-                              ),
-                            ),
-                            Text(
-                              DateFormat('dd/MM/yy HH:mm').format(r.callDate),
-                              style: GreenTheme.bodyFont(
-                                size: 10,
-                                color: GreenTheme.textMuted,
-                              ),
-                            ),
-                            if (r.duration > 0)
-                              Text(
-                                '${r.duration}s',
-                                style: GreenTheme.bodyFont(
-                                  size: 9,
-                                  color: GreenTheme.textMuted,
-                                ),
-                              ),
-                            if (r.interested)
-                              const Icon(
-                                Icons.thumb_up,
-                                color: GreenTheme.statusInterested,
-                                size: 12,
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      ),
+    ),
+  );
+}
 
   // ==========================================================================
   // TAB 3 – FACULTY
   // ==========================================================================
 
-  Widget _buildFacultyTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Faculty Management',
-                  style: GreenTheme.displayFont(
-                    size: 20,
-                    weight: FontWeight.w700,
+Widget _buildFacultyTab() {
+  return RefreshIndicator(
+    onRefresh: () async {
+      _refreshAllData();
+      await Future.delayed(const Duration(milliseconds: 500));
+    },
+    child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Faculty Management',
+                    style: GreenTheme.displayFont(
+                      size: 20,
+                      weight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
-              _addBtn('Add Faculty', _showAddFacultySheet),
-            ],
+                _addBtn('Add Faculty', _showAddFacultySheet),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: StableStreamBuilder<List<FacultyModel>>(
+          StableStreamBuilder<List<FacultyModel>>(
             stream: _facultiesStream,
             initialData: const [],
             loadingBuilder: (_) =>
@@ -4481,16 +4815,19 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
                 );
               }
               return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: list.length,
                 itemBuilder: (_, i) => _facultyCard(list[i]),
               );
             },
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _facultyCard(FacultyModel f) => Container(
     margin: const EdgeInsets.only(bottom: 12),
@@ -4837,72 +5174,88 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
   // TAB 4 – BATCHES
   // ==========================================================================
 
-  Widget _buildBatchesTab() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Batch Management',
-                  style: GreenTheme.displayFont(
-                    size: 20,
-                    weight: FontWeight.w700,
-                  ),
+Widget _buildBatchesTab() {
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Batch Management',
+                style: GreenTheme.displayFont(
+                  size: 20,
+                  weight: FontWeight.w700,
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.refresh_rounded),
-                    onPressed: () {
-                      _refreshBatches();
-                      _snack('Refreshing batches...');
-                    },
-                    tooltip: 'Refresh',
-                  ),
-                  _addBtn('New Batch', _showAddBatchSheet),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: StableStreamBuilder<List<BatchModel>>(
-            stream: _batchesStream,
-            initialData: const [],
-            loadingBuilder: (_) => const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading batches...'),
-                ],
-              ),
             ),
-            errorBuilder: (_, error) => _errorWidget('Error: $error'),
-            builder: (_, list) {
-              if (list.isEmpty) {
-                return _emptyState(
-                  'No Batches Created',
-                  'Tap + to create your first batch.',
-                );
-              }
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.refresh_rounded),
+                  onPressed: () {
+                    _refreshAllData();
+                    _snack('Refreshing batches...');
+                  },
+                  tooltip: 'Refresh',
+                ),
+                _addBtn('New Batch', _showAddBatchSheet),
+              ],
+            ),
+          ],
+        ),
+      ),
+      Expanded(
+        child: StreamBuilder<List<BatchModel>>(
+          stream: FirebaseService.watchBatches(
+            facultyId: _currentFacultyId,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading batches...'),
+                  ],
+                ),
+              );
+            }
 
-              return ListView.builder(
+            if (snapshot.hasError) {
+              return _errorWidget('Error: ${snapshot.error}');
+            }
+
+            final list = snapshot.data ?? [];
+
+            if (list.isEmpty) {
+              return _emptyState(
+                'No Batches Created',
+                'Tap + to create your first batch.',
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                _refreshAllData();
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: list.length,
                 itemBuilder: (_, i) => _batchCard(list[i]),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget _batchCard(BatchModel b) => Container(
     margin: const EdgeInsets.only(bottom: 12),
@@ -5107,30 +5460,34 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
                                     : null,
                               );
 
-                              await FirebaseService.addBatch(
-                                b,
-                                _currentFacultyId,
-                                _currentFacultyName,
-                              );
+// Inside _showAddBatchSheet, replace the success callback
+await FirebaseService.addBatch(
+  b,
+  _currentFacultyId,
+  _currentFacultyName,
+);
 
-                              // Clear cache and refresh streams
-                              _StreamCache.refreshBatches(
-                                facultyId: _currentFacultyId,
-                              );
-
-                              if (mounted) {
-                                // Force refresh the stream
-                                setState(() {
-                                  _batchesStream = FirebaseService.watchBatches(
-                                    facultyId: _currentFacultyId,
-                                  ).asBroadcastStream();
-                                });
-
-                                Navigator.pop(ctx);
-                                _snack(
-                                  'Batch "${b.batchName}" created successfully!',
-                                );
-                              }
+if (mounted) {
+  // Clear all caches first
+  _StreamCache.refreshAll();
+  
+  // Force refresh all streams
+  setState(() {
+    _batchesStream = FirebaseService.watchBatches(
+      facultyId: _currentFacultyId,
+    ).asBroadcastStream();
+    
+    _studentsStream = FirebaseService.watchStudents(
+      batchId: _selectedBatchId.isEmpty ? null : _selectedBatchId,
+    ).asBroadcastStream();
+    
+    // Update swiper key to force rebuild
+    _swiperKey = 'swiper_${_selectedBatchId}_${DateTime.now().millisecondsSinceEpoch}';
+  });
+  
+  Navigator.pop(ctx);
+  _snack('Batch "${b.batchName}" created successfully!');
+}
                             } catch (e) {
                               print('Error saving batch: $e');
                               if (mounted)
@@ -5451,23 +5808,32 @@ class _BeediSmartCallingScreenState extends State<BeediSmartCallingScreen>
                                 batchName: batch.batchName,
                                 createdAt: now,
                               );
-                              await FirebaseService.addStudent(
-                                s,
-                                _currentFacultyId,
-                                _currentFacultyName,
-                              );
-                              // After successfully adding student
-                              if (mounted) {
-                                Navigator.pop(ctx);
-                                _snack(
-                                  'Student "$name" added to ${batch.batchName}',
-                                );
-                                // Force refresh the students list for the current batch
-                                setState(() {
-                                  _swiperKey =
-                                      'swiper_${_selectedBatchId}_${DateTime.now().millisecondsSinceEpoch}';
-                                });
-                              }
+// Inside _showAddStudentSheet, replace the success part
+// Inside _showAddStudentSheet, after await FirebaseService.addStudent
+await FirebaseService.addStudent(
+  s,
+  _currentFacultyId,
+  _currentFacultyName,
+);
+
+if (mounted) {
+  Navigator.pop(ctx);
+  _snack('Student "$name" added to ${batch.batchName}');
+  
+  // Clear cache and refresh all data
+  _StreamCache.refreshAll();
+  _StreamCache.refreshStudents(batchId: _selectedBatchId);
+  
+  // Force refresh the students list
+  setState(() {
+    _studentsStream = FirebaseService.watchStudents(
+      batchId: _selectedBatchId.isEmpty ? null : _selectedBatchId,
+    ).asBroadcastStream();
+    
+    // Force swiper to rebuild
+    _swiperKey = 'swiper_${_selectedBatchId}_${DateTime.now().millisecondsSinceEpoch}';
+  });
+}
                             } catch (e) {
                               if (mounted)
                                 _snack(
