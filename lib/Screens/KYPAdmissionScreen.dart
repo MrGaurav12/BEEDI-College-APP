@@ -67,6 +67,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:beedi_college/CALLREPORT/SmartCallingScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -885,34 +886,38 @@ class _KYPAdmissionScreenState extends State<KYPAdmissionScreen>
   }
 
   int _viewToNavIndex(String view) {
-    switch (view) {
-      case 'home':
-        return 0;
-      case 'application':
-        return 1;
-      case 'tracking':
-        return 2;
-      case 'student':
-        return 3;
-      default:
-        return 0;
-    }
+  switch (view) {
+    case 'home':
+      return 0;
+    case 'application':
+      return 1;
+    case 'tracking':
+      return 2;
+    case 'student':
+      return 3;
+    case 'calling':  // Add this
+      return 4;
+    default:
+      return 0;
   }
+}
 
-  String _navIndexToView(int index) {
-    switch (index) {
-      case 0:
-        return 'home';
-      case 1:
-        return 'application';
-      case 2:
-        return 'tracking';
-      case 3:
-        return 'student';
-      default:
-        return 'home';
-    }
+String _navIndexToView(int index) {
+  switch (index) {
+    case 0:
+      return 'home';
+    case 1:
+      return 'application';
+    case 2:
+      return 'tracking';
+    case 3:
+      return 'student';
+    case 4:
+      return 'calling';  // Add this
+    default:
+      return 'home';
   }
+}
 
   // ─── Add notification (Feature 15) ──────────────────────────────────────────
   void _addNotification(String title, String body) {
@@ -1433,37 +1438,42 @@ class _KYPAdmissionScreenState extends State<KYPAdmissionScreen>
   // BOTTOM NAV (Feature 34)
   // ===========================================================================
 
-  Widget _buildBottomNav() {
-    return NavigationBar(
-      selectedIndex: _bottomNavIndex,
-      onDestinationSelected: (i) {
-        setState(() => _bottomNavIndex = i);
-        _navigateTo(_navIndexToView(i));
-      },
-      destinations: [
-        NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.assignment_outlined),
-          selectedIcon: Icon(Icons.assignment),
-          label: 'Apply',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.track_changes_outlined),
-          selectedIcon: Icon(Icons.track_changes),
-          label: 'Track',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.person_outlined),
-          selectedIcon: Icon(Icons.person),
-          label: 'Student',
-        ),
-      ],
-    );
-  }
+Widget _buildBottomNav() {
+  return NavigationBar(
+    selectedIndex: _bottomNavIndex,
+    onDestinationSelected: (i) {
+      setState(() => _bottomNavIndex = i);
+      _navigateTo(_navIndexToView(i));
+    },
+    destinations: [
+      NavigationDestination(
+        icon: Icon(Icons.home_outlined),
+        selectedIcon: Icon(Icons.home),
+        label: 'Home',
+      ),
+      NavigationDestination(
+        icon: Icon(Icons.assignment_outlined),
+        selectedIcon: Icon(Icons.assignment),
+        label: 'Apply',
+      ),
+      NavigationDestination(
+        icon: Icon(Icons.track_changes_outlined),
+        selectedIcon: Icon(Icons.track_changes),
+        label: 'Track',
+      ),
+      NavigationDestination(
+        icon: Icon(Icons.person_outlined),
+        selectedIcon: Icon(Icons.person),
+        label: 'Student',
+      ),
+      NavigationDestination(  // Add this
+        icon: Icon(Icons.phone_in_talk_outlined),
+        selectedIcon: Icon(Icons.phone_in_talk),
+        label: 'Calling',
+      ),
+    ],
+  );
+}
 
   // ===========================================================================
   // FAB
@@ -1486,83 +1496,86 @@ class _KYPAdmissionScreenState extends State<KYPAdmissionScreen>
   // CURRENT VIEW ROUTER
   // ===========================================================================
 
-  Widget _buildCurrentView() {
-    switch (_currentView) {
-      case 'home':
-        return _HomeView(
-          courses: _courses,
-          isDark: _isDarkMode,
-          onNavigate: _navigateTo,
-          firebaseError: _firebaseError,
-        );
-      case 'application':
-        return _ApplicationFormView(
-          courses: _courses,
-          isDark: _isDarkMode,
-          onSubmitted: (appId) {
-            _addNotification(
-              'Application Submitted',
-              'Your Application ID: $appId',
-            );
-            _navigateTo('tracking');
-          },
-        );
-      case 'tracking':
-        return _TrackingView(
-          isDark: _isDarkMode,
-          onNotification: _addNotification,
-        );
-      case 'student':
-        return _StudentPortalView(
-          isDark: _isDarkMode,
-          loggedInApp: _studentApplication,
-          onLogin: (app) {
-            setState(() {
-              _studentApplication = app;
-              _loggedInStudentId = app.applicationId;
-            });
-          },
-          onLogout: () {
-            setState(() {
-              _studentApplication = null;
-              _loggedInStudentId = null;
-            });
-          },
-        );
-      case 'admin':
-        return _AdminPanelView(
-          isDark: _isDarkMode,
-          isLoggedIn: _isAdminLoggedIn,
-          onLogin: () => setState(() => _isAdminLoggedIn = true),
-          onLogout: () => setState(() {
-            _isAdminLoggedIn = false;
-            _navigateTo('home');
-          }),
-          onNotification: _addNotification,
-        );
-      default:
-        return _HomeView(
-          courses: _courses,
-          isDark: _isDarkMode,
-          onNavigate: _navigateTo,
-        );
-    }
+Widget _buildCurrentView() {
+  switch (_currentView) {
+    case 'home':
+      return _HomeView(
+        courses: _courses,
+        isDark: _isDarkMode,
+        onNavigate: _navigateTo,
+        firebaseError: _firebaseError,
+      );
+    case 'application':
+      return _ApplicationFormView(
+        courses: _courses,
+        isDark: _isDarkMode,
+        onSubmitted: (appId) {
+          _addNotification(
+            'Application Submitted',
+            'Your Application ID: $appId',
+          );
+          _navigateTo('tracking');
+        },
+      );
+    case 'tracking':
+      return _TrackingView(
+        isDark: _isDarkMode,
+        onNotification: _addNotification,
+      );
+    case 'student':
+      return _StudentPortalView(
+        isDark: _isDarkMode,
+        loggedInApp: _studentApplication,
+        onLogin: (app) {
+          setState(() {
+            _studentApplication = app;
+            _loggedInStudentId = app.applicationId;
+          });
+        },
+        onLogout: () {
+          setState(() {
+            _studentApplication = null;
+            _loggedInStudentId = null;
+          });
+        },
+      );
+    case 'admin':
+      return _AdminPanelView(
+        isDark: _isDarkMode,
+        isLoggedIn: _isAdminLoggedIn,
+        onLogin: () => setState(() => _isAdminLoggedIn = true),
+        onLogout: () => setState(() {
+          _isAdminLoggedIn = false;
+          _navigateTo('home');
+        }),
+        onNotification: _addNotification,
+      );
+    case 'calling':  // Add this
+      return const BeediSmartCallingScreen();
+    default:
+      return _HomeView(
+        courses: _courses,
+        isDark: _isDarkMode,
+        onNavigate: _navigateTo,
+      );
   }
+}
 
   // ===========================================================================
   // HELPERS
   // ===========================================================================
 
-  List<Map<String, dynamic>> _getNavItems() => [
-    {'icon': Icons.home, 'label': 'Home', 'view': 'home'},
-    {'icon': Icons.assignment, 'label': 'Apply', 'view': 'application'},
-    {
-      'icon': Icons.track_changes,
-      'label': 'Track Application',
-      'view': 'tracking',
-    },
-    {'icon': Icons.person, 'label': 'Student Portal', 'view': 'student'},
-  ];
+ List<Map<String, dynamic>> _getNavItems() => [
+  {'icon': Icons.home, 'label': 'Home', 'view': 'home'},
+  {'icon': Icons.assignment, 'label': 'Apply', 'view': 'application'},
+  {
+    'icon': Icons.track_changes,
+    'label': 'Track Application',
+    'view': 'tracking',
+  },
+  {'icon': Icons.person, 'label': 'Student Portal', 'view': 'student'},
+  {'icon': Icons.phone_in_talk, 'label': 'Smart Calling', 'view': 'calling'}, // Add this
+];
 
   String _getViewTitle() {
     switch (_currentView) {

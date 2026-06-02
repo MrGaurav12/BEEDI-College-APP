@@ -1228,7 +1228,7 @@ class MainTesterScreen extends StatefulWidget {
 class _MainTesterScreenState extends State<MainTesterScreen>
     with TickerProviderStateMixin {
   // ── API ─────────────────────────────────────────────────────
-  final String apiKey = "AIzaSyCVj-7e1nkHfT71vJ86p2DpPilZy7wXx10";
+  final String apiKey = "pub_8c794ddd1d7c458daece93f72d98ba71";
   final String modelName = "BEEDI College AI Version 2.0";
 
   // ── State ────────────────────────────────────────────────────

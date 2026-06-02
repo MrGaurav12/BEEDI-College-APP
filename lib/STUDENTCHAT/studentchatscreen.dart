@@ -1,7 +1,7 @@
 // ignore_for_file: unused_field, unused_local_variable, deprecated_member_use, prefer_collection_literals, non_constant_identifier_names
 
 // ============================================================
-// BEEDI COLLEGE ANONYMOUS CHAT SYSTEM — UPGRADED v3.0
+// BEEDI COLLEGE ANONYMOUS CHAT SYSTEM — UPGRADED v4.0
 // Single-file Flutter App | Firebase Firestore + Auth
 // Theme: White + Green + Blue | Glassmorphism | Premium UI
 // PIN Security System | Admin Panel | Advanced Features
@@ -251,6 +251,8 @@ class StudentModel {
   final int? avatarColorIndex;
   final String? aboutText;
   final int messageCount;
+  final DateTime? lastSeen;
+  final String? deviceToken;
 
   StudentModel({
     required this.uid,
@@ -268,6 +270,8 @@ class StudentModel {
     this.avatarColorIndex,
     this.aboutText,
     this.messageCount = 0,
+    this.lastSeen,
+    this.deviceToken,
   });
 
   factory StudentModel.fromFirestore(DocumentSnapshot doc) {
@@ -289,6 +293,8 @@ class StudentModel {
       avatarColorIndex: data['avatarColorIndex'] as int?,
       aboutText: data['aboutText'] as String?,
       messageCount: data['messageCount'] as int? ?? 0,
+      lastSeen: (data['lastSeen'] as Timestamp?)?.toDate(),
+      deviceToken: data['deviceToken'] as String?,
     );
   }
 
@@ -309,6 +315,8 @@ class StudentModel {
         'avatarColorIndex': avatarColorIndex,
         'aboutText': aboutText,
         'messageCount': messageCount,
+        'lastSeen': lastSeen != null ? Timestamp.fromDate(lastSeen!) : null,
+        'deviceToken': deviceToken,
       };
 
   bool get isPinExpired =>
@@ -357,6 +365,8 @@ class StudentModel {
     int? avatarColorIndex,
     String? aboutText,
     int? messageCount,
+    DateTime? lastSeen,
+    String? deviceToken,
   }) =>
       StudentModel(
         uid: uid,
@@ -374,6 +384,8 @@ class StudentModel {
         avatarColorIndex: avatarColorIndex ?? this.avatarColorIndex,
         aboutText: aboutText ?? this.aboutText,
         messageCount: messageCount ?? this.messageCount,
+        lastSeen: lastSeen ?? this.lastSeen,
+        deviceToken: deviceToken ?? this.deviceToken,
       );
 }
 
@@ -621,6 +633,7 @@ class AuthProvider extends ChangeNotifier {
             'pinActive': true,
             'createdAt': Timestamp.now(),
             'messageCount': 0,
+            'lastSeen': Timestamp.now(),
           });
         }
 
@@ -715,6 +728,9 @@ class AuthProvider extends ChangeNotifier {
 
       _currentStudent = StudentModel.fromFirestore(studentData);
       ProfileCache.put(cleanPin, _currentStudent!);
+      
+      // Update last seen
+      await studentData.reference.update({'lastSeen': Timestamp.now()});
 
       if (pinDoc.exists) {
         await _db
@@ -770,6 +786,7 @@ class AuthProvider extends ChangeNotifier {
         'pinActive': true,
         'createdAt': Timestamp.now(),
         'messageCount': 0,
+        'lastSeen': Timestamp.now(),
       };
 
       await _db.collection('students').doc(uid).set(studentData);
@@ -867,6 +884,11 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    if (_currentStudent != null) {
+      await _db.collection('students').doc(_currentStudent!.uid).update({
+        'lastSeen': Timestamp.now(),
+      });
+    }
     await _auth.signOut();
     _currentStudent = null;
     _isAdminVerified = false;
@@ -1034,6 +1056,8 @@ class ChatProvider extends ChangeNotifier {
   bool _isSearching = false;
   ChatMessage? _pinnedMessage;
   String? _adminAnnouncement;
+  List<ChatMessage> _mediaMessages = [];
+  int _unreadCount = 0;
 
   final Map<String, List<DateTime>> _messageTimes = {};
 
@@ -1047,6 +1071,8 @@ class ChatProvider extends ChangeNotifier {
   bool get isSearching => _isSearching;
   ChatMessage? get pinnedMessage => _pinnedMessage;
   String? get adminAnnouncement => _adminAnnouncement;
+  List<ChatMessage> get mediaMessages => _mediaMessages;
+  int get unreadCount => _unreadCount;
 
   static const int pageSize = 30;
 
@@ -1076,6 +1102,7 @@ class ChatProvider extends ChangeNotifier {
     _lastDocument = null;
     _hasMore = true;
     _replyingTo = null;
+    _unreadCount = 0;
     _messageSubscription?.cancel();
     _typingSubscription?.cancel();
     _startListening();
@@ -1210,7 +1237,6 @@ class ChatProvider extends ChangeNotifier {
       'isDeleted': false,
       'seenBy': [senderPin],
       'isPinned': false,
-      // Public profile fields stored with message for display — no real name/PIN
       'senderNickname': senderNickname,
       'senderAvatarEmoji': senderAvatarEmoji,
       'senderAvatarColorIndex': senderAvatarColorIndex,
@@ -1415,6 +1441,59 @@ class ChatProvider extends ChangeNotifier {
     ProfileCache.put(pin, s);
     return s;
   }
+  
+  // Feature 1: Get online users count
+  Future<int> getOnlineUsersCount() async {
+    final fiveMinutesAgo = DateTime.now().subtract(const Duration(minutes: 5));
+    final snapshot = await _db
+        .collection('students')
+        .where('lastSeen', isGreaterThan: Timestamp.fromDate(fiveMinutesAgo))
+        .get();
+    return snapshot.docs.length;
+  }
+  
+  // Feature 2: Get total messages count
+  Future<int> getTotalMessagesCount() async {
+    final snapshot = await _db
+        .collection('anonymous_chats')
+        .doc(_currentRoom)
+        .collection('messages')
+        .count()
+        .get();
+    return snapshot.count ?? 0;
+  }
+  
+  // Feature 3: Clear all messages (admin only)
+  Future<void> clearAllMessages() async {
+    final snapshot = await _db
+        .collection('anonymous_chats')
+        .doc(_currentRoom)
+        .collection('messages')
+        .get();
+    for (final doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+    notifyListeners();
+  }
+  
+  // Feature 4: Get popular emojis
+  Future<Map<String, int>> getPopularEmojis() async {
+    final snapshot = await _db
+        .collection('anonymous_chats')
+        .doc(_currentRoom)
+        .collection('messages')
+        .get();
+    final emojiCount = <String, int>{};
+    for (final doc in snapshot.docs) {
+      final reactions = Map<String, List<String>>.from(
+        (doc.data()['reactions'] as Map<String, dynamic>? ?? {}),
+      );
+      reactions.forEach((emoji, users) {
+        emojiCount[emoji] = (emojiCount[emoji] ?? 0) + users.length;
+      });
+    }
+    return emojiCount;
+  }
 
   @override
   void dispose() {
@@ -1485,6 +1564,18 @@ class TimeHelper {
       return 'Yesterday';
     }
     return DateFormat('MMMM d, y').format(dt);
+  }
+  
+  // Feature 5: Relative time format
+  static String formatRelative(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    
+    if (diff.inSeconds < 60) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return DateFormat('MMM d').format(dt);
   }
 }
 
@@ -2506,6 +2597,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   late AnimationController _animCtrl;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
+  int _onlineUsers = 0;
 
   @override
   void initState() {
@@ -2519,6 +2611,12 @@ class _ProfileScreenState extends State<ProfileScreen>
         .animate(CurvedAnimation(
             parent: _animCtrl, curve: Curves.easeOutCubic));
     _animCtrl.forward();
+    _loadOnlineUsers();
+  }
+
+  Future<void> _loadOnlineUsers() async {
+    final count = await context.read<ChatProvider>().getOnlineUsersCount();
+    if (mounted) setState(() => _onlineUsers = count);
   }
 
   @override
@@ -2548,6 +2646,38 @@ class _ProfileScreenState extends State<ProfileScreen>
                     children: [
                       _buildStatsRow(student),
                       const SizedBox(height: 20),
+                      // Feature 6: Online users badge
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: AppColors.success,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$_onlineUsers online now',
+                              style: GoogleFonts.poppins(
+                                color: AppColors.success,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       _buildAboutCard(student),
                       const SizedBox(height: 16),
                       _buildInfoCard(student, isOwnProfile, context),
@@ -2602,7 +2732,6 @@ class _ProfileScreenState extends State<ProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 60),
-              // Avatar circle with emoji
               Container(
                 width: 110,
                 height: 110,
@@ -2636,7 +2765,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
               ),
               const SizedBox(height: 14),
-              // Nickname (public)
               Text(
                 student.displayNickname,
                 style: GoogleFonts.poppins(
@@ -2806,28 +2934,30 @@ class _ProfileScreenState extends State<ProfileScreen>
             ],
           ),
           const SizedBox(height: 12),
-          // Nickname always shown
           _ProfileInfoRow(
               label: 'Nickname', value: student.displayNickname),
           _ProfileInfoRow(label: 'Batch', value: student.batch),
-          // Real name ONLY shown to admin, or own profile privately
           if (isAdmin)
             _ProfileInfoRow(
                 label: 'Real Name (Admin)',
                 value: student.realName,
                 isPrivate: true),
-          // PIN ONLY shown to admin
           if (isAdmin)
             _ProfileInfoRow(
                 label: 'PIN (Admin)',
                 value: student.pin,
                 isPrivate: true),
-          // Own profile: show that real name is locked
           if (isOwnProfile && !isAdmin)
             _ProfileInfoRow(
                 label: 'Real Name',
                 value: '🔒 Locked (contact admin)',
                 isPrivate: false),
+          // Feature 7: Last seen
+          _ProfileInfoRow(
+              label: 'Last Seen',
+              value: student.lastSeen != null 
+                  ? TimeHelper.formatRelative(student.lastSeen!)
+                  : 'Recently'),
         ],
       ),
     );
@@ -3229,7 +3359,6 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             ),
             const SizedBox(height: 24),
 
-            // Locked fields notice
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -3299,6 +3428,8 @@ class _ChatScreenState extends State<ChatScreen>
   String? _sendError;
   late AnimationController _searchAnimCtrl;
   late Animation<double> _searchFade;
+  int _onlineUsers = 0;
+  Timer? _onlineTimer;
 
   final List<Map<String, String>> _rooms = [
     {'id': 'general', 'name': 'General', 'icon': '💬'},
@@ -3319,6 +3450,8 @@ class _ChatScreenState extends State<ChatScreen>
         CurvedAnimation(parent: _searchAnimCtrl, curve: Curves.easeInOut);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChatProvider>().setRoom(_currentRoom);
+      _loadOnlineUsers();
+      _onlineTimer = Timer.periodic(const Duration(seconds: 30), (_) => _loadOnlineUsers());
     });
     _scrollCtrl.addListener(() {
       final show = _scrollCtrl.offset > 300;
@@ -3326,6 +3459,11 @@ class _ChatScreenState extends State<ChatScreen>
         setState(() => _showScrollButton = show);
       }
     });
+  }
+  
+  Future<void> _loadOnlineUsers() async {
+    final count = await context.read<ChatProvider>().getOnlineUsersCount();
+    if (mounted) setState(() => _onlineUsers = count);
   }
 
   @override
@@ -3335,6 +3473,7 @@ class _ChatScreenState extends State<ChatScreen>
     _focusNode.dispose();
     _searchCtrl.dispose();
     _searchAnimCtrl.dispose();
+    _onlineTimer?.cancel();
     super.dispose();
   }
 
@@ -3403,6 +3542,7 @@ class _ChatScreenState extends State<ChatScreen>
         children: [
           if (_showSearch) _buildSearchBar(),
           _buildRoomSelector(),
+          _buildOnlineBadge(),
           _buildAdminAnnouncementBanner(),
           _buildPinnedMessageBanner(),
           _buildTypingIndicator(student.pin),
@@ -3465,7 +3605,6 @@ class _ChatScreenState extends State<ChatScreen>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Show nickname in appbar, never real name or PIN
                 Text(
                   student.displayNickname,
                   style: GoogleFonts.poppins(
@@ -3498,6 +3637,36 @@ class _ChatScreenState extends State<ChatScreen>
         ),
       ),
       actions: [
+        // Feature 8: Online users count in app bar
+        Container(
+          margin: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.success.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: AppColors.success,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '$_onlineUsers',
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.success,
+                ),
+              ),
+            ],
+          ),
+        ),
         IconButton(
           icon: Icon(
             _showSearch ? Icons.search_off : Icons.search,
@@ -3545,6 +3714,8 @@ class _ChatScreenState extends State<ChatScreen>
                   MaterialPageRoute(builder: (_) => const LoginScreen()),
                 );
               }
+            } else if (val == 'clear_chat' && auth.isAdmin) {
+              await _showClearChatDialog();
             }
           },
           itemBuilder: (_) => [
@@ -3560,6 +3731,19 @@ class _ChatScreenState extends State<ChatScreen>
                 ],
               ),
             ),
+            if (auth.isAdmin)
+              PopupMenuItem(
+                value: 'clear_chat',
+                child: Row(
+                  children: [
+                    const Icon(Icons.delete_sweep,
+                        color: AppColors.error, size: 18),
+                    const SizedBox(width: 8),
+                    Text('Clear All Messages',
+                        style: GoogleFonts.poppins(color: AppColors.error)),
+                  ],
+                ),
+              ),
             PopupMenuItem(
               value: 'logout',
               child: Row(
@@ -3579,6 +3763,68 @@ class _ChatScreenState extends State<ChatScreen>
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(height: 1, color: AppColors.divider),
+      ),
+    );
+  }
+  
+  Future<void> _showClearChatDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Clear All Messages?',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Text(
+          'This will permanently delete all messages in this room. This action cannot be undone.',
+          style: GoogleFonts.poppins()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel', style: GoogleFonts.poppins()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Clear All',
+                style: GoogleFonts.poppins(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await context.read<ChatProvider>().clearAllMessages();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All messages cleared!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildOnlineBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: AppColors.success,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '$_onlineUsers students online',
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              color: AppColors.textMed,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -4129,7 +4375,6 @@ class _ChatScreenState extends State<ChatScreen>
                 FutureBuilder<StudentModel?>(
                   future: ProfileCache.fetchByPin(reply.senderPin),
                   builder: (_, snap) => Text(
-                    // Show nickname in reply preview, not raw PIN
                     'Replying to ${snap.data?.displayNickname ?? reply.senderPin}',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
@@ -4174,7 +4419,6 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   Future<void> _showIdentity(String pin) async {
-    // Admin-only: fetch full identity including real name, PIN
     final student =
         await context.read<ChatProvider>().getStudentByPin(pin);
     if (!mounted) return;
@@ -4879,7 +5123,6 @@ class _MessageBubbleState extends State<MessageBubble>
     final isAdminMsg = widget.message.senderType == 'admin';
     final data = widget.message;
 
-    // Extract per-message profile data (stored at send time)
     final msgNickname = data.senderNickname;
     final msgEmoji = data.senderAvatarEmoji;
     final msgColorIndex = data.senderAvatarColorIndex;
@@ -4960,7 +5203,6 @@ class _MessageBubbleState extends State<MessageBubble>
 
     final bool useWhiteText = isAdminMsg || widget.isMe;
 
-    // Display label: nickname or fallback, NEVER raw PIN for non-admin viewers
     String displayLabel;
     if (isAdminMsg) {
       displayLabel = 'BEEDI Admin';
@@ -5068,7 +5310,6 @@ class _MessageBubbleState extends State<MessageBubble>
                             ? ProfileCache.fetchByPin(msg.replySenderPin!)
                             : Future.value(null),
                         builder: (_, snap) => Text(
-                          // Show nickname in reply thread, not PIN
                           snap.data?.displayNickname ??
                               msg.replySenderPin ??
                               '',
@@ -5493,7 +5734,7 @@ class _AdminDashboardState extends State<AdminDashboard>
 }
 
 // ============================================================
-// ADMIN STUDENTS TAB
+// ADMIN STUDENTS TAB - FIXED
 // ============================================================
 
 class _StudentsTab extends StatelessWidget {
@@ -5504,24 +5745,73 @@ class _StudentsTab extends StatelessWidget {
           .collection('students')
           .orderBy('createdAt', descending: true)
           .snapshots(),
-      builder: (_, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final docs = snap.data?.docs ?? [];
-        if (docs.isEmpty) {
-          return Center(
-            child: Text('No students registered.',
-                style:
-                    GoogleFonts.poppins(color: AppColors.textMed)),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         }
+        
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading students: ${snapshot.error}',
+                  style: GoogleFonts.poppins(color: AppColors.error),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // Refresh the stream by triggering a rebuild
+                    context.read<AdminPinProvider>().loadPins();
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        final docs = snapshot.data?.docs ?? [];
+        
+        if (docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.people_outline, size: 64, color: AppColors.textLight),
+                const SizedBox(height: 16),
+                Text(
+                  'No students registered yet',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: AppColors.textMed,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Students will appear here after registration',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: AppColors.textLight,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: docs.length,
-          itemBuilder: (_, i) {
-            final s = StudentModel.fromFirestore(docs[i]);
-            return _StudentCard(student: s);
+          itemBuilder: (context, index) {
+            final student = StudentModel.fromFirestore(docs[index]);
+            return _StudentCard(student: student);
           },
         );
       },
@@ -5566,7 +5856,6 @@ class _StudentCard extends StatelessWidget {
               style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
             ),
             Text(
-              // Real name visible to admin only in this context
               'Real: ${student.realName}',
               style: GoogleFonts.poppins(
                 fontSize: 11,
@@ -5584,7 +5873,10 @@ class _StudentCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                   fontSize: 12, color: AppColors.textMed),
             ),
-            Row(
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
               children: [
                 if (student.isBanned)
                   _StatusChip(label: 'BANNED', color: AppColors.error),
@@ -5594,6 +5886,10 @@ class _StudentCard extends StatelessWidget {
                 if (!student.pinActive)
                   _StatusChip(
                       label: 'PIN INACTIVE', color: AppColors.textMed),
+                if (student.lastSeen != null && 
+                    DateTime.now().difference(student.lastSeen!).inMinutes < 5)
+                  _StatusChip(
+                      label: '🟢 ONLINE', color: AppColors.success),
               ],
             ),
           ],
@@ -5616,6 +5912,9 @@ class _StudentCard extends StatelessWidget {
                         .collection('admin_pins')
                         .doc(student.pin)
                         .update({'isActive': false}).catchError((_) {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Student banned'), backgroundColor: AppColors.error),
+                    );
                   } else if (val == 'unban') {
                     await db
                         .collection('students')
@@ -5625,16 +5924,25 @@ class _StudentCard extends StatelessWidget {
                         .collection('admin_pins')
                         .doc(student.pin)
                         .update({'isActive': true}).catchError((_) {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Student unbanned'), backgroundColor: AppColors.success),
+                    );
                   } else if (val == 'mute') {
                     await db
                         .collection('students')
                         .doc(student.uid)
                         .update({'isMuted': true});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Student muted'), backgroundColor: AppColors.warning),
+                    );
                   } else if (val == 'unmute') {
                     await db
                         .collection('students')
                         .doc(student.uid)
                         .update({'isMuted': false});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Student unmuted'), backgroundColor: AppColors.success),
+                    );
                   } else if (val == 'deactivate_pin') {
                     await db
                         .collection('students')
@@ -5644,6 +5952,9 @@ class _StudentCard extends StatelessWidget {
                         .collection('admin_pins')
                         .doc(student.pin)
                         .update({'isActive': false}).catchError((_) {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('PIN deactivated'), backgroundColor: AppColors.warning),
+                    );
                   } else if (val == 'activate_pin') {
                     await db
                         .collection('students')
@@ -5653,6 +5964,9 @@ class _StudentCard extends StatelessWidget {
                         .collection('admin_pins')
                         .doc(student.pin)
                         .update({'isActive': true}).catchError((_) {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('PIN activated'), backgroundColor: AppColors.success),
+                    );
                   }
                 },
                 itemBuilder: (_) => [
@@ -5789,7 +6103,7 @@ class _MessagesTabState extends State<_MessagesTab> {
                 onTap: () => setState(() => _selectedRoom = r),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                 margin: const EdgeInsets.only(right: 8),
+                  margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
@@ -5848,7 +6162,6 @@ class _MessagesTabState extends State<_MessagesTab> {
                 itemBuilder: (_, i) {
                   final msg = ChatMessage.fromFirestore(docs[i]);
                   final isAdminMsg = msg.senderType == 'admin';
-                  // Admin can see raw PIN in messages tab
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
@@ -5883,7 +6196,6 @@ class _MessagesTabState extends State<_MessagesTab> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          // Admin sees PIN for moderation
                                           'PIN: ${msg.senderPin}',
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w700,
@@ -5940,6 +6252,12 @@ class _MessagesTabState extends State<_MessagesTab> {
                                 'message':
                                     'This message was deleted by admin.',
                               });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Message deleted'),
+                                  backgroundColor: AppColors.error,
+                                ),
+                              );
                             },
                           ),
                       ],
@@ -6038,6 +6356,7 @@ class _AnnounceTabState extends State<_AnnounceTab> {
           backgroundColor: AppColors.success,
         ),
       );
+      _bannerCtrl.clear();
     }
   }
 

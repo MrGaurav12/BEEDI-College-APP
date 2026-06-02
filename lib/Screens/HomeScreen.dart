@@ -14,8 +14,9 @@ import 'dart:math';
 
 import 'package:beedi_college/ADMISSION/Screens/ResultScreen.dart'
     hide LeaderboardScreen, LoginScreen;
+import 'package:beedi_college/ADMISSION/Screens/galery.dart';
 import 'package:beedi_college/ADMISSION/Screens/login_screen.dart';
-import 'package:beedi_college/GAME/GameScreen.dart';
+import 'package:beedi_college/GAME/beedi_game_screen.dart';
 import 'package:beedi_college/QuzeScreens/BS_CITScreen.dart' hide LoginScreen;
 import 'package:beedi_college/STUDENTCHAT/studentchatscreen.dart'
     hide LoginScreen;
@@ -782,13 +783,12 @@ List<DrawerItem> get kDrawerItems => [
     color: const Color(0xFF1E88E5),
     screen: const AppStartScreen(),
   ),
-    DrawerItem(
-    label: 'Learning',
-    icon: Icons.menu_book_rounded,
-    color: const Color(0xFF1E88E5),
-    // screen: const LearningGameScreen(),
-    screen : const GameScreen(),
-  ),
+DrawerItem(
+  label: 'Learning', 
+  icon: Icons.menu_book_rounded,
+  color: const Color(0xFF1E88E5),
+  screen: BeeediSplashScreen(), // This still won't work because kDrawerItems is static
+),
   DrawerItem(
     label: 'Research',
     icon: Icons.science_rounded,
@@ -939,6 +939,12 @@ List<DrawerItem> get kDrawerItems => [
     icon: Icons.smart_toy_rounded,
     color: const Color(0xFF7E57C2),
     screen: const MainTesterScreen(),
+  ),
+    DrawerItem(
+    label: 'Photo',
+    icon: Icons.smart_toy_rounded,
+    color: const Color(0xFF7E57C2),
+    screen: const PexelsHomeScreen(),
   ),
 ];
 
